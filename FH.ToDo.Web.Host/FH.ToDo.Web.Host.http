@@ -1,0 +1,6 @@
+@FH.ToDo.Web.Host_HostAddress = https://localhost:44387
+
+GET {{FH.ToDo.Web.Host_HostAddress}}/weatherforecast
+Accept: application/json
+
+###
