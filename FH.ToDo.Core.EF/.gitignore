@@ -1,0 +1,10 @@
+# Entity Framework Core - Local Database Files
+*.mdf
+*.ldf
+
+# Entity Framework Core - Migration Snapshots (optional - team preference)
+# Uncomment the following line if you want to ignore migration snapshots
+# **/Migrations/**ModelSnapshot.cs
+
+# Entity Framework Core - Local connection strings (if using user secrets)
+appsettings.*.local.json

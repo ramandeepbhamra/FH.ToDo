@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="FH.ToDo.Core.EF/FH.ToDo.Core.EF.csproj" />
+  <Project Path="FH.ToDo.Core.Shared/FH.ToDo.Core.Shared.csproj" />
+  <Project Path="FH.ToDo.Core/FH.ToDo.Core.csproj" />
   <Project Path="FH.ToDo.Web.Host/FH.ToDo.Web.Host.csproj" />
 </Solution>
