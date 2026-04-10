@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FH.ToDo.Web.Host")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6bde5413e9bb81153ac01be2f16b23cb23271e6e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6723ac0533ba403fc07fd3a6fab6d2a9b95a62bb")]
 [assembly: System.Reflection.AssemblyProductAttribute("FH.ToDo.Web.Host")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FH.ToDo.Web.Host")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
