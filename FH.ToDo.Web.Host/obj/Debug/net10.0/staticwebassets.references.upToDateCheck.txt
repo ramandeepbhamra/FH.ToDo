@@ -1,3 +1,0 @@
-C:\Projects\FunctionHealth\FH.ToDo\FH.ToDo.Web.Core\obj\Debug\net10.0\staticwebassets.build.json
-C:\Projects\FunctionHealth\FH.ToDo\FH.ToDo.Web.Core\obj\Debug\net10.0\staticwebassets.build.json
-C:\Projects\FunctionHealth\FH.ToDo\FH.ToDo.Web.Core\obj\Debug\net10.0\staticwebassets.build.json
