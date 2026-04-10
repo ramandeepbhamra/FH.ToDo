@@ -31,4 +31,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FH.ToDo.Core\FH.ToDo.Core.csproj" />
+  </ItemGroup>
+
 </Project>

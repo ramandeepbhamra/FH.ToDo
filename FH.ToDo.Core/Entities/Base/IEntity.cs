@@ -1,4 +1,4 @@
-namespace FH.ToDo.Core.EF.Entities.Base;
+namespace FH.ToDo.Core.Entities.Base;
 
 /// <summary>
 /// Base interface for all entities with primary key

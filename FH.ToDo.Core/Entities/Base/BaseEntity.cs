@@ -1,4 +1,4 @@
-namespace FH.ToDo.Core.EF.Entities.Base;
+namespace FH.ToDo.Core.Entities.Base;
 
 /// <summary>
 /// Base entity class with GUID primary key and audit fields

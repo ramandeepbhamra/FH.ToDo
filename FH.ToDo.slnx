@@ -2,5 +2,6 @@
   <Project Path="FH.ToDo.Core.EF/FH.ToDo.Core.EF.csproj" />
   <Project Path="FH.ToDo.Core.Shared/FH.ToDo.Core.Shared.csproj" />
   <Project Path="FH.ToDo.Core/FH.ToDo.Core.csproj" />
+  <Project Path="FH.ToDo.Web.Core/FH.ToDo.Web.Core.csproj" Id="5d1b9789-b60d-40fd-9a7c-5885fcd199ca" />
   <Project Path="FH.ToDo.Web.Host/FH.ToDo.Web.Host.csproj" />
 </Solution>

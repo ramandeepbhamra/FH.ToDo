@@ -1386,6 +1386,29 @@
         "build": {
           "buildTransitive/net8.0/_._": {}
         }
+      },
+      "FH.ToDo.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "FH.ToDo.Core.Shared": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/FH.ToDo.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/FH.ToDo.Core.dll": {}
+        }
+      },
+      "FH.ToDo.Core.Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/FH.ToDo.Core.Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/FH.ToDo.Core.Shared.dll": {}
+        }
       }
     }
   },
@@ -3995,10 +4018,21 @@
         "system.security.cryptography.protecteddata.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "FH.ToDo.Core/1.0.0": {
+      "type": "project",
+      "path": "../FH.ToDo.Core/FH.ToDo.Core.csproj",
+      "msbuildProject": "../FH.ToDo.Core/FH.ToDo.Core.csproj"
+    },
+    "FH.ToDo.Core.Shared/1.0.0": {
+      "type": "project",
+      "path": "../FH.ToDo.Core.Shared/FH.ToDo.Core.Shared.csproj",
+      "msbuildProject": "../FH.ToDo.Core.Shared/FH.ToDo.Core.Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "FH.ToDo.Core >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 10.0.5",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.5",
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.5",
@@ -4040,7 +4074,11 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Projects\\FunctionHealth\\FH.ToDo\\FH.ToDo.Core\\FH.ToDo.Core.csproj": {
+              "projectPath": "C:\\Projects\\FunctionHealth\\FH.ToDo\\FH.ToDo.Core\\FH.ToDo.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

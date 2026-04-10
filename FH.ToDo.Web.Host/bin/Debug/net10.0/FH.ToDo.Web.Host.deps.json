@@ -9,6 +9,7 @@
       "FH.ToDo.Web.Host/1.0.0": {
         "dependencies": {
           "FH.ToDo.Core": "1.0.0",
+          "FH.ToDo.Web.Core": "1.0.0",
           "Microsoft.AspNetCore.OpenApi": "10.0.5",
           "Microsoft.EntityFrameworkCore.Design": "10.0.5"
         },
@@ -768,7 +769,7 @@
       },
       "FH.ToDo.Core/1.0.0": {
         "dependencies": {
-          "FH.ToDo.Core.EF": "1.0.0"
+          "FH.ToDo.Core.Shared": "1.0.0"
         },
         "runtime": {
           "FH.ToDo.Core.dll": {
@@ -779,11 +780,31 @@
       },
       "FH.ToDo.Core.EF/1.0.0": {
         "dependencies": {
+          "FH.ToDo.Core": "1.0.0",
           "Microsoft.EntityFrameworkCore": "10.0.5",
           "Microsoft.EntityFrameworkCore.SqlServer": "10.0.5"
         },
         "runtime": {
           "FH.ToDo.Core.EF.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "FH.ToDo.Core.Shared/1.0.0": {
+        "runtime": {
+          "FH.ToDo.Core.Shared.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "FH.ToDo.Web.Core/1.0.0": {
+        "dependencies": {
+          "FH.ToDo.Core.EF": "1.0.0"
+        },
+        "runtime": {
+          "FH.ToDo.Web.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -1118,6 +1139,16 @@
       "sha512": ""
     },
     "FH.ToDo.Core.EF/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FH.ToDo.Core.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FH.ToDo.Web.Core/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

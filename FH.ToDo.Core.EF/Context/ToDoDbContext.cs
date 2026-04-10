@@ -1,6 +1,6 @@
+using FH.ToDo.Core.Entities.Users;
+using FH.ToDo.Core.Entities.Base;
 using FH.ToDo.Core.EF.Configurations;
-using FH.ToDo.Core.EF.Entities;
-using FH.ToDo.Core.EF.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -32,7 +32,7 @@ public class ToDoDbContext : DbContext
     {
         // Automatically set audit fields
         SetAuditFields();
-        
+
         return base.SaveChangesAsync(cancellationToken);
     }
 
@@ -40,7 +40,7 @@ public class ToDoDbContext : DbContext
     {
         // Automatically set audit fields
         SetAuditFields();
-        
+
         return base.SaveChanges();
     }
 

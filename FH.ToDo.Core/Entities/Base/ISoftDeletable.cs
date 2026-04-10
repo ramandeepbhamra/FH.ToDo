@@ -1,4 +1,4 @@
-namespace FH.ToDo.Core.EF.Entities.Base;
+namespace FH.ToDo.Core.Entities.Base;
 
 /// <summary>
 /// Interface for entities that support soft delete
