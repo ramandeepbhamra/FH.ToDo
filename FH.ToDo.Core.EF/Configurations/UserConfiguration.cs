@@ -19,6 +19,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Id)
             .ValueGeneratedOnAdd();
 
+        // Password Hash - Required
+        builder.Property(u => u.PasswordHash)
+            .IsRequired()
+            .HasMaxLength(User.MaxPasswordHashLength);
+
         // Audit Fields - SQL Defaults
         builder.Property(u => u.CreatedDate)
             .HasDefaultValueSql("GETUTCDATE()");

@@ -1,6 +1,8 @@
-﻿using FH.ToDo.Core.Entities.Users;
+using FH.ToDo.Core.Entities.Users;
 using FH.ToDo.Core.Extensions;
 using FH.ToDo.Core.Repositories;
+using FH.ToDo.Services.Core.Authentication;
+using FH.ToDo.Services.Core.Common.Dto;
 using FH.ToDo.Services.Core.Users;
 using FH.ToDo.Services.Core.Users.Dto;
 using FH.ToDo.Services.Mapping;
@@ -9,58 +11,206 @@ using Microsoft.EntityFrameworkCore;
 namespace FH.ToDo.Services.Users;
 
 /// <summary>
-/// User service implementation with business logic
-/// Uses generic repository with private query builder methods for complex queries
+/// User service implementation with complete CRUD operations
+/// Uses generic repository only - all custom queries built in service layer
 /// All business logic (filtering, sorting, searching) is handled in the service layer
 /// </summary>
 public class UserServices : IUserService
 {
     private readonly IRepository<User, Guid> _userRepository;
+    private readonly IAuthenticationService _authenticationService;
     private readonly UserMapper _mapper;
 
-    public UserServices(IRepository<User, Guid> userRepository, UserMapper mapper)
+    public UserServices(
+        IRepository<User, Guid> userRepository,
+        IAuthenticationService authenticationService,
+        UserMapper mapper)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    /// <summary>
-    /// Get list of users with filtering
-    /// Public API method - delegates complex query logic to private query builder
-    /// </summary>
-    public async Task<List<UserListDto>> GetPeople(GetUserInput input)
+    public async Task<PagedResultDto<UserDto>> GetUsersAsync(GetUsersInputDto input, CancellationToken cancellationToken = default)
     {
-        // Build query using private query builder method
+        // Build filtered query
         var query = GetUsersFilteredQuery(input);
 
-        // Apply business logic: ordering
+        // Get total count
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        // Apply sorting
+        query = ApplySorting(query, input.SortBy, input.SortDirection);
+
+        // Apply pagination
+        var skip = (input.Page - 1) * input.PageSize;
+        query = query.Skip(skip).Take(input.PageSize);
+
+        // Execute query
+        var users = await query.ToListAsync(cancellationToken);
+
+        // Map to DTOs
+        var userDtos = users.Select(u => _mapper.UserToUserDto(u)).ToList();
+
+        return new PagedResultDto<UserDto>
+        {
+            Items = userDtos,
+            TotalCount = totalCount,
+            Page = input.Page,
+            PageSize = input.PageSize
+        };
+    }
+
+    public async Task<UserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ID '{id}' not found.");
+        }
+
+        return _mapper.UserToUserDto(user);
+    }
+
+    public async Task<UserDto> CreateUserAsync(CreateUserDto input, CancellationToken cancellationToken = default)
+    {
+        // Check if email already exists using generic repository
+        var existingUser = await _userRepository
+            .GetAll()
+            .FirstOrDefaultAsync(u => u.Email == input.Email, cancellationToken);
+
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException($"Email '{input.Email}' is already in use.");
+        }
+
+        // Hash password
+        var passwordHash = _authenticationService.HashPassword(input.Password);
+
+        // Map DTO to entity
+        var user = _mapper.CreateUserDtoToUser(input);
+        user.PasswordHash = passwordHash;
+
+        // Save to database
+        var createdUser = await _userRepository.InsertAsync(user, cancellationToken);
+
+        return _mapper.UserToUserDto(createdUser);
+    }
+
+    public async Task<UserDto> UpdateUserAsync(Guid id, UpdateUserDto input, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ID '{id}' not found.");
+        }
+
+        // Check if email is being changed and if new email already exists
+        if (user.Email != input.Email)
+        {
+            var existingUser = await _userRepository
+                .GetAll()
+                .FirstOrDefaultAsync(u => u.Email == input.Email, cancellationToken);
+
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException($"Email '{input.Email}' is already in use.");
+            }
+        }
+
+        // Update password if provided
+        if (!string.IsNullOrEmpty(input.Password))
+        {
+            user.PasswordHash = _authenticationService.HashPassword(input.Password);
+        }
+
+        // Map changes to entity
+        _mapper.UpdateUserDtoToUser(input, user);
+
+        // Save changes
+        var updatedUser = await _userRepository.UpdateAsync(user, cancellationToken);
+
+        return _mapper.UserToUserDto(updatedUser);
+    }
+
+    public async Task DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ID '{id}' not found.");
+        }
+
+        // Soft delete
+        await _userRepository.DeleteAsync(user, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get simple list of users with filtering (existing method - kept for backward compatibility)
+    /// </summary>
+    public async Task<List<UserListDto>> GetUser(GetUserInputDto input)
+    {
+        var query = GetUserFilteredQuery(input);
+
         query = query
             .OrderBy(u => u.FirstName)
             .ThenBy(u => u.LastName);
 
-        // Execute query and get results
         var users = await query.ToListAsync();
 
-        // Map entities to DTOs (never expose entities outside service layer)
         return _mapper.UsersToUserListDtos(users);
     }
 
+    #region Private Query Builders
+
     /// <summary>
-    /// Private query builder: Constructs filtered query for users
-    /// Returns IQueryable (not executed) - allows caller to add additional operations
-    /// Centralizes all user filtering business logic in one reusable method
+    /// Builds filtered query for paginated user list
     /// </summary>
-    private IQueryable<User> GetUsersFilteredQuery(GetUserInput? input)
+    private IQueryable<User> GetUsersFilteredQuery(GetUsersInputDto input)
     {
         var query = _userRepository.GetAll();
 
-        // Data access pattern: Soft-delete filter (always exclude deleted)
-        query = query.Where(u => !u.IsDeleted);
+        // Apply IsActive filter
+        if (input.IsActive.HasValue)
+        {
+            query = query.Where(u => u.IsActive == input.IsActive.Value);
+        }
 
-        // Business logic: Active users only by default
+        // Apply Email filter
+        query = query.WhereIf(
+            !string.IsNullOrWhiteSpace(input.Email),
+            u => u.Email.ToLower().Contains(input.Email!.Trim().ToLower()));
+
+        // Apply Name filter (FirstName or LastName)
+        query = query.WhereIf(
+            !string.IsNullOrWhiteSpace(input.Name),
+            u => u.FirstName.ToLower().Contains(input.Name!.Trim().ToLower()) ||
+                 u.LastName.ToLower().Contains(input.Name!.Trim().ToLower()));
+
+        // Apply SearchKeyword (searches across Email, FirstName, LastName)
+        query = query.WhereIf(
+            !string.IsNullOrWhiteSpace(input.SearchKeyword),
+            u => u.Email.ToLower().Contains(input.SearchKeyword!.Trim().ToLower()) ||
+                 u.FirstName.ToLower().Contains(input.SearchKeyword!.Trim().ToLower()) ||
+                 u.LastName.ToLower().Contains(input.SearchKeyword!.Trim().ToLower()));
+
+        return query;
+    }
+
+    /// <summary>
+    /// Builds filtered query for simple user list (backward compatibility)
+    /// </summary>
+    private IQueryable<User> GetUserFilteredQuery(GetUserInputDto? input)
+    {
+        var query = _userRepository.GetAll();
+
+        // Active users only
         query = query.Where(u => u.IsActive);
 
-        // Conditional search filter using WhereIf extension
+        // Search filter
         query = query.WhereIf(
             input?.Filter.HasValue() ?? false,
             u => u.Email.ToLower().Contains(input!.Filter!.Trim().ToLower()) ||
@@ -70,20 +220,22 @@ public class UserServices : IUserService
         return query;
     }
 
-    // Example: Additional query builders can be added for different scenarios
-    // Uncomment and customize as needed
-    /*
-    private IQueryable<User> GetActiveUsersWithRolesQuery()
+    /// <summary>
+    /// Applies sorting to query
+    /// </summary>
+    private IQueryable<User> ApplySorting(IQueryable<User> query, string? sortBy, string sortDirection)
     {
-        return _userRepository
-            .GetAllIncluding(u => u.Roles)  // Eager load roles to avoid N+1
-            .Where(u => !u.IsDeleted && u.IsActive);
+        var isDescending = sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+        return sortBy?.ToLower() switch
+        {
+            "email" => isDescending ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            "firstname" => isDescending ? query.OrderByDescending(u => u.FirstName) : query.OrderBy(u => u.FirstName),
+            "lastname" => isDescending ? query.OrderByDescending(u => u.LastName) : query.OrderBy(u => u.LastName),
+            "createddate" => isDescending ? query.OrderByDescending(u => u.CreatedDate) : query.OrderBy(u => u.CreatedDate),
+            _ => query.OrderBy(u => u.FirstName).ThenBy(u => u.LastName) // Default sorting
+        };
     }
 
-    private IQueryable<User> GetPremiumUsersQuery()
-    {
-        return _userRepository.GetAll()
-            .Where(u => !u.IsDeleted && u.IsActive && u.IsPremium);
-    }
-    */
+    #endregion
 }
