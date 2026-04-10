@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace FH.ToDo.Core.Entities.Users;
 
 [Table("Users")]
-public class User : BaseEntity
+public class User : BaseEntity<Guid>
 {
     public const int MaxNameLength = 100;
     public const int MaxPhoneNumberLength = 20;

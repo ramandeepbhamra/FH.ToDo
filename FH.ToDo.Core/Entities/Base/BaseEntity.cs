@@ -1,11 +1,14 @@
 namespace FH.ToDo.Core.Entities.Base;
 
 /// <summary>
-/// Base entity class with GUID primary key and audit fields
+/// Generic base entity class with any primary key type and audit fields
+/// Developers must explicitly specify the TKey type parameter (int, long, Guid, string, etc.)
 /// </summary>
-public abstract class BaseEntity : IEntity<Guid>, IAuditableEntity, ISoftDeletable
+/// <typeparam name="TKey">The type of the primary key - must be explicitly declared</typeparam>
+public abstract class BaseEntity<TKey> : IEntity<TKey>, IAuditableEntity, ISoftDeletable
+    where TKey : IEquatable<TKey>
 {
-    public Guid Id { get; set; }
+    public TKey Id { get; set; } = default!;
     public DateTime CreatedDate { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }

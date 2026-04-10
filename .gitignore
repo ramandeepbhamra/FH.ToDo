@@ -52,3 +52,7 @@ artifacts/
 
 # Entity Framework Core
 appsettings.*.local.json
+
+# Visual Studio backup files
+*.Backup.tmp
+*.bak
