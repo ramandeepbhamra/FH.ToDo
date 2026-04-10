@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FH.ToDo.Core\FH.ToDo.Core.csproj" />
     <ProjectReference Include="..\FH.ToDo.Core.Shared\FH.ToDo.Core.Shared.csproj" />
   </ItemGroup>
 

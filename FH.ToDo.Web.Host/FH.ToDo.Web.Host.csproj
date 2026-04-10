@@ -12,10 +12,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Scalar.AspNetCore" Version="1.3.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FH.ToDo.Core\FH.ToDo.Core.csproj" />
+    <ProjectReference Include="..\FH.ToDo.Core.EF\FH.ToDo.Core.EF.csproj" />
+    <ProjectReference Include="..\FH.ToDo.Services\FH.ToDo.Services.csproj" />
+    <ProjectReference Include="..\FH.ToDo.Services.Core\FH.ToDo.Services.Core.csproj" />
     <ProjectReference Include="..\FH.ToDo.Web.Core\FH.ToDo.Web.Core.csproj" />
   </ItemGroup>
 

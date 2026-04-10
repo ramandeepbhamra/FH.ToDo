@@ -1,16 +1,19 @@
+using FH.ToDo.Core.Entities.Users;
 using FH.ToDo.Services.Core.Authentication.Dto;
 
 namespace FH.ToDo.Services.Core.Authentication;
 
 /// <summary>
 /// Authentication service interface
+/// Handles user credential verification only (no JWT generation)
 /// </summary>
 public interface IAuthenticationService
 {
     /// <summary>
-    /// Authenticates a user and returns JWT token
+    /// Authenticates a user by email and password
+    /// Returns User entity if successful, throws exception if failed
     /// </summary>
-    Task<LoginResponseDto> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken = default);
+    Task<User> AuthenticateAsync(LoginRequestDto request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Validates a password against a stored hash

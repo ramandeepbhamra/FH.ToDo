@@ -9,8 +9,8 @@ namespace FH.ToDo.Services.Authentication;
 
 /// <summary>
 /// Authentication service implementation
-/// Handles user authentication and password hashing
-/// NOTE: JWT token generation will be added when Web.Core infrastructure is implemented
+/// Handles user credential verification and password hashing
+/// Does NOT generate JWT tokens (that's a web-layer responsibility)
 /// </summary>
 public class AuthenticationService : IAuthenticationService
 {
@@ -21,7 +21,7 @@ public class AuthenticationService : IAuthenticationService
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
-    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<User> AuthenticateAsync(LoginRequestDto request, CancellationToken cancellationToken = default)
     {
         // Find user by email using generic repository
         var user = await _userRepository
@@ -45,23 +45,8 @@ public class AuthenticationService : IAuthenticationService
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        // TODO: Generate JWT token (will be implemented in Web.Core)
-        // For now, return a placeholder response
-        return new LoginResponseDto
-        {
-            Token = new TokenResponseDto
-            {
-                AccessToken = "TOKEN_GENERATION_PENDING",
-                ExpiresAt = DateTime.UtcNow.AddHours(1),
-                ExpiresInSeconds = 3600
-            },
-            User = new UserInfoDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FullName = user.FullName
-            }
-        };
+        // Return authenticated user entity
+        return user;
     }
 
     public bool VerifyPassword(string password, string passwordHash)
