@@ -10,8 +10,4 @@
     <ProjectReference Include="..\FH.ToDo.Core.Shared\FH.ToDo.Core.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Users\Dto\" />
-  </ItemGroup>
-
 </Project>

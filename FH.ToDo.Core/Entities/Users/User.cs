@@ -14,19 +14,19 @@ public class User : BaseEntity
     [Required]
     [MaxLength(MaxEmailAddressLength)]
     [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    public virtual string Email { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(MaxNameLength)]
-    public string FirstName { get; set; } = string.Empty;
+    public virtual string FirstName { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(MaxNameLength)]
-    public string LastName { get; set; } = string.Empty;
+    public virtual string LastName { get; set; } = string.Empty;
 
     [MaxLength(MaxPhoneNumberLength)]
     [Phone]
-    public string? PhoneNumber { get; set; }
+    public virtual string? PhoneNumber { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    public virtual bool IsActive { get; set; } = true;
 }
