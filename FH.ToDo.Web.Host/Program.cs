@@ -8,6 +8,7 @@ using FH.ToDo.Services.Mapping;
 using FH.ToDo.Services.Users;
 using FH.ToDo.Web.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
+using NSwag;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -60,13 +61,38 @@ builder.Services.AddCors(options =>
 // OpenAPI / Scalar (Modern .NET 10 API Documentation)
 builder.Services.AddOpenApi();
 
+// NSwag / Swagger (Alternative API Documentation)
+builder.Services.AddOpenApiDocument(options =>
+{
+    options.Title = "FH.ToDo API";
+    options.Version = "v1";
+    options.Description = "FH.ToDo RESTful API with JWT Authentication";
+
+    // Add JWT authentication to Swagger
+    options.AddSecurity("Bearer", new NSwag.OpenApiSecurityScheme
+    {
+        Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your JWT token",
+        Scheme = "Bearer"
+    });
+
+    options.OperationProcessors.Add(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("Bearer"));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
+    // Scalar UI (Modern)
     app.MapOpenApi();
-    app.MapScalarApiReference();  // Modern API explorer at /scalar/v1
+    app.MapScalarApiReference();  // Available at: /scalar/v1
+
+    // NSwag / Swagger UI (Traditional)
+    app.UseOpenApi();             // OpenAPI spec at: /swagger/v1/swagger.json
+    app.UseSwaggerUi();            // Swagger UI at: /swagger
 }
 
 // Global exception handling
