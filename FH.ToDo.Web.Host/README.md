@@ -57,7 +57,7 @@ FH.ToDo.Web.Host/
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YuvrajzAlien\\AGAMZMSSQLSERVER;Database=FHToDo_Dev;..."
+    "DefaultConnection": "Server=YuvrajzAlien\\AGAMZMSSQLSERVER;Database=FHToDoDev;..."
   }
 }
 ```

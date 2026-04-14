@@ -1,4 +1,5 @@
 using FH.ToDo.Core.Entities.Users;
+using FH.ToDo.Core.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,11 +19,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
         builder.Property(u => u.Id)
             .ValueGeneratedOnAdd();
-
-        // Password Hash - Required
-        builder.Property(u => u.PasswordHash)
-            .IsRequired()
-            .HasMaxLength(User.MaxPasswordHashLength);
 
         // Audit Fields - SQL Defaults
         builder.Property(u => u.CreatedDate)
@@ -46,6 +42,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(u => new { u.FirstName, u.LastName })
             .HasDatabaseName("IX_Users_FullName");
+
+        builder.HasIndex(u => u.Role)
+            .HasDatabaseName("IX_Users_Role");
+
+        // Role Configuration - Stored as INT with default value
+        builder.Property(u => u.Role)
+            .HasDefaultValue(UserRole.BasicUser);
 
         // Query Filter for Soft Delete
         builder.HasQueryFilter(u => !u.IsDeleted);

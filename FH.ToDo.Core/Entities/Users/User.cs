@@ -1,4 +1,5 @@
 ﻿using FH.ToDo.Core.Entities.Base;
+using FH.ToDo.Core.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,6 +35,8 @@ public class User : BaseEntity<Guid>
     public virtual string? PhoneNumber { get; set; }
 
     public virtual bool IsActive { get; set; } = true;
+
+    public UserRole Role { get; set; } = UserRole.BasicUser;
 
     /// <summary>
     /// Gets the user's full name

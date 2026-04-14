@@ -64,7 +64,7 @@ public class ToDoDbContextFactory : IDesignTimeDbContextFactory<ToDoDbContext>
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=...;Database=FHToDo_Dev;..."
+    "DefaultConnection": "Server=...;Database=FHToDoDev;..."
   }
 }
 ```
