@@ -4,117 +4,117 @@ body {
   --mat-toolbar-container-text-color: var(--primary-light);
 
   /* Buttons  */
-  --mdc-protected-button-label-text-color: var(--primary);
-  --mat-protected-button-state-layer-color: var(--primary);
-  --mdc-text-button-label-text-color: var(--primary);
-  --mdc-filled-button-container-color: var(--primary);
-  --mdc-outlined-button-label-text-color: var(--primary);
-  --mat-text-button-state-layer-color: var(--primary);
-  --mat-outlined-button-state-layer-color: var(--primary);
-  --mdc-protected-button-container-color: var(--background);
-  --mdc-filled-button-label-text-color: var(--primary-light);
-  --mdc-outlined-button-outline-color: var(--primary-dark);
-  --mdc-fab-container-color: var(--primary-light);
-  --mdc-fab-small-container-color: var(--primary-light);
-  --mat-outlined-button-ripple-color: var(--ripple);
+  --mat-button-protected-label-text-color: var(--primary);
+  --mat-button-protected-state-layer-color: var(--primary);
+  --mat-button-text-label-text-color: var(--primary);
+  --mat-button-filled-container-color: var(--primary);
+  --mat-button-outlined-label-text-color: var(--primary);
+  --mat-button-text-state-layer-color: var(--primary);
+  --mat-button-outlined-state-layer-color: var(--primary);
+  --mat-button-protected-container-color: var(--background);
+  --mat-button-filled-label-text-color: var(--primary-light);
+  --mat-button-outlined-outline-color: var(--primary-dark);
+  --mat-fab-container-color: var(--primary-light);
+  --mat-fab-small-container-color: var(--primary-light);
+  --mat-button-outlined-ripple-color: var(--ripple);
   --mat-icon-button-ripple-color: var(--ripple);
   --mat-fab-ripple-color: var(--ripple);
   --mat-fab-small-ripple-color: var(--ripple);
-  --mat-protected-button-ripple-color: var(--ripple);
-  --mat-text-button-ripple-color: var(--ripple);
+  --mat-button-protected-ripple-color: var(--ripple);
+  --mat-button-text-ripple-color: var(--ripple);
   --mat-fab-small-foreground-color: var(--primary-dark);
   --mat-fab-small-state-layer-color: var(--primary-dark);
-  --mdc-icon-button-icon-color: var(--primary-dark);
+  --mat-icon-button-icon-color: var(--primary-dark);
   --mat-icon-button-state-layer-color: var(--primary-dark);
   --mat-fab-foreground-color: var(--primary-dark);
   --mat-fab-state-layer-color: var(--primary-dark);
-  --mat-text-button-disabled-state-layer-color: var(--primary-dark);
-  --mat-protected-button-disabled-state-layer-color: var(--primary-dark);
-  --mat-filled-button-disabled-state-layer-color: var(--primary-dark);
+  --mat-button-text-disabled-state-layer-color: var(--primary-dark);
+  --mat-button-protected-disabled-state-layer-color: var(--primary-dark);
+  --mat-button-filled-disabled-state-layer-color: var(--primary-dark);
   --mat-icon-button-disabled-state-layer-color: var(--primary-dark);
-  --mat-standard-button-toggle-divider-color: var(--primary-dark);
-  --mat-standard-button-toggle-selected-state-text-color: var(--primary-dark);
-  --mat-standard-button-toggle-text-color: var(--primary-dark);
-  --mat-standard-button-toggle-state-layer-color: var(--primary-dark);
+  --mat-button-toggle-divider-color: var(--primary-dark);
+  --mat-button-toggle-selected-state-text-color: var(--primary-dark);
+  --mat-button-toggle-text-color: var(--primary-dark);
+  --mat-button-toggle-state-layer-color: var(--primary-dark);
 
   /*Toggle */
-  --mat-standard-button-toggle-selected-state-background-color: var(
+  --mat-button-toggle-selected-state-background-color: var(
     --primary-light
   );
 
   /*Checkbox  */
-  --mdc-checkbox-selected-focus-icon-color: var(--primary);
-  --mdc-checkbox-selected-hover-icon-color: var(--primary);
-  --mdc-checkbox-selected-icon-color: var(--primary);
-  --mdc-checkbox-selected-pressed-icon-color: var(--primary);
-  --mdc-checkbox-selected-focus-state-layer-color: var(--primary);
-  --mdc-checkbox-selected-hover-state-layer-color: var(--primary);
-  --mdc-checkbox-unselected-pressed-state-layer-color: var(--primary);
-  --mat-full-pseudo-checkbox-selected-icon-color: var(--primary);
-  --mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--primary);
-  --mdc-checkbox-selected-checkmark-color: var(--primary-light);
-  --mdc-checkbox-unselected-focus-icon-color: var(--primary-dark);
-  --mdc-checkbox-unselected-hover-icon-color: var(--primary-dark);
-  --mdc-checkbox-unselected-icon-color: var(--primary-dark);
-  --mdc-checkbox-unselected-pressed-icon-color: var(--primary-dark);
-  --mdc-checkbox-selected-pressed-state-layer-color: var(--primary-dark);
-  --mdc-checkbox-unselected-focus-state-layer-color: var(--primary-dark);
-  --mdc-checkbox-unselected-hover-state-layer-color: var(--primary-dark);
-  --mat-full-pseudo-checkbox-unselected-icon-color: var(--primary-dark);
+  --mat-checkbox-selected-focus-icon-color: var(--primary);
+  --mat-checkbox-selected-hover-icon-color: var(--primary);
+  --mat-checkbox-selected-icon-color: var(--primary);
+  --mat-checkbox-selected-pressed-icon-color: var(--primary);
+  --mat-checkbox-selected-focus-state-layer-color: var(--primary);
+  --mat-checkbox-selected-hover-state-layer-color: var(--primary);
+  --mat-checkbox-unselected-pressed-state-layer-color: var(--primary);
+  --mat-pseudo-checkbox-full-selected-icon-color: var(--primary);
+  --mat-pseudo-checkbox-minimal-selected-checkmark-color: var(--primary);
+  --mat-checkbox-selected-checkmark-color: var(--primary-light);
+  --mat-checkbox-unselected-focus-icon-color: var(--primary-dark);
+  --mat-checkbox-unselected-hover-icon-color: var(--primary-dark);
+  --mat-checkbox-unselected-icon-color: var(--primary-dark);
+  --mat-checkbox-unselected-pressed-icon-color: var(--primary-dark);
+  --mat-checkbox-selected-pressed-state-layer-color: var(--primary-dark);
+  --mat-checkbox-unselected-focus-state-layer-color: var(--primary-dark);
+  --mat-checkbox-unselected-hover-state-layer-color: var(--primary-dark);
+  --mat-pseudo-checkbox-full-unselected-icon-color: var(--primary-dark);
   --mat-checkbox-label-text-color: var(--primary-dark);
 
   /* Progress  */
-  --mdc-linear-progress-active-indicator-color: var(--primary);
-  --mdc-circular-progress-active-indicator-color: var(--primary);
-  --mdc-linear-progress-track-color: var(--primary-light);
+  --mat-progress-bar-active-indicator-color: var(--primary);
+  --mat-progress-spinner-active-indicator-color: var(--primary);
+  --mat-progress-bar-track-color: var(--primary-light);
 
   /*Text fields  */
-  --mdc-filled-text-field-caret-color: var(--primary);
-  --mdc-filled-text-field-focus-active-indicator-color: var(--primary);
-  --mdc-filled-text-field-focus-label-text-color: var(--primary);
-  --mdc-outlined-text-field-caret-color: var(--primary);
-  --mdc-outlined-text-field-focus-outline-color: var(--primary);
-  --mdc-outlined-text-field-focus-label-text-color: var(--primary);
-  --mdc-filled-text-field-disabled-label-text-color: var(--ripple);
-  --mdc-filled-text-field-input-text-color: var(--primary-dark);
-  --mdc-filled-text-field-disabled-input-text-color: var(--ripple);
-  --mdc-filled-text-field-input-text-placeholder-color: var(--primary-dark);
-  --mdc-filled-text-field-hover-active-indicator-color: var(--primary-dark);
-  --mdc-filled-text-field-input-text-placeholder-color: var(--primary-dark);
+  --mat-form-field-filled-caret-color: var(--primary);
+  --mat-form-field-filled-focus-active-indicator-color: var(--primary);
+  --mat-form-field-filled-focus-label-text-color: var(--primary);
+  --mat-form-field-outlined-caret-color: var(--primary);
+  --mat-form-field-outlined-focus-outline-color: var(--primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--primary);
+  --mat-form-field-filled-disabled-label-text-color: var(--ripple);
+  --mat-form-field-filled-input-text-color: var(--primary-dark);
+  --mat-form-field-filled-disabled-input-text-color: var(--ripple);
+  --mat-form-field-filled-input-text-placeholder-color: var(--primary-dark);
+  --mat-form-field-filled-hover-active-indicator-color: var(--primary-dark);
+  --mat-form-field-filled-input-text-placeholder-color: var(--primary-dark);
 
-  --mdc-outlined-text-field-label-text-color: var(--primary-dark);
-  --mdc-outlined-text-field-hover-label-text-color: var(--primary-dark);
-  --mdc-outlined-text-field-disabled-label-text-color: var(--ripple);
-  --mdc-outlined-text-field-input-text-color: var(--primary-dark);
-  --mdc-outlined-text-field-disabled-input-text-color: var(--ripple);
-  --mdc-outlined-text-field-input-text-placeholder-color: var(--primary-dark);
+  --mat-form-field-outlined-label-text-color: var(--primary-dark);
+  --mat-form-field-outlined-hover-label-text-color: var(--primary-dark);
+  --mat-form-field-outlined-disabled-label-text-color: var(--ripple);
+  --mat-form-field-outlined-input-text-color: var(--primary-dark);
+  --mat-form-field-outlined-disabled-input-text-color: var(--ripple);
+  --mat-form-field-outlined-input-text-placeholder-color: var(--primary-dark);
 
-  --mdc-outlined-text-field-outline-color: var(--primary-dark);
-  --mdc-outlined-text-field-disabled-outline-color: var(--ripple);
-  --mdc-outlined-text-field-hover-outline-color: var(--primary-dark);
+  --mat-form-field-outlined-outline-color: var(--primary-dark);
+  --mat-form-field-outlined-disabled-outline-color: var(--ripple);
+  --mat-form-field-outlined-hover-outline-color: var(--primary-dark);
   --mat-form-field-trailing-icon-color: var(--primary-dark);
 
-  --mdc-filled-text-field-error-hover-label-text-color: var(--error);
-  --mdc-filled-text-field-error-focus-label-text-color: var(--error);
-  --mdc-filled-text-field-error-label-text-color: var(--error);
-  --mdc-filled-text-field-error-active-indicator-color: var(--error);
-  --mdc-filled-text-field-error-focus-active-indicator-color: var(--error);
-  --mdc-filled-text-field-error-hover-active-indicator-color: var(--error);
+  --mat-form-field-filled-error-hover-label-text-color: var(--error);
+  --mat-form-field-filled-error-focus-label-text-color: var(--error);
+  --mat-form-field-filled-error-label-text-color: var(--error);
+  --mat-form-field-filled-error-active-indicator-color: var(--error);
+  --mat-form-field-filled-error-focus-active-indicator-color: var(--error);
+  --mat-form-field-filled-error-hover-active-indicator-color: var(--error);
   --mat-form-field-error-text-color: var(--error);
-  --mdc-outlined-text-field-error-focus-label-text-color: var(--error);
-  --mdc-outlined-text-field-error-label-text-color: var(--error);
-  --mdc-outlined-text-field-error-hover-label-text-color: var(--error);
-  --mdc-outlined-text-field-error-focus-outline-color: var(--error);
-  --mdc-outlined-text-field-error-hover-outline-color: var(--error);
-  --mdc-outlined-text-field-error-hover-label-text-color: var(--error);
-  --mdc-outlined-text-field-error-outline-color: var(--error);
+  --mat-form-field-outlined-error-focus-label-text-color: var(--error);
+  --mat-form-field-outlined-error-label-text-color: var(--error);
+  --mat-form-field-outlined-error-hover-label-text-color: var(--error);
+  --mat-form-field-outlined-error-focus-outline-color: var(--error);
+  --mat-form-field-outlined-error-hover-outline-color: var(--error);
+  --mat-form-field-outlined-error-hover-label-text-color: var(--error);
+  --mat-form-field-outlined-error-outline-color: var(--error);
   --mat-form-field-error-focus-trailing-icon-color: var(--error);
   --mat-form-field-error-hover-trailing-icon-color: var(--error);
   --mat-form-field-error-trailing-icon-color: var(--error);
-  --mdc-filled-text-field-container-color: var(--primary-light);
-  --mdc-form-field-label-text-color: var(--primary-dark);
-  --mdc-filled-text-field-label-text-color: var(--primary-dark);
-  --mdc-filled-text-field-hover-label-text-color: var(--primary-dark);
+  --mat-form-field-filled-container-color: var(--primary-light);
+  --mat-form-field-label-text-color: var(--primary-dark);
+  --mat-form-field-filled-label-text-color: var(--primary-dark);
+  --mat-form-field-filled-hover-label-text-color: var(--primary-dark);
 
   /*Select*/
   --mat-form-field-focus-select-arrow-color: var(--primary);
@@ -132,77 +132,77 @@ body {
   --mat-option-selected-state-layer-color: var(--ripple);
 
   /*Switch/toggle  */
-  --mdc-switch-selected-focus-state-layer-color: var(--primary);
-  --mdc-switch-selected-hover-state-layer-color: var(--primary);
-  --mdc-switch-selected-pressed-state-layer-color: var(--primary);
-  --mdc-switch-selected-focus-track-color: var(--primary);
-  --mdc-switch-selected-hover-track-color: var(--primary);
-  --mdc-switch-selected-pressed-track-color: var(--primary);
-  --mdc-switch-selected-track-color: var(--primary);
-  --mdc-switch-unselected-pressed-track-color: var(--primary-light);
-  --mdc-switch-unselected-track-color: var(--primary-light);
-  --mat-switch-track-outline-color: var(--primary-dark);
-  --mdc-switch-unselected-hover-track-color: var(--primary-light);
-  --mdc-switch-unselected-icon-color: var(--primary-light);
-  --mdc-switch-unselected-pressed-handle-color: var(--primary-dark);
-  --mdc-switch-disabled-selected-icon-color: var(--primary-dark);
-  --mdc-switch-disabled-selected-track-color: var(--primary-dark);
-  --mdc-switch-disabled-unselected-handle-color: var(--primary-dark);
-  --mdc-switch-disabled-unselected-icon-color: var(--primary-light);
-  --mdc-switch-disabled-unselected-track-color: var(--primary-light);
-  --mdc-switch-selected-icon-color: var(--primary-dark);
-  --mdc-switch-unselected-focus-handle-color: var(--primary-dark);
-  --mdc-switch-unselected-focus-state-layer-color: var(--primary-dark);
-  --mdc-switch-unselected-focus-track-color: var(--primary-light);
-  --mdc-switch-selected-focus-handle-color: var(--primary-light);
-  --mdc-switch-selected-hover-handle-color: var(--primary-light);
-  --mdc-switch-selected-pressed-handle-color: var(--primary-light);
-  --mdc-switch-unselected-handle-color: var(--primary-dark);
-  --mdc-switch-unselected-hover-handle-color: var(--primary-dark);
-  --mdc-switch-unselected-hover-state-layer-color: var(--primary-dark);
-  --mdc-switch-selected-handle-color: var(--primary-light);
-  --mat-switch-label-text-color: var(--primary-dark);
+  --mat-slide-toggle-selected-focus-state-layer-color: var(--primary);
+  --mat-slide-toggle-selected-hover-state-layer-color: var(--primary);
+  --mat-slide-toggle-selected-pressed-state-layer-color: var(--primary);
+  --mat-slide-toggle-selected-focus-track-color: var(--primary);
+  --mat-slide-toggle-selected-hover-track-color: var(--primary);
+  --mat-slide-toggle-selected-pressed-track-color: var(--primary);
+  --mat-slide-toggle-selected-track-color: var(--primary);
+  --mat-slide-toggle-unselected-pressed-track-color: var(--primary-light);
+  --mat-slide-toggle-unselected-track-color: var(--primary-light);
+  --mat-slide-toggle-track-outline-color: var(--primary-dark);
+  --mat-slide-toggle-unselected-hover-track-color: var(--primary-light);
+  --mat-slide-toggle-unselected-icon-color: var(--primary-light);
+  --mat-slide-toggle-unselected-pressed-handle-color: var(--primary-dark);
+  --mat-slide-toggle-disabled-selected-icon-color: var(--primary-dark);
+  --mat-slide-toggle-disabled-selected-track-color: var(--primary-dark);
+  --mat-slide-toggle-disabled-unselected-handle-color: var(--primary-dark);
+  --mat-slide-toggle-disabled-unselected-icon-color: var(--primary-light);
+  --mat-slide-toggle-disabled-unselected-track-color: var(--primary-light);
+  --mat-slide-toggle-selected-icon-color: var(--primary-dark);
+  --mat-slide-toggle-unselected-focus-handle-color: var(--primary-dark);
+  --mat-slide-toggle-unselected-focus-state-layer-color: var(--primary-dark);
+  --mat-slide-toggle-unselected-focus-track-color: var(--primary-light);
+  --mat-slide-toggle-selected-focus-handle-color: var(--primary-light);
+  --mat-slide-toggle-selected-hover-handle-color: var(--primary-light);
+  --mat-slide-toggle-selected-pressed-handle-color: var(--primary-light);
+  --mat-slide-toggle-unselected-handle-color: var(--primary-dark);
+  --mat-slide-toggle-unselected-hover-handle-color: var(--primary-dark);
+  --mat-slide-toggle-unselected-hover-state-layer-color: var(--primary-dark);
+  --mat-slide-toggle-selected-handle-color: var(--primary-light);
+  --mat-slide-toggle-label-text-color: var(--primary-dark);
 
   /*Radio*/
-  --mdc-radio-selected-focus-icon-color: var(--primary);
-  --mdc-radio-selected-hover-icon-color: var(--primary);
-  --mdc-radio-selected-icon-color: var(--primary);
-  --mdc-radio-selected-pressed-icon-color: var(--primary);
+  --mat-radio-selected-focus-icon-color: var(--primary);
+  --mat-radio-selected-hover-icon-color: var(--primary);
+  --mat-radio-selected-icon-color: var(--primary);
+  --mat-radio-selected-pressed-icon-color: var(--primary);
   --mat-radio-checked-ripple-color: var(--primary);
-  --mdc-radio-disabled-selected-icon-color: var(--primary-dark);
-  --mdc-radio-disabled-unselected-icon-color: var(--primary-dark);
-  --mdc-radio-unselected-hover-icon-color: var(--primary-dark);
-  --mdc-radio-unselected-icon-color: var(--primary-dark);
-  --mdc-radio-unselected-pressed-icon-color: var(--primary-dark);
+  --mat-radio-disabled-selected-icon-color: var(--primary-dark);
+  --mat-radio-disabled-unselected-icon-color: var(--primary-dark);
+  --mat-radio-unselected-hover-icon-color: var(--primary-dark);
+  --mat-radio-unselected-icon-color: var(--primary-dark);
+  --mat-radio-unselected-pressed-icon-color: var(--primary-dark);
   --mat-radio-label-text-color: var(--primary-dark);
 
   /*Slider*/
-  --mdc-slider-handle-color: var(--primary);
-  --mdc-slider-focus-handle-color: var(--primary);
-  --mdc-slider-hover-handle-color: var(--primary);
-  --mdc-slider-active-track-color: var(--primary);
-  --mdc-slider-label-container-color: var(--primary);
+  --mat-slider-handle-color: var(--primary);
+  --mat-slider-focus-handle-color: var(--primary);
+  --mat-slider-hover-handle-color: var(--primary);
+  --mat-slider-active-track-color: var(--primary);
+  --mat-slider-label-container-color: var(--primary);
   --mat-slider-ripple-color: var(--primary);
-  --mdc-slider-label-label-text-color: var(--primary-light);
-  --mdc-slider-with-overlap-handle-outline-color: var(--primary-light);
+  --mat-slider-label-label-text-color: var(--primary-light);
+  --mat-slider-with-overlap-handle-outline-color: var(--primary-light);
   --mat-slider-hover-state-layer-color: var(--ripple);
   --mat-slider-focus-state-layer-color: var(--ripple);
 
   /*List*/
-  --mdc-list-list-item-selected-trailing-icon-color: var(--primary);
-  --mdc-list-list-item-leading-avatar-color: var(--primary-light);
-  --mdc-list-list-item-disabled-state-layer-color: var(--primary-dark);
-  --mdc-list-list-item-label-text-color: var(--primary-dark);
-  --mdc-list-list-item-supporting-text-color: var(--primary-dark);
-  --mdc-list-list-item-leading-icon-color: var(--primary-dark);
-  --mdc-list-list-item-trailing-supporting-text-color: var(--primary-dark);
-  --mdc-list-list-item-disabled-label-text-color: var(--primary-dark);
-  --mdc-list-list-item-disabled-leading-icon-color: var(--primary-dark);
-  --mdc-list-list-item-disabled-trailing-icon-color: var(--primary-dark);
-  --mdc-list-list-item-hover-label-text-color: var(--primary-dark);
-  --mdc-list-list-item-focus-label-text-color: var(--primary-dark);
-  --mdc-list-list-item-hover-state-layer-color: var(--primary-dark);
-  --mdc-list-list-item-focus-state-layer-color: var(--primary-dark);
+  --mat-list-list-item-selected-trailing-icon-color: var(--primary);
+  --mat-list-list-item-leading-avatar-color: var(--primary-light);
+  --mat-list-list-item-disabled-state-layer-color: var(--primary-dark);
+  --mat-list-list-item-label-text-color: var(--primary-dark);
+  --mat-list-list-item-supporting-text-color: var(--primary-dark);
+  --mat-list-list-item-leading-icon-color: var(--primary-dark);
+  --mat-list-list-item-trailing-supporting-text-color: var(--primary-dark);
+  --mat-list-list-item-disabled-label-text-color: var(--primary-dark);
+  --mat-list-list-item-disabled-leading-icon-color: var(--primary-dark);
+  --mat-list-list-item-disabled-trailing-icon-color: var(--primary-dark);
+  --mat-list-list-item-hover-label-text-color: var(--primary-dark);
+  --mat-list-list-item-focus-label-text-color: var(--primary-dark);
+  --mat-list-list-item-hover-state-layer-color: var(--primary-dark);
+  --mat-list-list-item-focus-state-layer-color: var(--primary-dark);
   --mat-list-active-indicator-color: var(--primary-light);
 
   /*Autocomplete */
@@ -229,7 +229,7 @@ body {
   --mat-sort-arrow-color: var(--primary-dark);
 
   /*Card*/
-  --mdc-elevated-card-container-color: var(--background);
+  --mat-card-elevated-container-color: var(--background);
   --mat-card-subtitle-text-color: var(--primary-dark);
 
   /*Menu */
@@ -241,18 +241,18 @@ body {
   --mat-menu-item-focus-state-layer-color: var(--ripple);
 
   /*Tabs */
-  --mdc-tab-indicator-active-indicator-color: var(--primary);
-  --mat-tab-header-active-focus-indicator-color: var(--primary);
-  --mat-tab-header-active-hover-indicator-color: var(--primary);
-  --mat-tab-header-pagination-icon-color: var(--primary-dark);
-  --mat-tab-header-inactive-label-text-color: var(--primary-dark);
-  --mat-tab-header-active-label-text-color: var(--primary-dark);
-  --mat-tab-header-active-ripple-color: var(--primary-dark);
-  --mat-tab-header-inactive-ripple-color: var(--primary-dark);
-  --mat-tab-header-inactive-focus-label-text-color: var(--primary-dark);
-  --mat-tab-header-inactive-hover-label-text-color: var(--primary-dark);
-  --mat-tab-header-active-focus-label-text-color: var(--primary-dark);
-  --mat-tab-header-active-hover-label-text-color: var(--primary-dark);
+  --mat-tab-active-indicator-color: var(--primary);
+  --mat-tab-active-focus-indicator-color: var(--primary);
+  --mat-tab-active-hover-indicator-color: var(--primary);
+  --mat-tab-pagination-icon-color: var(--primary-dark);
+  --mat-tab-inactive-label-text-color: var(--primary-dark);
+  --mat-tab-active-label-text-color: var(--primary-dark);
+  --mat-tab-active-ripple-color: var(--primary-dark);
+  --mat-tab-inactive-ripple-color: var(--primary-dark);
+  --mat-tab-inactive-focus-label-text-color: var(--primary-dark);
+  --mat-tab-inactive-hover-label-text-color: var(--primary-dark);
+  --mat-tab-active-focus-label-text-color: var(--primary-dark);
+  --mat-tab-active-hover-label-text-color: var(--primary-dark);
 
   /*Sidenav */
   --mat-sidenav-container-background-color: var(--background);
@@ -325,26 +325,26 @@ body {
   --mat-snack-bar-button-color: white;
 
   /*Chips*/
-  --mdc-chip-outline-color: var(--primary-dark);
-  --mdc-chip-focus-outline-color: var(--primary-dark);
-  --mdc-chip-focus-state-layer-color: var(--primary-dark);
-  --mdc-chip-hover-state-layer-color: var(--primary-dark);
-  --mdc-chip-selected-hover-state-layer-color: var(--primary-dark);
-  --mdc-chip-selected-focus-state-layer-color: var(--primary-dark);
-  --mdc-chip-label-text-color: var(--primary-dark);
-  --mdc-chip-selected-label-text-color: var(--primary-dark);
-  --mdc-chip-with-icon-icon-color: var(--primary-dark);
-  --mdc-chip-with-icon-disabled-icon-color: var(--primary-dark);
-  --mdc-chip-with-icon-selected-icon-color: var(--primary-dark);
-  --mdc-chip-with-trailing-icon-disabled-trailing-icon-color: var(
+  --mat-chip-outline-color: var(--primary-dark);
+  --mat-chip-focus-outline-color: var(--primary-dark);
+  --mat-chip-focus-state-layer-color: var(--primary-dark);
+  --mat-chip-hover-state-layer-color: var(--primary-dark);
+  --mat-chip-selected-hover-state-layer-color: var(--primary-dark);
+  --mat-chip-selected-focus-state-layer-color: var(--primary-dark);
+  --mat-chip-label-text-color: var(--primary-dark);
+  --mat-chip-selected-label-text-color: var(--primary-dark);
+  --mat-chip-with-icon-icon-color: var(--primary-dark);
+  --mat-chip-with-icon-disabled-icon-color: var(--primary-dark);
+  --mat-chip-with-icon-selected-icon-color: var(--primary-dark);
+  --mat-chip-with-trailing-icon-disabled-trailing-icon-color: var(
     --primary-dark
   );
-  --mdc-chip-with-trailing-icon-trailing-icon-color: var(--primary-dark);
+  --mat-chip-with-trailing-icon-trailing-icon-color: var(--primary-dark);
 
   /* Dialogs  */
-  --mdc-dialog-container-color: var(--background);
-  --mdc-dialog-subhead-color: var(--primary-dark);
-  --mdc-dialog-supporting-text-color: var(--primary-dark);
+  --mat-dialog-container-color: var(--background);
+  --mat-dialog-subhead-color: var(--primary-dark);
+  --mat-dialog-supporting-text-color: var(--primary-dark);
 
   /*Background */
   --mat-app-background-color: var(--background);

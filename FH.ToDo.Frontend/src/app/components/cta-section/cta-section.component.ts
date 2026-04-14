@@ -1,13 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
 import { ThemeSelectorService } from '../../services/theme-selector.service';
 
 @Component({
   selector: 'app-cta-section',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, RouterLink],
+  imports: [MatButtonModule, MatIconModule],
   template: `
     <section class="cta">
       <div class="container">
@@ -69,7 +68,7 @@ import { ThemeSelectorService } from '../../services/theme-selector.service';
       .actions {
         flex-direction: column;
         width: 100%;
-        
+
         a {
           width: 100%;
           justify-content: center;

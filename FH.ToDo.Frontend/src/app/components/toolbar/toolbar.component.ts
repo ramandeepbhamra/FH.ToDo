@@ -29,7 +29,7 @@ import { ResponsiveService } from '../../services/responsive.service';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    --mdc-icon-button-icon-color: var(--primary-light);
+    --mat-icon-button-icon-color: var(--primary-light);
     width: 100%;
   }
 
