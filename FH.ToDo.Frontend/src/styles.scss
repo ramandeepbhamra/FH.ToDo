@@ -1,0 +1,45 @@
+@use "@angular/material" as mat;
+@use "./easy-theming.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: Roboto,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+
+.flex-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mdc-notched-outline__notch {
+  border-right: none;
+}
+
+.mat-mdc-icon-button {
+  line-height: normal;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  text-align: center;
+}
