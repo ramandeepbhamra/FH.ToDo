@@ -1,0 +1,50 @@
+<mat-nav-list>
+  <a
+    mat-list-item
+    routerLink="/todos/favourites"
+    routerLinkActive="active-link"
+  >
+    <mat-icon matListItemIcon>star</mat-icon>
+    <span matListItemTitle>Favourites</span>
+  </a>
+
+  <mat-divider />
+
+  @for (list of taskLists; track list.id) {
+    <a
+      mat-list-item
+      [routerLink]="['/todos/list', list.id]"
+      routerLinkActive="active-link"
+    >
+      <mat-icon matListItemIcon>list</mat-icon>
+      <span matListItemTitle>{{ list.title }}</span>
+    </a>
+  }
+
+  <mat-divider />
+
+  @if (!showNewListInput()) {
+    <mat-list-item (click)="showNewListInput.set(true)" style="cursor:pointer">
+      <mat-icon matListItemIcon>add</mat-icon>
+      <span matListItemTitle>New list</span>
+    </mat-list-item>
+  } @else {
+    <div class="new-list-form">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>List name</mat-label>
+        <input
+          matInput
+          [value]="newListTitle()"
+          (input)="newListTitle.set($any($event.target).value)"
+          (keyup.enter)="submitNewList()"
+          (keyup.escape)="cancelNewList()"
+          autofocus
+        />
+      </mat-form-field>
+      <div class="flex gap-2">
+        <button mat-flat-button (click)="submitNewList()">Add</button>
+        <button mat-button (click)="cancelNewList()">Cancel</button>
+      </div>
+    </div>
+  }
+</mat-nav-list>

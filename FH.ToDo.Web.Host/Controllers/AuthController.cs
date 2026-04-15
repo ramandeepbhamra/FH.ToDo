@@ -1,6 +1,8 @@
 using FH.ToDo.Core.Entities.Users;
+using FH.ToDo.Core.Shared.Enums;
 using FH.ToDo.Services.Core.Authentication;
 using FH.ToDo.Services.Core.Authentication.Dto;
+using FH.ToDo.Services.Core.Tasks;
 using FH.ToDo.Services.Core.Users;
 using FH.ToDo.Services.Core.Users.Dto;
 using FH.ToDo.Web.Core.Authentication;
@@ -13,28 +15,31 @@ namespace FH.ToDo.Web.Host.Controllers;
 /// <summary>
 /// Authentication controller — login, self-registration, token refresh, and revocation
 /// </summary>
-[AllowAnonymous]
 public class AuthController : ApiControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IUserService _userService;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly ITaskListService _taskListService;
 
     public AuthController(
         IAuthenticationService authenticationService,
         IJwtTokenService jwtTokenService,
         IUserService userService,
-        IRefreshTokenService refreshTokenService)
+        IRefreshTokenService refreshTokenService,
+        ITaskListService taskListService)
     {
         _authenticationService = authenticationService;
         _jwtTokenService = jwtTokenService;
         _userService = userService;
         _refreshTokenService = refreshTokenService;
+        _taskListService = taskListService;
     }
 
     /// <summary>Login with email and password</summary>
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request, CancellationToken cancellationToken)
     {
         var user = await _authenticationService.AuthenticateAsync(request, cancellationToken);
@@ -45,12 +50,17 @@ public class AuthController : ApiControllerBase
 
     /// <summary>Register a new account — creates the user then auto-authenticates</summary>
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] CreateUserDto request, CancellationToken cancellationToken)
     {
         await _userService.CreateUserAsync(request, cancellationToken);
 
         var loginRequest = new LoginRequestDto { Email = request.Email, Password = request.Password };
         var user = await _authenticationService.AuthenticateAsync(loginRequest, cancellationToken);
+
+        if (user.Role != UserRole.Admin)
+            await _taskListService.CreateDefaultListAsync(user.Id, cancellationToken);
+
         var token = await BuildFullTokenAsync(user, cancellationToken);
 
         return Created(BuildLoginResponse(user, token), "Registration successful");
@@ -58,6 +68,7 @@ public class AuthController : ApiControllerBase
 
     /// <summary>Exchange a valid refresh token for a new access token + rotated refresh token</summary>
     [HttpPost("refresh")]
+    [AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request, CancellationToken cancellationToken)
     {
         var existing = await _refreshTokenService.GetValidTokenAsync(request.RefreshToken, cancellationToken);

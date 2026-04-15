@@ -16,25 +16,25 @@ public class User : BaseEntity<Guid>
     [Required]
     [MaxLength(MaxEmailAddressLength)]
     [EmailAddress]
-    public virtual string Email { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(MaxPasswordHashLength)]
-    public virtual string PasswordHash { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(MaxNameLength)]
-    public virtual string FirstName { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(MaxNameLength)]
-    public virtual string LastName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
 
     [MaxLength(MaxPhoneNumberLength)]
     [Phone]
-    public virtual string? PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
-    public virtual bool IsActive { get; set; } = true;
+    public bool IsActive { get; set; } = true;
 
     public UserRole Role { get; set; } = UserRole.BasicUser;
 
@@ -42,5 +42,5 @@ public class User : BaseEntity<Guid>
     /// Gets the user's full name
     /// </summary>
     [NotMapped]
-    public virtual string FullName => $"{FirstName} {LastName}".Trim();
+    public string FullName => $"{FirstName} {LastName}".Trim();
 }

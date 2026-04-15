@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
         })
         .AddJwtBearer(options =>
         {
+            options.MapInboundClaims = false; // preserve claim names exactly as issued in the token
             options.RequireHttpsMetadata = false; // Set to true in production
             options.SaveToken = true;
             options.TokenValidationParameters = new TokenValidationParameters
