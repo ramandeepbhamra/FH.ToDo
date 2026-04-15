@@ -1,23 +1,23 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './pages/landing/landing.component';
-import { DemoComponent } from './pages/demo/demo.component';
-import { ButtonsComponent } from './pages/buttons/buttons.component';
-import { InputsComponent } from './pages/inputs/inputs.component';
-import { StepperComponent } from './pages/stepper/stepper.component';
-import { TabsComponent } from './pages/tabs/tabs.component';
-import { ProgressComponent } from './pages/progress/progress.component';
-import { DialogComponent } from './pages/dialog/dialog.component';
-import { PanelsComponent } from './pages/panels/panels.component';
-import { TableComponent } from './pages/table/table.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { DevtoolsComponent } from './features/devtools/devtools.component';
+import { ButtonsComponent } from './features/devtools/buttons.component';
+import { InputsComponent } from './features/devtools/inputs.component';
+import { StepperComponent } from './features/devtools/stepper.component';
+import { TabsComponent } from './features/devtools/tabs.component';
+import { ProgressComponent } from './features/devtools/progress.component';
+import { DialogComponent } from './features/devtools/dialog.component';
+import { PanelsComponent } from './features/devtools/panels.component';
+import { TableComponent } from './features/devtools/table.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: LandingComponent,
+    component: DashboardComponent,
   },
   {
     path: 'components',
-    component: DemoComponent,
+    component: DevtoolsComponent,
     children: [
       {
         path: '',
@@ -49,10 +49,6 @@ export const routes: Routes = [
         component: TableComponent,
       },
       {
-        path: 'dialog',
-        component: DialogComponent,
-      },
-      {
         path: 'stepper',
         component: StepperComponent,
       },
@@ -63,3 +59,4 @@ export const routes: Routes = [
     ],
   },
 ];
+

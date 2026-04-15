@@ -1,10 +1,10 @@
 import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ThemingService } from './services/theming.service';
-import { NavigationComponent } from './components/navigation/navigation.component';
+import { ThemingService } from './core/services/theming.service';
+import { NavigationComponent } from './shared/components/navigation.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { ThemeSelectorComponent } from './components/theme-selector/theme-selector.component';
-import { ThemeSelectorService } from './services/theme-selector.service';
+import { ThemeSelectorComponent } from './shared/components/theme-selector.component';
+import { ThemeSelectorService } from './core/services/theme-selector.service';
 
 @Component({
   selector: 'app-root',
