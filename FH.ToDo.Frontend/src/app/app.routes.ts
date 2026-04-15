@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { DashboardHomeComponent } from './features/dashboard/dashboard-home/dashboard-home.component';
 import { DevtoolsComponent } from './features/devtools/devtools.component';
 import { ButtonsComponent } from './features/devtools/buttons.component';
 import { InputsComponent } from './features/devtools/inputs.component';
@@ -9,7 +9,7 @@ import { ProgressComponent } from './features/devtools/progress.component';
 import { DialogComponent } from './features/devtools/dialog.component';
 import { PanelsComponent } from './features/devtools/panels.component';
 import { TableComponent } from './features/devtools/table.component';
-import { AppLayoutComponent } from './layout/app-layout.component';
+import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -22,7 +22,7 @@ export const routes: Routes = [
     component: AppLayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', component: DashboardComponent },
+      { path: '', component: DashboardHomeComponent },
       {
         path: 'dev-tools',
         component: DevtoolsComponent,

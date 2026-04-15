@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthUser } from '../models/auth.models';
+import { AuthUser } from '../../features/auth/models/auth-user.model';
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {

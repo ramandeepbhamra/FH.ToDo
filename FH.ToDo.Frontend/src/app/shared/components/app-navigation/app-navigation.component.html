@@ -1,0 +1,24 @@
+<mat-toolbar class="nav-bar">
+  <div class="container nav-container">
+    <a routerLink="/" class="logo">
+      <mat-icon>check_circle</mat-icon>
+      <span>FH ToDo</span>
+    </a>
+
+    <nav>
+      <a mat-button routerLink="/todos">Todos</a>
+      <a mat-button routerLink="/users">Users</a>
+      <a mat-button routerLink="/dev-tools">Dev Tools</a>
+    </nav>
+
+    <div class="nav-user">
+      <span class="user-name">{{ authService.currentUser()?.fullName }}</span>
+      <button mat-icon-button (click)="themeSelectorService.open()" title="Theme">
+        <mat-icon>palette</mat-icon>
+      </button>
+      <button mat-icon-button (click)="authService.logout()" title="Sign out">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>

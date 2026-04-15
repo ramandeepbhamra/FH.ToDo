@@ -5,8 +5,11 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/models/api-response.model';
-import { AuthUser, LoginRequest, LoginResponse, RegisterRequest } from '../models/auth.models';
-import { RefreshTokenRequest } from '../models/refresh-token-request.model';
+import { AuthUser } from '../../features/auth/models/auth-user.model';
+import { AuthLoginRequest } from '../../features/auth/models/auth-login-request.model';
+import { AuthRegisterRequest } from '../../features/auth/models/auth-register-request.model';
+import { AuthLoginResponse } from '../../features/auth/models/auth-login-response.model';
+import { AuthRefreshTokenRequest } from '../../features/auth/models/auth-refresh-token-request.model';
 import { StorageService } from './storage.service';
 
 @Injectable({ providedIn: 'root' })
@@ -27,18 +30,18 @@ export class AuthService {
     if (stored) this.currentUserSignal.set(stored);
   }
 
-  login(request: LoginRequest): Observable<LoginResponse> {
+  login(request: AuthLoginRequest): Observable<AuthLoginResponse> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(`${environment.apiBaseUrl}/api/auth/login`, request)
+      .post<ApiResponse<AuthLoginResponse>>(`${environment.apiBaseUrl}/api/auth/login`, request)
       .pipe(
         map(res => res.data!),
         tap(data => this.handleAuthSuccess(data))
       );
   }
 
-  register(request: RegisterRequest): Observable<LoginResponse> {
+  register(request: AuthRegisterRequest): Observable<AuthLoginResponse> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(`${environment.apiBaseUrl}/api/auth/register`, request)
+      .post<ApiResponse<AuthLoginResponse>>(`${environment.apiBaseUrl}/api/auth/register`, request)
       .pipe(
         map(res => res.data!),
         tap(data => this.handleAuthSuccess(data))
@@ -49,7 +52,7 @@ export class AuthService {
     const refreshToken = this.storage.getRefreshToken();
     if (refreshToken) {
       this.http
-        .post(`${environment.apiBaseUrl}/api/auth/revoke`, { refreshToken } satisfies RefreshTokenRequest)
+        .post(`${environment.apiBaseUrl}/api/auth/revoke`, { refreshToken } satisfies AuthRefreshTokenRequest)
         .subscribe({ error: () => {} });
     }
     this.storage.clear();
@@ -77,9 +80,9 @@ export class AuthService {
       }
 
       return this.http
-        .post<ApiResponse<LoginResponse>>(
+        .post<ApiResponse<AuthLoginResponse>>(
           `${environment.apiBaseUrl}/api/auth/refresh`,
-          { refreshToken } satisfies RefreshTokenRequest
+          { refreshToken } satisfies AuthRefreshTokenRequest
         )
         .pipe(
           map(res => res.data!),
@@ -108,7 +111,7 @@ export class AuthService {
     );
   }
 
-  private handleAuthSuccess(data: LoginResponse): void {
+  private handleAuthSuccess(data: AuthLoginResponse): void {
     this.storage.setToken(data.token.accessToken);
     this.storage.setRefreshToken(data.token.refreshToken);
     const user: AuthUser = {

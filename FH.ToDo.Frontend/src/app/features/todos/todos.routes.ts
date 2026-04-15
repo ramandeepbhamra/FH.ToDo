@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { TodoLayoutComponent } from './layout/todo-layout.component';
-import { TodoListComponent } from './todo-list.component';
-import { FavouritesComponent } from './favourites/favourites.component';
+import { TodoLayoutComponent } from './todo-layout/todo-layout.component';
+import { TodoListComponent } from './todo-list/todo-list.component';
+import { TodoFavouritesComponent } from './todo-favourites/todo-favourites.component';
 
 export const TODO_ROUTES: Routes = [
   {
@@ -9,7 +9,7 @@ export const TODO_ROUTES: Routes = [
     component: TodoLayoutComponent,
     children: [
       { path: '', redirectTo: 'favourites', pathMatch: 'full' },
-      { path: 'favourites', component: FavouritesComponent },
+      { path: 'favourites', component: TodoFavouritesComponent },
       { path: 'list/:listId', component: TodoListComponent },
     ],
   },
