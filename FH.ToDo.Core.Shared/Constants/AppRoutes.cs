@@ -1,0 +1,11 @@
+namespace FH.ToDo.Core.Shared.Constants;
+
+/// <summary>
+/// API route prefixes
+/// </summary>
+public static class AppRoutes
+{
+    public const string ApiPrefix = "api";
+    public const string Auth = $"{ApiPrefix}/auth";
+    public const string Users = $"{ApiPrefix}/users";
+}

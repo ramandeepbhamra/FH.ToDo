@@ -32,10 +32,10 @@ public class JwtTokenService : IJwtTokenService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(AppConstants.JwtClaimTypes.UserId, user.Id.ToString()),
-            new Claim(AppConstants.JwtClaimTypes.Email, user.Email),
-            new Claim(AppConstants.JwtClaimTypes.FullName, user.FullName),
-            new Claim(AppConstants.JwtClaimTypes.Role, user.Role.ToString())
+            new Claim(JwtClaimTypes.UserId, user.Id.ToString()),
+            new Claim(JwtClaimTypes.Email, user.Email),
+            new Claim(JwtClaimTypes.FullName, user.FullName),
+            new Claim(JwtClaimTypes.Role, user.Role.ToString())
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor

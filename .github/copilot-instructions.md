@@ -3,7 +3,7 @@
 ## Project Guidelines
 
 ### Types
-- All types (interfaces, classes, enums, DTOs) must be defined in separate files — one type per file — on both backend and frontend.
+- All types (interfaces, classes, enums, DTOs) must be defined in separate files — one type per file — on both backend and frontend. This rule applies to ALL type declarations, including nested static classes, nested enums, and nested interfaces. Use C# partial classes to split nested types across files while preserving the outer class name.
 
 ### Angular Components
 - All **new** components must have a separate `.ts` class file and a `.html` template file — no inline templates.
