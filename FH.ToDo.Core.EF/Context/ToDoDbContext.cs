@@ -1,3 +1,4 @@
+using FH.ToDo.Core.Entities.Auth;
 using FH.ToDo.Core.Entities.Users;
 using FH.ToDo.Core.Entities.Base;
 using FH.ToDo.Core.EF.Configurations;
@@ -17,6 +18,7 @@ public class ToDoDbContext : DbContext
 
     // DbSets
     public DbSet<User> Users => Set<User>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -16,6 +16,11 @@ public interface IAuthenticationService
     Task<User> AuthenticateAsync(LoginRequestDto request, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets a user entity by ID — used by the refresh token flow
+    /// </summary>
+    Task<User?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Validates a password against a stored hash
     /// </summary>
     bool VerifyPassword(string password, string passwordHash);

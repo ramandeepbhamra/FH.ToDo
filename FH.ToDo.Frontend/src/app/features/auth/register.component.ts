@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -30,12 +30,30 @@ import { AuthService } from '../../core/services/auth.service';
             <mat-icon>check_circle</mat-icon>
             <span>FH ToDo</span>
           </div>
-          <mat-card-title>Sign in</mat-card-title>
-          <mat-card-subtitle>Enter your credentials to continue</mat-card-subtitle>
+          <mat-card-title>Create account</mat-card-title>
+          <mat-card-subtitle>Fill in your details to get started</mat-card-subtitle>
         </mat-card-header>
 
         <mat-card-content>
           <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+            <div class="name-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>First name</mat-label>
+                <input matInput formControlName="firstName" autocomplete="given-name" />
+                @if (form.controls.firstName.hasError('required') && form.controls.firstName.touched) {
+                  <mat-error>First name is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Last name</mat-label>
+                <input matInput formControlName="lastName" autocomplete="family-name" />
+                @if (form.controls.lastName.hasError('required') && form.controls.lastName.touched) {
+                  <mat-error>Last name is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="email" />
@@ -53,14 +71,22 @@ import { AuthService } from '../../core/services/auth.service';
                 matInput
                 [type]="showPassword() ? 'text' : 'password'"
                 formControlName="password"
-                autocomplete="current-password"
+                autocomplete="new-password"
               />
               <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
                 <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
               @if (form.controls.password.hasError('required') && form.controls.password.touched) {
                 <mat-error>Password is required</mat-error>
+              } @else if (form.controls.password.hasError('minlength') && form.controls.password.touched) {
+                <mat-error>Password must be at least 6 characters</mat-error>
               }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone (optional)</mat-label>
+              <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
+              <mat-icon matSuffix>phone</mat-icon>
             </mat-form-field>
 
             @if (errorMessage()) {
@@ -79,7 +105,7 @@ import { AuthService } from '../../core/services/auth.service';
               @if (isLoading()) {
                 <mat-spinner diameter="20" />
               } @else {
-                Sign in
+                Create account
               }
             </button>
           </form>
@@ -88,8 +114,8 @@ import { AuthService } from '../../core/services/auth.service';
         <mat-card-actions>
           <div class="card-footer">
             <span class="auth-link">
-              Don't have an account?
-              <a mat-button routerLink="/auth/register">Create one</a>
+              Already have an account?
+              <a mat-button routerLink="/auth/login">Sign in</a>
             </span>
           </div>
         </mat-card-actions>
@@ -107,7 +133,7 @@ import { AuthService } from '../../core/services/auth.service';
 
     .auth-container {
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       padding: 16px;
     }
 
@@ -136,6 +162,12 @@ import { AuthService } from '../../core/services/auth.service';
       flex-direction: column;
       gap: 4px;
       padding-top: 8px;
+    }
+
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
     .full-width {
@@ -172,14 +204,16 @@ import { AuthService } from '../../core/services/auth.service';
     }
   `,
 })
-export class LoginComponent {
+export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
 
   readonly form = new FormGroup({
+    firstName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    lastName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    phoneNumber: new FormControl<string | null>(null),
   });
 
   readonly isLoading = signal(false);
@@ -195,18 +229,22 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const { email, password } = this.form.getRawValue();
+    const { email, password, firstName, lastName, phoneNumber } = this.form.getRawValue();
 
-    this.authService.login({ email: email!, password: password! }).subscribe({
-      next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-        this.router.navigateByUrl(returnUrl);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.errorMessage.set(err.error?.message || 'Login failed. Please try again.');
-        this.isLoading.set(false);
-      },
-    });
+    this.authService
+      .register({
+        email: email!,
+        password: password!,
+        firstName: firstName!,
+        lastName: lastName!,
+        phoneNumber: phoneNumber ?? null,
+      })
+      .subscribe({
+        next: () => this.router.navigate(['/']),
+        error: (err: HttpErrorResponse) => {
+          this.errorMessage.set(err.error?.message || 'Registration failed. Please try again.');
+          this.isLoading.set(false);
+        },
+      });
   }
 }
-

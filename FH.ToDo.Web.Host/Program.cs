@@ -37,6 +37,7 @@ builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 // Services
 builder.Services.AddScoped<IUserService, UserServices>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 // Mappers
 builder.Services.AddScoped<UserMapper>();
@@ -98,9 +99,9 @@ if (app.Environment.IsDevelopment())
 // Global exception handling
 app.UseGlobalExceptionHandler();
 
-app.UseHttpsRedirection();
-
 app.UseCors("AllowAll");
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

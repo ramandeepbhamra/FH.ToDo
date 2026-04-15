@@ -8,10 +8,11 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\FH.ToDo.Frontend\browser\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\app\components\features-section\" />
-    <Folder Include="src\app\components\hero-section\" />
-    <Folder Include="src\app\components\theme-selector\" />
-    <Folder Include="src\app\pages\table\" />
-    <Folder Include="src\app\services\" />
+    <None Remove="src\app\components\**" />
+    <None Remove="src\app\pages\**" />
+    <None Remove="src\app\services\**" />
+    <TypeScriptConfiguration Remove="src\app\components\**" />
+    <TypeScriptConfiguration Remove="src\app\pages\**" />
+    <TypeScriptConfiguration Remove="src\app\services\**" />
   </ItemGroup>
 </Project>

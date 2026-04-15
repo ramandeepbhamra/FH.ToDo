@@ -49,6 +49,11 @@ public class AuthenticationService : IAuthenticationService
         return user;
     }
 
+    public async Task<User?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _userRepository.GetByIdAsync(userId, cancellationToken);
+    }
+
     public bool VerifyPassword(string password, string passwordHash)
     {
         return BCrypt.Net.BCrypt.Verify(password, passwordHash);

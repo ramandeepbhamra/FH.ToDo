@@ -9,54 +9,45 @@ import { ProgressComponent } from './features/devtools/progress.component';
 import { DialogComponent } from './features/devtools/dialog.component';
 import { PanelsComponent } from './features/devtools/panels.component';
 import { TableComponent } from './features/devtools/table.component';
+import { AppLayoutComponent } from './layout/app-layout.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
-    path: '',
-    component: DashboardComponent,
+    path: 'auth',
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
   },
   {
-    path: 'dev-tools',
-    component: DevtoolsComponent,
+    path: '',
+    component: AppLayoutComponent,
+    canActivate: [authGuard],
     children: [
+      { path: '', component: DashboardComponent },
       {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'buttons',
+        path: 'dev-tools',
+        component: DevtoolsComponent,
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'buttons' },
+          { path: 'buttons', component: ButtonsComponent },
+          { path: 'inputs', component: InputsComponent },
+          { path: 'progress', component: ProgressComponent },
+          { path: 'dialog', component: DialogComponent },
+          { path: 'panels', component: PanelsComponent },
+          { path: 'table', component: TableComponent },
+          { path: 'stepper', component: StepperComponent },
+          { path: 'tabs', component: TabsComponent },
+        ],
       },
       {
-        path: 'buttons',
-        component: ButtonsComponent,
+        path: 'users',
+        loadChildren: () => import('./features/users/users.routes').then(m => m.USER_ROUTES),
       },
       {
-        path: 'inputs',
-        component: InputsComponent,
-      },
-      {
-        path: 'progress',
-        component: ProgressComponent,
-      },
-      {
-        path: 'dialog',
-        component: DialogComponent,
-      },
-      {
-        path: 'panels',
-        component: PanelsComponent,
-      },
-      {
-        path: 'table',
-        component: TableComponent,
-      },
-      {
-        path: 'stepper',
-        component: StepperComponent,
-      },
-      {
-        path: 'tabs',
-        component: TabsComponent,
+        path: 'todos',
+        loadChildren: () => import('./features/todos/todos.routes').then(m => m.TODO_ROUTES),
       },
     ],
   },
+  { path: '**', redirectTo: 'auth/login' },
 ];
 

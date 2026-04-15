@@ -191,9 +191,10 @@ public class UserServices : IUserService
 **ASP.NET Core 10 Web API**
 
 **Contents:**
-- 🚧 Controllers (to be implemented)
-- 🚧 DI registration in Program.cs
-- ✅ OpenAPI/Swagger configuration
+- ✅ `AuthController` — login + self-registration (JWT)
+- ✅ `UsersController` — full CRUD
+- ✅ DI registration in Program.cs
+- ✅ OpenAPI/Swagger + Scalar configuration
 
 **DI Registration Pattern:**
 ```csharp
@@ -225,42 +226,139 @@ builder.Services.AddScoped<IUserService, UserServices>();
 ## 🚀 Getting Started
 
 ### Prerequisites
-- ✅ **.NET 10 SDK** (or higher)
-- ✅ **SQL Server** or SQL Server LocalDB
-- ✅ **Visual Studio 2026** (or Visual Studio Code)
-- ✅ **Entity Framework Core CLI tools**
 
-### Installation
+| Tool | Minimum Version | Notes |
+|---|---|---|
+| .NET SDK | 10.x | [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/10.0) |
+| SQL Server | 2019 / Express 2019+ | Local or remote instance |
+| Node.js | 20.x LTS | [nodejs.org](https://nodejs.org/) |
+| Angular CLI | 21.x | `npm install -g @angular/cli` |
+| EF Core CLI | 10.x | `dotnet tool install --global dotnet-ef` |
+| Visual Studio | 2022 17.x+ | Community edition is supported |
 
-1. **Clone the repository**:
-```bash
-git clone <repository-url>
-cd FH.ToDo
+### Backend Setup
+
+**1 — Configure the database connection string**
+
+Edit `FH.ToDo.Web.Host/appsettings.Development.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=YOUR_SERVER;Database=FHToDoDev;User ID=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
+  }
+}
 ```
 
-2. **Restore NuGet packages**:
-```bash
-dotnet restore
+**2 — Apply EF Core migrations**
+
+```powershell
+dotnet ef database update --project FH.ToDo.Core.EF --startup-project FH.ToDo.Web.Host
 ```
 
-3. **Update connection string** in `FH.ToDo.Core.EF/appsettings.json` or `FH.ToDo.Web.Host/appsettings.json`
+Re-run this command whenever a new migration is added to the project.
 
-4. **Apply database migrations**:
-```bash
-cd FH.ToDo.Core.EF
-dotnet ef database update
+**3 — Choose a launch profile**
+
+| Profile | HTTP URL | HTTPS URL | Recommendation |
+|---|---|---|---|
+| `http` (Kestrel) | `http://localhost:5214` | — | ✅ Use this |
+| `https` (Kestrel) | `http://localhost:5214` | `https://localhost:7182` | — |
+| IIS Express | `http://localhost:52333` | `https://localhost:44387` | VS default |
+
+> **Recommendation:** Use the Kestrel `http` profile. In Visual Studio, select it from the run profile dropdown next to the ▶ button. It gives a stable, machine-independent URL.
+
+To trust the dev certificate (HTTPS profiles only):
+```powershell
+dotnet dev-certs https --trust
 ```
 
-5. **Run the application**:
-```bash
-cd FH.ToDo.Web.Host
-dotnet run
+**4 — Start the backend and confirm it is healthy**
+
+Press `F5`. Navigate to:
+- Scalar UI: `http://localhost:5214/scalar/v1`
+- Swagger UI: `http://localhost:5214/swagger`
+
+---
+
+### Frontend Setup
+
+**1 — Install dependencies**
+
+```powershell
+cd FH.ToDo.Frontend
+npm install
 ```
 
-6. **Access Swagger UI**:
+**2 — Set the backend URL**
+
+Open `src/environments/environment.ts` and set `apiBaseUrl` to match the active backend profile:
+
+```typescript
+export const environment = {
+  production: false,
+  apiBaseUrl: 'http://localhost:5214',  // match your active launch profile
+};
 ```
-https://localhost:5001/swagger
+
+| Active profile | `apiBaseUrl` value |
+|---|---|
+| Kestrel `http` | `http://localhost:5214` |
+| Kestrel `https` | `https://localhost:7182` |
+| IIS Express HTTP | `http://localhost:52333` |
+| IIS Express HTTPS | `https://localhost:44387` |
+
+**3 — Start the frontend**
+
+```powershell
+ng serve
 ```
+
+Angular dev server runs at `http://localhost:4200`.
+
+---
+
+### CORS
+
+The backend allows requests from these origins (configured in `appsettings.json`):
+
+```
+http://localhost:3000
+http://localhost:4200
+https://localhost:5001
+```
+
+`http://localhost:4200` is included by default. **No proxy configuration is required.**
+
+---
+
+### Common Issues
+
+**`ERR_CONNECTION_REFUSED`**
+The backend is not running or `environment.ts` points to the wrong port.
+Verify the backend is healthy via the Scalar/Swagger URL, then confirm `apiBaseUrl` matches.
+
+**`Provisional headers are shown` (CORS preflight blocked)**
+Ensure the middleware order in `Program.cs` is `UseCors` **before** `UseHttpsRedirection`:
+```csharp
+app.UseCors("AllowAll");
+app.UseHttpsRedirection();
+```
+
+**Migration fails**
+Verify the SQL Server connection string in `appsettings.Development.json` and that the instance is reachable.
+
+---
+
+### When to Update This File
+
+Update `README.md` whenever:
+- [ ] A new key is added to `appsettings.json` or `environment.ts`
+- [ ] A new EF Core migration changes the setup steps
+- [ ] The backend launch profile or port changes
+- [ ] The minimum Node.js or .NET SDK version changes
+- [ ] A new npm dependency or global CLI tool is required
+- [ ] CORS origins are updated
 
 ---
 
@@ -673,17 +771,20 @@ docs(readme): update installation instructions
 
 ## ✅ Project Status
 
-**Current Phase**: Foundation ✅  
-**Next Phase**: API Implementation 🚧
+**Current Phase**: Authentication & Core API ✅  
+**Next Phase**: Todo Feature 🚧
 
 ### Milestones
 - [x] Project structure setup
 - [x] Domain entities (User)
 - [x] Database infrastructure
-- [x] Migrations working
-- [ ] API endpoints
-- [ ] Authentication
-- [ ] Full CRUD operations
+- [x] EF Core migrations
+- [x] JWT Authentication (login + register)
+- [x] User CRUD API
+- [x] Angular frontend structure (routing, guards, interceptors)
+- [x] Login & Register pages (frontend + backend)
+- [ ] Todo entity and CRUD API
+- [ ] Todo Angular feature
 - [ ] Testing suite
 - [ ] Deployment pipeline
 
