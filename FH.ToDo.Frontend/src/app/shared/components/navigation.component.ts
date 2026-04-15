@@ -20,7 +20,7 @@ import { ThemeSelectorService } from '../../core/services/theme-selector.service
           <a mat-button href="#features">Features</a>
           <a mat-button href="#testimonials">Testimonials</a>
           <a mat-button href="#pricing">Pricing</a>
-          <a mat-button routerLink="/components"> Components </a>
+          <a mat-button routerLink="/dev-tools"> Dev Tools </a>
           <a mat-flat-button (click)="themeSelectorService.open()"
             >Try it out</a
           >

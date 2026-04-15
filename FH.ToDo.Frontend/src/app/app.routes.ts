@@ -16,7 +16,7 @@ export const routes: Routes = [
     component: DashboardComponent,
   },
   {
-    path: 'components',
+    path: 'dev-tools',
     component: DevtoolsComponent,
     children: [
       {
