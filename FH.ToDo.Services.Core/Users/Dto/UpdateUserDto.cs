@@ -1,3 +1,4 @@
+using FH.ToDo.Core.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace FH.ToDo.Services.Core.Users.Dto;
@@ -26,7 +27,6 @@ public class UpdateUserDto
 
     public bool IsActive { get; set; }
 
-    [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
-    [MaxLength(100, ErrorMessage = "Password cannot exceed 100 characters")]
-    public string? Password { get; set; } // Optional - only if changing password
+    [Required(ErrorMessage = "Role is required")]
+    public UserRole Role { get; set; }
 }

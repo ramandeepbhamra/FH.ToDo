@@ -1,53 +1,54 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgxMaskDirective } from 'ngx-mask';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserService } from '../services/user.service';
 import { UserForm } from '../forms/user.form';
+import { UserDialogData } from '../models/user-dialog-data.model';
 import { UserRole } from '../../../core/enums/user-role.enum';
 import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.validator';
 
 @Component({
-  selector: 'app-user-form',
-  templateUrl: './user-form.component.html',
-  styleUrl: './user-form.component.scss',
+  selector: 'app-user-dialog',
+  templateUrl: './user-dialog.component.html',
+  styleUrl: './user-dialog.component.scss',
   imports: [
     ReactiveFormsModule,
     NgxMaskDirective,
+    MatDialogModule,
+    TrimOnBlurDirective,
     MatButtonModule,
-    MatCardModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatIcon,
     MatInput,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatTooltipModule,
   ],
 })
-export class UserFormComponent implements OnInit {
+export class UserDialogComponent implements OnInit {
   private readonly userService = inject(UserService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
+  private readonly dialogRef = inject(MatDialogRef<UserDialogComponent>);
+  readonly data = inject<UserDialogData>(MAT_DIALOG_DATA);
 
-  readonly UserRole = UserRole;
   readonly roles = Object.values(UserRole);
-
-  readonly isEditMode = signal(false);
+  readonly isEditMode = computed(() => !!this.data.userId);
   readonly isSystemUser = signal(false);
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
   readonly errorMessage = signal<string | null>(null);
-
-  private userId: string | null = null;
+  readonly showPassword = signal(false);
 
   readonly form = new FormGroup<UserForm>({
     firstName: new FormControl('', {
@@ -71,20 +72,14 @@ export class UserFormComponent implements OnInit {
     isActive: new FormControl(true, { nonNullable: true }),
   });
 
-  // Password is only used on add — kept separate so it's not part of UserForm
   readonly passwordControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(6), Validators.maxLength(100)],
   });
-  readonly showPassword = signal(false);
-
-  readonly pageTitle = computed(() => this.isEditMode() ? 'Edit user' : 'Add user');
 
   ngOnInit(): void {
-    this.userId = this.route.snapshot.paramMap.get('id');
-    if (this.userId) {
-      this.isEditMode.set(true);
-      this.loadUser(this.userId);
+    if (this.data.userId) {
+      this.loadUser(this.data.userId);
     }
   }
 
@@ -123,11 +118,10 @@ export class UserFormComponent implements OnInit {
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
-
     const v = this.form.getRawValue();
 
-    if (this.isEditMode() && this.userId) {
-      this.userService.update(this.userId, {
+    if (this.isEditMode() && this.data.userId) {
+      this.userService.update(this.data.userId, {
         firstName:   v.firstName,
         lastName:    v.lastName,
         email:       v.email,
@@ -135,23 +129,23 @@ export class UserFormComponent implements OnInit {
         role:        v.role!,
         isActive:    v.isActive,
       }).subscribe({
-        next: () => this.router.navigate(['/users']),
+        next: () => this.dialogRef.close(true),
         error: (err: HttpErrorResponse) => {
           this.errorMessage.set(err.error?.message || 'Failed to save user.');
           this.isSaving.set(false);
         },
       });
     } else {
-        this.userService.create({
-          firstName:   v.firstName,
-          lastName:    v.lastName,
-          email:       v.email,
-          password:    this.passwordControl.value,
-          phoneNumber: v.phoneNumber || null,
-          role:        v.role!,
-          isActive:    v.isActive,
-        }).subscribe({
-        next: () => this.router.navigate(['/users']),
+      this.userService.create({
+        firstName:   v.firstName,
+        lastName:    v.lastName,
+        email:       v.email,
+        password:    this.passwordControl.value,
+        phoneNumber: v.phoneNumber || null,
+        role:        v.role!,
+        isActive:    v.isActive,
+      }).subscribe({
+        next: () => this.dialogRef.close(true),
         error: (err: HttpErrorResponse) => {
           this.errorMessage.set(err.error?.message || 'Failed to create user.');
           this.isSaving.set(false);
@@ -159,9 +153,4 @@ export class UserFormComponent implements OnInit {
       });
     }
   }
-
-  cancel(): void {
-    this.router.navigate(['/users']);
-  }
 }
-

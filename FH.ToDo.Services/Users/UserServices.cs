@@ -107,6 +107,10 @@ public class UserServices : IUserService
             throw new KeyNotFoundException($"User with ID '{id}' not found.");
         }
 
+        // Guard: system user role cannot be changed
+        if (user.IsSystemUser && user.Role != input.Role)
+            throw new InvalidOperationException("System user role cannot be changed.");
+
         // Check if email is being changed and if new email already exists
         if (user.Email != input.Email)
         {
@@ -118,12 +122,6 @@ public class UserServices : IUserService
             {
                 throw new InvalidOperationException($"Email '{input.Email}' is already in use.");
             }
-        }
-
-        // Update password if provided
-        if (!string.IsNullOrEmpty(input.Password))
-        {
-            user.PasswordHash = _authenticationService.HashPassword(input.Password);
         }
 
         // Map changes to entity
@@ -179,6 +177,12 @@ public class UserServices : IUserService
             query = query.Where(u => u.IsActive == input.IsActive.Value);
         }
 
+        // Apply IsSystemUser filter
+        if (input.IsSystemUser.HasValue)
+        {
+            query = query.Where(u => u.IsSystemUser == input.IsSystemUser.Value);
+        }
+
         // Apply Email filter
         query = query.WhereIf(
             !string.IsNullOrWhiteSpace(input.Email),
@@ -189,6 +193,10 @@ public class UserServices : IUserService
             !string.IsNullOrWhiteSpace(input.Name),
             u => u.FirstName.ToLower().Contains(input.Name!.Trim().ToLower()) ||
                  u.LastName.ToLower().Contains(input.Name!.Trim().ToLower()));
+
+        // Apply Role filter
+        if (input.Role.HasValue)
+            query = query.Where(u => u.Role == input.Role.Value);
 
         // Apply SearchKeyword (searches across Email, FirstName, LastName)
         query = query.WhereIf(
@@ -229,11 +237,13 @@ public class UserServices : IUserService
 
         return sortBy?.ToLower() switch
         {
-            "email" => isDescending ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
-            "firstname" => isDescending ? query.OrderByDescending(u => u.FirstName) : query.OrderBy(u => u.FirstName),
-            "lastname" => isDescending ? query.OrderByDescending(u => u.LastName) : query.OrderBy(u => u.LastName),
+            "email"       => isDescending ? query.OrderByDescending(u => u.Email)       : query.OrderBy(u => u.Email),
+            "firstname"   => isDescending ? query.OrderByDescending(u => u.FirstName)   : query.OrderBy(u => u.FirstName),
+            "lastname"    => isDescending ? query.OrderByDescending(u => u.LastName)    : query.OrderBy(u => u.LastName),
+            "role"        => isDescending ? query.OrderByDescending(u => u.Role)        : query.OrderBy(u => u.Role),
+            "isactive"    => isDescending ? query.OrderByDescending(u => u.IsActive)    : query.OrderBy(u => u.IsActive),
             "createddate" => isDescending ? query.OrderByDescending(u => u.CreatedDate) : query.OrderBy(u => u.CreatedDate),
-            _ => query.OrderBy(u => u.FirstName).ThenBy(u => u.LastName) // Default sorting
+            _ => query.OrderBy(u => u.FirstName).ThenBy(u => u.LastName)
         };
     }
 

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgxMaskDirective } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +13,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthRegisterForm } from '../forms/auth-register.form';
 import { passwordMatchValidator } from '../../../core/validators/password-match.validator';
 import { PasswordMatchErrorStateMatcher } from '../../../core/matchers/password-match.matcher';
+import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.validator';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 
 @Component({
   selector: 'app-auth-register',
@@ -20,12 +23,14 @@ import { PasswordMatchErrorStateMatcher } from '../../../core/matchers/password-
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    NgxMaskDirective,
     MatCardModule,
     MatFormFieldModule,
     MatInput,
     MatButtonModule,
     MatIcon,
     MatProgressSpinnerModule,
+    TrimOnBlurDirective,
   ],
 })
 export class AuthRegisterComponent {
@@ -36,11 +41,11 @@ export class AuthRegisterComponent {
     {
       firstName: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(100)],
+        validators: [Validators.required, Validators.maxLength(100), noWhitespaceValidator],
       }),
       lastName: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(100)],
+        validators: [Validators.required, Validators.maxLength(100), noWhitespaceValidator],
       }),
       email: new FormControl('', {
         nonNullable: true,
@@ -54,7 +59,9 @@ export class AuthRegisterComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      phoneNumber: new FormControl<string | null>(null),
+      phoneNumber: new FormControl<string | null>(null, {
+        validators: [Validators.maxLength(14)],
+      }),
     },
     { validators: passwordMatchValidator() }
   );

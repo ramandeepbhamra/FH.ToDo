@@ -36,6 +36,8 @@ public class User : BaseEntity<Guid>
 
     public bool IsActive { get; set; } = true;
 
+    public bool IsSystemUser { get; set; } = false;
+
     public UserRole Role { get; set; } = UserRole.Basic;
 
     /// <summary>

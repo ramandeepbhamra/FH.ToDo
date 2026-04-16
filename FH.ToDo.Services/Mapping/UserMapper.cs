@@ -27,15 +27,28 @@ public partial class UserMapper
     /// <summary>
     /// Maps CreateUserDto to User entity.
     /// Password will be hashed separately before calling this.
+    /// IsSystemUser is always false for new users — set by the service.
     /// </summary>
     [MapProperty(nameof(CreateUserDto.Password), nameof(User.PasswordHash))]
+    [MapperIgnoreTarget(nameof(User.Id))]
+    [MapperIgnoreTarget(nameof(User.IsSystemUser))]
+    [MapperIgnoreTarget(nameof(User.CreatedDate))]
+    [MapperIgnoreTarget(nameof(User.CreatedBy))]
+    [MapperIgnoreTarget(nameof(User.ModifiedDate))]
+    [MapperIgnoreTarget(nameof(User.ModifiedBy))]
+    [MapperIgnoreTarget(nameof(User.IsDeleted))]
+    [MapperIgnoreTarget(nameof(User.DeletedDate))]
+    [MapperIgnoreTarget(nameof(User.DeletedBy))]
     public partial User CreateUserDtoToUser(CreateUserDto dto);
 
     /// <summary>Maps UpdateUserDto onto an existing User entity (updates only provided fields)</summary>
     [MapperIgnoreTarget(nameof(User.Id))]
     [MapperIgnoreTarget(nameof(User.PasswordHash))]
+    [MapperIgnoreTarget(nameof(User.IsSystemUser))]
     [MapperIgnoreTarget(nameof(User.CreatedDate))]
     [MapperIgnoreTarget(nameof(User.CreatedBy))]
+    [MapperIgnoreTarget(nameof(User.ModifiedDate))]
+    [MapperIgnoreTarget(nameof(User.ModifiedBy))]
     [MapperIgnoreTarget(nameof(User.IsDeleted))]
     [MapperIgnoreTarget(nameof(User.DeletedDate))]
     [MapperIgnoreTarget(nameof(User.DeletedBy))]

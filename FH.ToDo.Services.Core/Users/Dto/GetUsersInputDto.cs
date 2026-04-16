@@ -1,3 +1,4 @@
+using FH.ToDo.Core.Shared.Enums;
 using FH.ToDo.Services.Core.Common.Dto;
 
 namespace FH.ToDo.Services.Core.Users.Dto;
@@ -7,18 +8,9 @@ namespace FH.ToDo.Services.Core.Users.Dto;
 /// </summary>
 public class GetUsersInputDto : PagedAndSortedRequestDto
 {
-    /// <summary>
-    /// Filter by active status
-    /// </summary>
     public bool? IsActive { get; set; }
-
-    /// <summary>
-    /// Filter by email (partial match)
-    /// </summary>
+    public bool? IsSystemUser { get; set; }
     public string? Email { get; set; }
-
-    /// <summary>
-    /// Filter by name (FirstName or LastName partial match)
-    /// </summary>
     public string? Name { get; set; }
+    public UserRole? Role { get; set; }
 }

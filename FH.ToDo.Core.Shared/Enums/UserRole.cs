@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace FH.ToDo.Core.Shared.Enums;
 
 /// <summary>
 /// User role types
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserRole
 {
     /// <summary>Basic user with limited access (10 active task limit)</summary>

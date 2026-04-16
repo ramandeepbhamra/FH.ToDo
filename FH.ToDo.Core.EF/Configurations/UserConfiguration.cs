@@ -27,6 +27,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.IsActive)
             .HasDefaultValue(true);
 
+        builder.Property(u => u.IsSystemUser)
+            .HasDefaultValue(false);
+
         builder.Property(u => u.IsDeleted)
             .HasDefaultValue(false);
 

@@ -1,3 +1,4 @@
+using FH.ToDo.Core.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace FH.ToDo.Services.Core.Users.Dto;
@@ -30,4 +31,7 @@ public class CreateUserDto
     public string? PhoneNumber { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    [Required(ErrorMessage = "Role is required")]
+    public UserRole Role { get; set; }
 }
