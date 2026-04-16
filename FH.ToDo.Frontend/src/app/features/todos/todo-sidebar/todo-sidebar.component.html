@@ -10,7 +10,7 @@
 
   <mat-divider />
 
-  @for (list of taskLists; track list.id) {
+  @for (list of taskLists(); track list.id) {
     <a
       mat-list-item
       [routerLink]="['/todos/list', list.id]"

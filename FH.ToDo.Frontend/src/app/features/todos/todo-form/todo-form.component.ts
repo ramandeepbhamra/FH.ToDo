@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,18 +16,18 @@ import { TodoTaskService } from '../services/todo-task.service';
 export class TodoFormComponent {
   private readonly todoTaskService = inject(TodoTaskService);
 
-  @Input({ required: true }) listId!: string;
-  @Output() taskAdded = new EventEmitter<TodoTask>();
+  readonly listId = input.required<string>();
+  readonly taskAdded = output<TodoTask>();
 
   readonly title = signal('');
   readonly isSubmitting = signal(false);
 
   submit(): void {
     const title = this.title().trim();
-    if (!title || !this.listId) return;
+    if (!title || !this.listId()) return;
 
     this.isSubmitting.set(true);
-    this.todoTaskService.create({ title, listId: this.listId }).subscribe({
+    this.todoTaskService.create({ title, listId: this.listId() }).subscribe({
       next: task => {
         this.taskAdded.emit(task);
         this.title.set('');

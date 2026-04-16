@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,10 +29,10 @@ import { TodoTaskListService } from '../services/todo-task-list.service';
 export class TodoSidebarComponent {
   private readonly taskListService = inject(TodoTaskListService);
 
-  @Input() taskLists: TodoTaskList[] = [];
-  @Output() listCreated = new EventEmitter<TodoTaskList>();
-  @Output() listDeleted = new EventEmitter<string>();
-  @Output() listRenamed = new EventEmitter<TodoTaskList>();
+  readonly taskLists = input<TodoTaskList[]>([]);
+  readonly listCreated = output<TodoTaskList>();
+  readonly listDeleted = output<string>();
+  readonly listRenamed = output<TodoTaskList>();
 
   readonly showNewListInput = signal(false);
   readonly newListTitle = signal('');

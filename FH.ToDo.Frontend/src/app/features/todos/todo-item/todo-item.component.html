@@ -1,21 +1,21 @@
 <div class="task-row">
   <mat-checkbox
-    [checked]="task.isCompleted"
+    [checked]="task().isCompleted"
     (change)="toggleComplete()"
   />
 
   @if (!isEditing()) {
     <span
       class="task-title"
-      [class.completed]="task.isCompleted"
+      [class.completed]="task().isCompleted"
       (dblclick)="startEdit()"
     >
-      {{ task.title }}
+      {{ task().title }}
     </span>
 
-    @if (task.dueDate) {
+    @if (task().dueDate) {
       <span class="due-date" [class.overdue]="isDueDateOverdue">
-        {{ task.dueDate }}
+        {{ task().dueDate }}
       </span>
     }
   } @else {
@@ -34,7 +34,7 @@
   }
 
   <button mat-icon-button (click)="toggleFavourite()">
-    <mat-icon>{{ task.isFavourite ? 'star' : 'star_border' }}</mat-icon>
+    <mat-icon>{{ task().isFavourite ? 'star' : 'star_border' }}</mat-icon>
   </button>
 
   <button mat-icon-button (click)="showSubTasks.set(!showSubTasks())">
@@ -48,7 +48,7 @@
 
 @if (showSubTasks()) {
   <div class="subtasks">
-    @for (sub of task.subTasks; track sub.id) {
+    @for (sub of task().subTasks; track sub.id) {
       <div class="subtask-row">
         <mat-checkbox
           [checked]="sub.isCompleted"
