@@ -50,7 +50,7 @@ export const routes: Routes = [
       {
         path: 'logs',
         canActivate: [adminGuard],
-        loadChildren: () => import('./features/logs/logs.routes').then(m => m.LOGS_ROUTES),
+        loadChildren: () => import('./features/api-logs/api-logs.routes').then(m => m.API_LOGS_ROUTES),
       },
     ],
   },
