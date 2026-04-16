@@ -1,4 +1,5 @@
 using System.Text;
+using FH.ToDo.Core.Shared.Constants;
 using FH.ToDo.Web.Core.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -62,7 +63,8 @@ public static class ServiceCollectionExtensions
                 ValidateAudience = true,
                 ValidAudience = audience,
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                RoleClaimType = JwtClaimTypes.Role
             };
         });
 

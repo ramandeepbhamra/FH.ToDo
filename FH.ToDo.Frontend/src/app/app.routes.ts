@@ -12,6 +12,8 @@ import { TableComponent } from './features/devtools/table.component';
 import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { devUserGuard } from './core/guards/dev-user.guard';
+import { adminOrDevUserGuard } from './core/guards/admin-or-dev-user.guard';
 
 export const routes: Routes = [
   {
@@ -26,6 +28,7 @@ export const routes: Routes = [
       { path: '', component: DashboardHomeComponent },
       {
         path: 'dev-tools',
+        canActivate: [devUserGuard],
         component: DevtoolsComponent,
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'buttons' },
@@ -41,6 +44,7 @@ export const routes: Routes = [
       },
       {
         path: 'users',
+        canActivate: [adminGuard],
         loadChildren: () => import('./features/users/users.routes').then(m => m.USER_ROUTES),
       },
       {
@@ -49,7 +53,7 @@ export const routes: Routes = [
       },
       {
         path: 'logs',
-        canActivate: [adminGuard],
+        canActivate: [adminOrDevUserGuard],
         loadChildren: () => import('./features/api-logs/api-logs.routes').then(m => m.API_LOGS_ROUTES),
       },
     ],

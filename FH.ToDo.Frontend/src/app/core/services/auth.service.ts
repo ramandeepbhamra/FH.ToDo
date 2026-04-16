@@ -11,6 +11,7 @@ import { AuthRegisterRequest } from '../../features/auth/models/auth-register-re
 import { AuthLoginResponse } from '../../features/auth/models/auth-login-response.model';
 import { AuthRefreshTokenRequest } from '../../features/auth/models/auth-refresh-token-request.model';
 import { StorageService } from './storage.service';
+import { UserRole } from '../enums/user-role.enum';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -118,7 +119,7 @@ export class AuthService {
       id: data.user.id,
       email: data.user.email,
       fullName: data.user.fullName,
-      role: data.user.role,
+      role: data.user.role as UserRole,
     };
     this.storage.setUser(user);
     this.currentUserSignal.set(user);

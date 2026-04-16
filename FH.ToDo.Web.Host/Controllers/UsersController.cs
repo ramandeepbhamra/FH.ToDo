@@ -1,3 +1,4 @@
+using FH.ToDo.Core.Shared.Enums;
 using FH.ToDo.Services.Core.Users;
 using FH.ToDo.Services.Core.Users.Dto;
 using FH.ToDo.Web.Core.Controllers;
@@ -7,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace FH.ToDo.Web.Host.Controllers;
 
 /// <summary>
-/// User management controller
+/// User management controller — Admin only (POST is AllowAnonymous for self-registration)
 /// </summary>
-[Authorize]
+[Authorize(Roles = nameof(UserRole.Admin))]
 public class UsersController : ApiControllerBase
 {
     private readonly IUserService _userService;

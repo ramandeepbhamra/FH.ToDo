@@ -48,7 +48,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         // Role Configuration - Stored as INT with default value
         builder.Property(u => u.Role)
-            .HasDefaultValue(UserRole.BasicUser);
+            .HasDefaultValue(UserRole.Basic);
 
         // Query Filter for Soft Delete
         builder.HasQueryFilter(u => !u.IsDeleted);

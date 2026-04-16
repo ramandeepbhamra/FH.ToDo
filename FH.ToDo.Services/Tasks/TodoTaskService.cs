@@ -63,7 +63,7 @@ public class TodoTaskService : ITodoTaskService
             .FirstOrDefaultAsync(tl => tl.Id == input.ListId && tl.UserId == userId, cancellationToken)
             ?? throw new KeyNotFoundException("Task list not found.");
 
-        if (userRole == UserRole.BasicUser)
+        if (userRole == UserRole.Basic)
         {
             var activeCount = await GetActiveTaskCountAsync(userId, cancellationToken);
             if (activeCount >= BasicUserTaskLimit)
@@ -143,7 +143,7 @@ public class TodoTaskService : ITodoTaskService
         if (task.UserId != userId)
             throw new UnauthorizedAccessException("You do not have access to this task.");
 
-        if (task.IsCompleted && userRole == UserRole.BasicUser)
+        if (task.IsCompleted && userRole == UserRole.Basic)
         {
             var activeCount = await GetActiveTaskCountAsync(userId, cancellationToken);
             if (activeCount >= BasicUserTaskLimit)

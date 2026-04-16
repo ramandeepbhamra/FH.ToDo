@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace FH.ToDo.Web.Host.Controllers;
 
 /// <summary>
-/// API log viewer — admin only
+/// API log viewer — Admin and Dev only
 /// </summary>
-[Authorize]
+[Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Dev))]
 public class LogsController : ApiControllerBase
 {
     private readonly IApiLogService _apiLogService;
@@ -26,9 +26,6 @@ public class LogsController : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> GetLogs([FromQuery] GetApiLogsInputDto input)
     {
-        if (CurrentUserRole != UserRole.Admin)
-            return Forbidden("Access denied. Admin role required.");
-
         var result = await _apiLogService.GetLogsAsync(input);
         return Success(result);
     }

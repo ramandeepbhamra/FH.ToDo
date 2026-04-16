@@ -36,7 +36,7 @@ public class User : BaseEntity<Guid>
 
     public bool IsActive { get; set; } = true;
 
-    public UserRole Role { get; set; } = UserRole.BasicUser;
+    public UserRole Role { get; set; } = UserRole.Basic;
 
     /// <summary>
     /// Gets the user's full name

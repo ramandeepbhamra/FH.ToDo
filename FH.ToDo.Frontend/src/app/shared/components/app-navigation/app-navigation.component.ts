@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 import { ThemeSelectorService } from '../../../core/services/theme-selector.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserRole } from '../../../core/enums/user-role.enum';
 
 @Component({
   selector: 'app-navigation',
@@ -13,6 +14,13 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [MatToolbarModule, MatButtonModule, MatIcon, RouterLink],
 })
 export class AppNavigationComponent {
-  readonly themeSelectorService = inject(ThemeSelectorService);
-  readonly authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
+  private readonly themeSelectorService = inject(ThemeSelectorService);
+
+  readonly currentUser = this.authService.currentUser;
+  readonly isAdmin   = computed(() => this.currentUser()?.role === UserRole.Admin);
+  readonly isDevUser = computed(() => this.currentUser()?.role === UserRole.Dev);
+
+  readonly logout    = () => this.authService.logout();
+  readonly openTheme = () => this.themeSelectorService.open();
 }
