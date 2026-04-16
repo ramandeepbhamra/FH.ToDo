@@ -15,4 +15,8 @@
     <TypeScriptConfiguration Remove="src\app\pages\**" />
     <TypeScriptConfiguration Remove="src\app\services\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\app\features\auth\auth-login\" />
+    <Folder Include="src\app\features\auth\auth-register\" />
+  </ItemGroup>
 </Project>

@@ -5,27 +5,34 @@
       <span>FH ToDo</span>
     </a>
 
-    <nav>
-      <a mat-button routerLink="/todos">Todos</a>
-      @if (isAdmin()) {
-        <a mat-button routerLink="/users">Users</a>
-      }
-      @if (isDevUser()) {
-        <a mat-button routerLink="/dev-tools">Dev Tools</a>
-      }
-      @if (isAdmin() || isDevUser()) {
-        <a mat-button routerLink="/logs">API Logs</a>
-      }
-    </nav>
+    @if (isAuthenticated()) {
+      <nav>
+        <a mat-button routerLink="/todos">Todos</a>
+        @if (isAdmin()) {
+          <a mat-button routerLink="/users">Users</a>
+        }
+        @if (isDevUser()) {
+          <a mat-button routerLink="/dev-tools">Dev Tools</a>
+        }
+        @if (isAdmin() || isDevUser()) {
+          <a mat-button routerLink="/logs">API Logs</a>
+        }
+      </nav>
 
-    <div class="nav-user">
-      <span class="user-name">{{ currentUser()?.fullName }}</span>
-      <button mat-icon-button (click)="openTheme()" title="Theme">
-        <mat-icon>palette</mat-icon>
-      </button>
-      <button mat-icon-button (click)="logout()" title="Sign out">
-        <mat-icon>logout</mat-icon>
-      </button>
-    </div>
+      <div class="nav-user">
+        <span class="user-name">{{ currentUser()?.fullName }}</span>
+        <button mat-icon-button (click)="openTheme()" title="Theme">
+          <mat-icon>palette</mat-icon>
+        </button>
+        <button mat-icon-button (click)="logout()" title="Sign out">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    } @else {
+      <div class="nav-user">
+        <a mat-button (click)="authDialogService.openLogin()">Sign in</a>
+        <a mat-flat-button (click)="authDialogService.openRegister()">Register</a>
+      </div>
+    }
   </div>
 </mat-toolbar>

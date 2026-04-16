@@ -1,15 +1,16 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthDialogService } from '../../../core/services/auth-dialog.service';
 import { AuthRegisterForm } from '../forms/auth-register.form';
 import { passwordMatchValidator } from '../../../core/validators/password-match.validator';
 import { PasswordMatchErrorStateMatcher } from '../../../core/matchers/password-match.matcher';
@@ -17,25 +18,26 @@ import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.va
 import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 
 @Component({
-  selector: 'app-auth-register',
-  templateUrl: './auth-register.component.html',
-  styleUrl: './auth-register.component.scss',
+  selector: 'app-auth-register-dialog',
+  templateUrl: './auth-register-dialog.component.html',
+  styleUrl: './auth-register-dialog.component.scss',
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     NgxMaskDirective,
-    MatCardModule,
+    MatDialogModule,
+    MatButtonModule,
     MatFormFieldModule,
     MatInput,
-    MatButtonModule,
     MatIcon,
     MatProgressSpinnerModule,
     TrimOnBlurDirective,
   ],
 })
-export class AuthRegisterComponent {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+export class AuthRegisterDialogComponent {
+  private readonly authService       = inject(AuthService);
+  private readonly authDialogService  = inject(AuthDialogService);
+  private readonly dialogRef         = inject(MatDialogRef<AuthRegisterDialogComponent>);
+  private readonly router            = inject(Router);
 
   readonly form = new FormGroup<AuthRegisterForm>(
     {
@@ -66,10 +68,10 @@ export class AuthRegisterComponent {
     { validators: passwordMatchValidator() }
   );
 
-  readonly isLoading = signal(false);
-  readonly errorMessage = signal<string | null>(null);
-  readonly showPassword = signal(false);
-  readonly showConfirmPassword = signal(false);
+  readonly isLoading             = signal(false);
+  readonly errorMessage          = signal<string | null>(null);
+  readonly showPassword          = signal(false);
+  readonly showConfirmPassword   = signal(false);
   readonly confirmPasswordMatcher = new PasswordMatchErrorStateMatcher();
 
   submit(): void {
@@ -86,11 +88,18 @@ export class AuthRegisterComponent {
     this.authService
       .register({ email, password, firstName, lastName, phoneNumber: phoneNumber ?? null })
       .subscribe({
-        next: () => this.router.navigate(['/']),
+        next: () => {
+          this.dialogRef.close();
+          this.router.navigate(['/todos']);
+        },
         error: (err: HttpErrorResponse) => {
           this.errorMessage.set(err.error?.message || 'Registration failed. Please try again.');
           this.isLoading.set(false);
         },
       });
+  }
+
+  switchToLogin(): void {
+    this.authDialogService.openLogin();
   }
 }

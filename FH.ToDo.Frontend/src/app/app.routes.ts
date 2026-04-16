@@ -23,6 +23,11 @@ export const routes: Routes = [
   {
     path: '',
     component: AppLayoutComponent,
+    children: [{ path: '', component: DashboardHomeComponent }],
+  },
+  {
+    path: '',
+    component: AppLayoutComponent,
     canActivate: [authGuard],
     children: [
       { path: '', component: DashboardHomeComponent },
