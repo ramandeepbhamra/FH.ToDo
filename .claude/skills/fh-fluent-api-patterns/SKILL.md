@@ -27,7 +27,31 @@ public class {Entity}Configuration : IEntityTypeConfiguration<{Entity}>
 }
 ```
 
-## Indexes
+## Ownership Rule — Fluent API vs Data Annotations
+
+Fluent API and data annotations each own distinct concerns. **Never duplicate** in Fluent API what an annotation already declares.
+
+| Concern | Owner | Example |
+|---|---|---|
+| `NOT NULL` constraint | `[Required]` on entity | EF reads annotation automatically |
+| Column max length | `[MaxLength(n)]` on entity | EF reads annotation automatically |
+| Min length validation | `[MinLength(n)]` on entity | App-level validation only |
+| Unique index | Fluent API `HasIndex().IsUnique()` | No annotation equivalent |
+| Composite index | Fluent API `HasIndex(e => new {...})` | No annotation equivalent |
+| SQL default value | Fluent API `HasDefaultValueSql()` | No annotation equivalent |
+| Cascade delete | Fluent API `OnDelete()` | No annotation equivalent |
+| Soft-delete filter | Fluent API `HasQueryFilter()` | No annotation equivalent |
+| FK relationship | Fluent API `HasOne().WithMany()` | Annotation can only declare FK column |
+
+```csharp
+// ❌ Wrong — duplicates [Required] and [MaxLength(256)] already on entity
+builder.Property(u => u.Email).IsRequired().HasMaxLength(256);
+
+// ✅ Correct — Fluent API handles what annotations cannot
+builder.HasIndex(u => u.Email).IsUnique().HasDatabaseName("IX_Users_Email");
+builder.Property(u => u.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
+builder.HasQueryFilter(u => !u.IsDeleted);
+```
 
 ### Single Column Index
 ```csharp

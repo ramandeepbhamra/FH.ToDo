@@ -1,6 +1,6 @@
 ---
 name: fh-entity-patterns
-description: "Entity creation patterns for FH.ToDo Clean Architecture with BaseEntity, validation attributes, and domain organization"
+description: "Entity creation patterns for FH.ToDo Clean Architecture with BaseEntity<T>, validation attributes, and domain organization"
 ---
 
 # FH.ToDo Entity Patterns
@@ -11,12 +11,11 @@ description: "Entity creation patterns for FH.ToDo Clean Architecture with BaseE
 
 **Examples**:
 - `FH.ToDo.Core/Entities/Users/User.cs`
-- `FH.ToDo.Core/Entities/Tasks/ToDoTask.cs`
-- `FH.ToDo.Core/Entities/Categories/Category.cs`
+- `FH.ToDo.Core/Entities/Tasks/TodoTask.cs`
 
 ## Base Entity
 
-**ALL entities MUST inherit from BaseEntity**:
+**ALL entities MUST inherit from `BaseEntity<Guid>`**:
 
 ```csharp
 using FH.ToDo.Core.Entities.Base;
@@ -26,38 +25,112 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace FH.ToDo.Core.Entities.{Domain};
 
 [Table("{TableName}")]
-public class {EntityName} : BaseEntity
+public class {EntityName} : BaseEntity<Guid>
 {
-    // Properties with validation attributes
+    // Scalar properties with validation attributes
+    // Navigation properties with virtual keyword
 }
 ```
 
-## BaseEntity Provides
+## BaseEntity\<T\> Provides
 
 ```csharp
-public abstract class BaseEntity
+public abstract class BaseEntity<T>
 {
-    public Guid Id { get; set; }
+    public T Id { get; set; }
+
+    // Audit fields
     public DateTime CreatedDate { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public string? ModifiedBy { get; set; }
+
+    // Soft delete
     public bool IsDeleted { get; set; }
     public DateTime? DeletedDate { get; set; }
     public string? DeletedBy { get; set; }
 }
 ```
 
-**Benefits**:
-- ✅ Automatic audit tracking
-- ✅ Soft delete built-in
-- ✅ Consistent primary key (Guid)
-- ✅ No need to define these properties in every entity
+Concrete entities use `BaseEntity<Guid>` unless a different key type is explicitly required.
+
+## `virtual` Rule — Navigation Properties ONLY
+
+`virtual` enables EF Core lazy loading proxies. It must be used on navigation properties and **never** on scalar properties.
+
+```csharp
+// ✅ Correct — navigation property
+public virtual User User { get; set; } = null!;
+public virtual ICollection<SubTask> SubTasks { get; set; } = [];
+
+// ❌ Wrong — scalars are never virtual
+public virtual string Title { get; set; } = string.Empty;
+public virtual bool IsCompleted { get; set; }
+public virtual DateTime? DueDate { get; set; }
+public virtual Guid UserId { get; set; }  // FK scalar — never virtual
+```
 
 ## Validation Attributes
 
-### Required Fields
+Use data annotations for all schema-affecting constraints. EF Core reads these automatically — **do not repeat them in Fluent API**.
+
+### Required scalar
 ```csharp
+[Required]
+[MaxLength(200)]
+public string Title { get; set; } = string.Empty;
+```
+
+### Optional scalar
+```csharp
+[MaxLength(20)]
+[Phone]
+public string? PhoneNumber { get; set; }
+```
+
+### Email
+```csharp
+[Required]
+[MaxLength(256)]
+[EmailAddress]
+public string Email { get; set; } = string.Empty;
+```
+
+### FK column (scalar — NOT virtual)
+```csharp
+public Guid UserId { get; set; }          // FK — scalar, not virtual
+public virtual User User { get; set; } = null!;  // navigation — virtual ✅
+```
+
+## Full Entity Example
+
+```csharp
+[Table("TodoTasks")]
+public class TodoTask : BaseEntity<Guid>
+{
+    [Required]
+    [MaxLength(500)]
+    public string Title { get; set; } = string.Empty;
+
+    public bool IsCompleted { get; set; }
+    public bool IsFavourite { get; set; }
+    public DateTime? DueDate { get; set; }
+    public int Order { get; set; }
+
+    // FK scalar — not virtual
+    public Guid ListId { get; set; }
+    public Guid UserId { get; set; }
+
+    // Navigation — virtual ✅
+    public virtual TaskList List { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
+    public virtual ICollection<SubTask> SubTasks { get; set; } = [];
+}
+```
+
+## One Type Per File
+
+Every entity, interface, enum, and DTO lives in its own `.cs` file. No nested types unless using C# `partial` classes.
 [Required]
 public string Title { get; set; } = string.Empty;
 ```

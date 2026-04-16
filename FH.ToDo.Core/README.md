@@ -36,11 +36,22 @@ FH.ToDo.Core/
 
 ## 🎯 Domain Entities
 
-### BaseEntity
-All domain entities inherit from `BaseEntity`, which provides:
-- ✅ **Primary Key**: `Guid Id`
-- ✅ **Audit Tracking**: CreatedDate, CreatedBy, ModifiedDate, ModifiedBy
-- ✅ **Soft Delete**: IsDeleted, DeletedDate, DeletedBy
+### BaseEntity\<T\>
+All domain entities inherit from `BaseEntity<T>` (generic key type, default `Guid`):
+- ✅ **Primary Key**: `T Id` (typically `BaseEntity<Guid>`)
+- ✅ **Audit Tracking**: `CreatedDate`, `CreatedBy`, `ModifiedDate`, `ModifiedBy`
+- ✅ **Soft Delete**: `IsDeleted`, `DeletedDate`, `DeletedBy`
+
+**`virtual` rule — navigation properties only:**
+```csharp
+// ✅ Correct — virtual on navigation property (EF lazy loading)
+public virtual ICollection<TodoTask> Tasks { get; set; } = [];
+
+// ❌ Wrong — never virtual on scalar/primitive properties
+public virtual string Title { get; set; } = string.Empty;
+public virtual bool IsActive { get; set; }
+```
+Scalar properties (`string`, `bool`, `int`, `DateTime?`, etc.) are never `virtual`. Only navigation properties that EF Core needs to proxy for lazy loading use `virtual`.
 
 ### User Entity
 Represents a user in the system with validation attributes.

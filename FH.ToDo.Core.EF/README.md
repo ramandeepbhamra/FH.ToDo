@@ -69,11 +69,34 @@ public override async Task<int> SaveChangesAsync(...)
 
 **Purpose**: Define database-specific features that annotations can't handle.
 
+**Ownership rule — what goes where:**
+
+| Concern | Owner | Why |
+|---|---|---|
+| `NOT NULL` | `[Required]` on entity | EF reads the annotation automatically |
+| Column max length | `[MaxLength(n)]` on entity | EF reads the annotation automatically |
+| Indexes | Fluent API `HasIndex()` | No annotation equivalent |
+| SQL defaults | Fluent API `HasDefaultValueSql()` | No annotation equivalent |
+| Cascade delete | Fluent API `OnDelete()` | No annotation equivalent |
+| Query filters | Fluent API `HasQueryFilter()` | No annotation equivalent |
+| Soft-delete filter | Fluent API `HasQueryFilter(e => !e.IsDeleted)` | No annotation equivalent |
+
+**Never duplicate in Fluent API what an annotation already declares:**
+```csharp
+// ❌ Wrong — [Required] on entity already makes this NOT NULL
+builder.Property(u => u.Title).IsRequired().HasMaxLength(200);
+
+// ✅ Correct — annotation handles schema, Fluent API handles what annotations can't
+builder.HasIndex(u => u.Email).IsUnique().HasDatabaseName("IX_Users_Email");
+builder.Property(u => u.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
+builder.HasQueryFilter(u => !u.IsDeleted);
+```
+
 **What's Configured**:
 - ✅ **Indexes** (unique, composite)
 - ✅ **SQL defaults** (`GETUTCDATE()`)
 - ✅ **Query filters** (soft delete)
-- ✅ **Relationships** (foreign keys)
+- ✅ **Relationships** (foreign keys, cascade rules)
 
 ---
 

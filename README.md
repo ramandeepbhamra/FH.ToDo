@@ -70,8 +70,9 @@ A production-grade ToDo/Task Management application built with **ASP.NET Core 10
 
 ### ✅ Mapperly for DTO Mapping
 - **Source generator** (compile-time, zero runtime overhead)
-- No AutoMapper (security concerns + performance)
-- Type-safe mappings
+- Replaces AutoMapper — no runtime reflection, no security concerns
+- `RequiredMappingStrategy = RequiredMappingStrategy.Target` — source extras silently skipped
+- Sensitive fields (`IsDeleted`, `DeletedDate`, `DeletedBy`, `PasswordHash`) explicitly guarded with `[MapperIgnoreSource]`
 - **Why?** Fastest, safest, most modern approach
 
 ### ✅ Extension Methods
@@ -209,6 +210,39 @@ builder.Services.AddScoped<IUserService, UserServices>();
 ```
 
 📖 [View FH.ToDo.Web.Host README](FH.ToDo.Web.Host/README.md)
+
+---
+
+### FH.ToDo.Frontend (Angular SPA)
+**Angular 19 single-page application**
+
+**Stack:** Angular 19, Angular Material, TypeScript (strict), SCSS
+
+**Structure:**
+```
+src/app/
+├── core/            # Guards, interceptors, app-wide services
+├── features/        # Feature modules (auth, todos, users, dashboard, devtools)
+│   └── {feature}/
+│       ├── {feature}-{component}/    # One folder per component
+│       │   ├── *.component.ts        # templateUrl + styleUrl — no inline
+│       │   ├── *.component.html
+│       │   └── *.component.scss
+│       ├── forms/                    # Typed FormGroup interfaces only
+│       ├── models/                   # API contracts — one interface per file
+│       └── services/                 # Feature-scoped HTTP services
+├── layout/          # App shell (app-layout with navigation + theme sidenav)
+└── shared/          # Cross-feature components, directives, models
+```
+
+**Conventions:**
+- File naming: `{feature}-{entity}-{operation}` — e.g. `todo-task-create-request.model.ts`
+- Form files contain the `FormGroup<T>` **interface only** — form is instantiated in the component
+- Error access: `form.controls.x.errors?.['required']` — bracket notation required (strict templates)
+- Auth models: `AuthLoginRequest`, `AuthRegisterRequest`, `AuthTokenInfo`, etc. — all in `features/auth/models/`
+- Task models: `TodoTask`, `TodoTaskList`, `TodoSubTask`, etc. — all in `features/todos/models/`
+
+📖 [View FH.ToDo.Frontend README](FH.ToDo.Frontend/README.md)
 
 ---
 
