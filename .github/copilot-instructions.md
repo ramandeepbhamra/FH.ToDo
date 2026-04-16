@@ -38,6 +38,7 @@
 - The `.form.ts` file contains **only the interface** — no factory function, no default values.
 - The `FormGroup` is instantiated in the component with validators and defaults: `readonly form = new FormGroup<AuthLoginForm>({...})`.
 - Use `nonNullable: true` on all `FormControl` instances for better type inference.
+- Error access in templates uses **bracket notation**: `form.controls.email.errors?.['required']`, `form.errors?.['passwordMismatch']`.
 
 ### Angular Models
 - Model files contain the interface only — no initial data, no factory, no schema.

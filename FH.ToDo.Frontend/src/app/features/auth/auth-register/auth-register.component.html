@@ -59,6 +59,25 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm password</mat-label>
+          <input
+            matInput
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+            [errorStateMatcher]="confirmPasswordMatcher"
+          />
+          <button mat-icon-button matSuffix type="button" (click)="showConfirmPassword.set(!showConfirmPassword())">
+            <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.confirmPassword.errors?.['required'] && form.controls.confirmPassword.touched) {
+            <mat-error>Please confirm your password</mat-error>
+          } @else if (form.errors?.['passwordMismatch'] && form.controls.confirmPassword.touched) {
+            <mat-error>Passwords do not match</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Phone (optional)</mat-label>
           <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
           <mat-icon matSuffix>phone</mat-icon>
