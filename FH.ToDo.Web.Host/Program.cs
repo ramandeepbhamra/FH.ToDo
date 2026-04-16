@@ -1,3 +1,5 @@
+using FH.ToDo.Services.Seeding;
+using FH.ToDo.Services.Core.Seeding;
 using FH.ToDo.Core.EF.Context;
 using FH.ToDo.Core.Repositories;
 using FH.ToDo.Core.EF.Repositories;
@@ -45,6 +47,7 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<ITaskListService, TaskListService>();
 builder.Services.AddScoped<ITodoTaskService, TodoTaskService>();
 builder.Services.AddScoped<IApiLogService, ApiLogService>();
+builder.Services.AddScoped<IDataSeeder, DataSeeder>();
 
 // Mappers
 builder.Services.AddScoped<UserMapper>();
@@ -117,5 +120,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Seed initial data — idempotent, safe to run on every startup
+using (var scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider
+        .GetRequiredService<IDataSeeder>()
+        .SeedAsync();
+}
 
 app.Run();
