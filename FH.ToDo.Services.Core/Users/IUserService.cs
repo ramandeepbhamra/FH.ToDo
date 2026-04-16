@@ -29,6 +29,11 @@ public interface IUserService
     Task<UserDto> UpdateUserAsync(Guid id, UpdateUserDto input, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Updates the current user's own profile (FirstName, LastName, Phone only)
+    /// </summary>
+    Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto input, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Deletes a user (soft delete)
     /// </summary>
     Task DeleteUserAsync(Guid id, CancellationToken cancellationToken = default);

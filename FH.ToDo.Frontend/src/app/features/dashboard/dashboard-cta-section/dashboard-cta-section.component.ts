@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ThemeSelectorService } from '../../../core/services/theme-selector.service';
+import { AuthDialogService } from '../../../core/services/auth-dialog.service';
 
 @Component({
   selector: 'app-dashboard-cta-section',
@@ -10,5 +10,5 @@ import { ThemeSelectorService } from '../../../core/services/theme-selector.serv
   imports: [MatButtonModule, MatIconModule],
 })
 export class DashboardCtaSectionComponent {
-  readonly themeSelectorService = inject(ThemeSelectorService);
+  readonly authDialogService = inject(AuthDialogService);
 }

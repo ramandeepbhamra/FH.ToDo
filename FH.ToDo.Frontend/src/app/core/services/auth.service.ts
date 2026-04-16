@@ -58,7 +58,7 @@ export class AuthService {
     }
     this.storage.clear();
     this.currentUserSignal.set(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/']);
   }
 
   getToken(): string | null {

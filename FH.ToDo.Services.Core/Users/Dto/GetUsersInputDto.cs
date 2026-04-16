@@ -13,4 +13,5 @@ public class GetUsersInputDto : PagedAndSortedRequestDto
     public string? Email { get; set; }
     public string? Name { get; set; }
     public UserRole? Role { get; set; }
+    public Guid? ExcludeUserId { get; set; }
 }

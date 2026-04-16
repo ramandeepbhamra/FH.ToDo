@@ -74,6 +74,10 @@ builder.Services.AddCors(options =>
 // OpenAPI / Scalar (Modern .NET 10 API Documentation)
 builder.Services.AddOpenApi();
 
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ToDoDbContext>("database");
+
 // NSwag / Swagger (Alternative API Documentation)
 builder.Services.AddOpenApiDocument(options =>
 {
@@ -120,6 +124,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 // Seed initial data — idempotent, safe to run on every startup
 using (var scope = app.Services.CreateScope())

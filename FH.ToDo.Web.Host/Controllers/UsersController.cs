@@ -26,6 +26,7 @@ public class UsersController : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersInputDto input)
     {
+        input.ExcludeUserId = CurrentUserId;
         var result = await _userService.GetUsersAsync(input);
         return Success(result);
     }

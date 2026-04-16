@@ -133,6 +133,19 @@ public class UserServices : IUserService
         return _mapper.UserToUserDto(updatedUser);
     }
 
+    public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto input, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken)
+            ?? throw new KeyNotFoundException($"User with ID '{userId}' not found.");
+
+        user.FirstName   = input.FirstName.Trim();
+        user.LastName    = input.LastName.Trim();
+        user.PhoneNumber = input.PhoneNumber?.Trim();
+
+        var updated = await _userRepository.UpdateAsync(user, cancellationToken);
+        return _mapper.UserToUserDto(updated);
+    }
+
     public async Task DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(id, cancellationToken);
@@ -181,6 +194,12 @@ public class UserServices : IUserService
         if (input.IsSystemUser.HasValue)
         {
             query = query.Where(u => u.IsSystemUser == input.IsSystemUser.Value);
+        }
+
+        // Exclude the requesting user from the list
+        if (input.ExcludeUserId.HasValue)
+        {
+            query = query.Where(u => u.Id != input.ExcludeUserId.Value);
         }
 
         // Apply Email filter

@@ -9,11 +9,13 @@ import { User } from '../models/user.model';
 import { UserGetInput } from '../models/user-get-input.model';
 import { UserCreateRequest } from '../models/user-create-request.model';
 import { UserUpdateRequest } from '../models/user-update-request.model';
+import { UserUpdateProfileRequest } from '../models/user-update-profile-request.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiBaseUrl}/api/users`;
+  private readonly profileBase = `${environment.apiBaseUrl}/api/profile`;
 
   getUsers(input: UserGetInput): Observable<PagedResult<User>> {
     let params = new HttpParams()
@@ -48,6 +50,18 @@ export class UserService {
   update(id: string, request: UserUpdateRequest): Observable<User> {
     return this.http
       .put<ApiResponse<User>>(`${this.base}/${id}`, request)
+      .pipe(map(r => r.data!));
+  }
+
+  getProfile(): Observable<User> {
+    return this.http
+      .get<ApiResponse<User>>(this.profileBase)
+      .pipe(map(r => r.data!));
+  }
+
+  updateProfile(request: UserUpdateProfileRequest): Observable<User> {
+    return this.http
+      .put<ApiResponse<User>>(this.profileBase, request)
       .pipe(map(r => r.data!));
   }
 }
