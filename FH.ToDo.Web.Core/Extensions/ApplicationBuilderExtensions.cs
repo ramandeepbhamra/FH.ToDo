@@ -15,4 +15,12 @@ public static class ApplicationBuilderExtensions
     {
         return app.UseMiddleware<ExceptionHandlingMiddleware>();
     }
+
+    /// <summary>
+    /// Adds API request logging middleware — records every hit to the ApiLogs table
+    /// </summary>
+    public static IApplicationBuilder UseApiLogging(this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<ApiLoggingMiddleware>();
+    }
 }

@@ -1,4 +1,5 @@
 using FH.ToDo.Core.Entities.Auth;
+using FH.ToDo.Core.Entities.Logging;
 using FH.ToDo.Core.Entities.Tasks;
 using FH.ToDo.Core.Entities.Users;
 using FH.ToDo.Core.Entities.Base;
@@ -23,6 +24,7 @@ public class ToDoDbContext : DbContext
     public DbSet<TaskList> TaskLists => Set<TaskList>();
     public DbSet<TodoTask> TodoTasks => Set<TodoTask>();
     public DbSet<SubTask> SubTasks => Set<SubTask>();
+    public DbSet<ApiLog> ApiLogs => Set<ApiLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

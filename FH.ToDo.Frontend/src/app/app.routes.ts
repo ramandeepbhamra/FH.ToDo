@@ -11,6 +11,7 @@ import { PanelsComponent } from './features/devtools/panels.component';
 import { TableComponent } from './features/devtools/table.component';
 import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -45,6 +46,11 @@ export const routes: Routes = [
       {
         path: 'todos',
         loadChildren: () => import('./features/todos/todos.routes').then(m => m.TODO_ROUTES),
+      },
+      {
+        path: 'logs',
+        canActivate: [adminGuard],
+        loadChildren: () => import('./features/logs/logs.routes').then(m => m.LOGS_ROUTES),
       },
     ],
   },

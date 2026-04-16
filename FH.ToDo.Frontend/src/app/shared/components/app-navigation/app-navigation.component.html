@@ -9,6 +9,9 @@
       <a mat-button routerLink="/todos">Todos</a>
       <a mat-button routerLink="/users">Users</a>
       <a mat-button routerLink="/dev-tools">Dev Tools</a>
+      @if (authService.currentUser()?.role === 'Admin') {
+        <a mat-button routerLink="/logs">API Logs</a>
+      }
     </nav>
 
     <div class="nav-user">

@@ -1,5 +1,9 @@
 # Copilot Instructions
 
+## General Guidelines
+- Confirm all changes with the user before applying them.
+- Do not create new markdown files — **exception: `README.md` at the repo root is permitted and must be kept up to date**.
+
 ## Project Guidelines
 
 ### Types
@@ -15,9 +19,7 @@
 - Convention: `{feature}-{component}.{type}.ts` — e.g. `auth-login.component.ts`, `todo-task.model.ts`, `auth-login.form.ts`.
 - Model naming for request/response DTOs: `{feature}-{entity}-{operation}-request.model.ts` — e.g. `todo-task-create-request.model.ts`.
 
-### Angular Folder Structure (per feature)
-```
-features/{feature}/
+### Angular Folder Structure (per feature)features/{feature}/
   {feature}-{component}/          ← one folder per component
     {feature}-{component}.component.ts
     {feature}-{component}.component.html
@@ -30,8 +32,6 @@ features/{feature}/
   services/
     {feature}-{entity}.service.ts
   {feature}.routes.ts
-```
-
 ### Angular Forms
 - Use Angular reactive forms only (`FormGroup`, `FormControl`).
 - Each `.form.ts` file exports a single typed interface — the form schema — named with a `Form` suffix: e.g. `AuthLoginForm`.
@@ -44,7 +44,9 @@ features/{feature}/
 - API request/response types go in `models/` — no `Form` suffix.
 - Entity types (e.g. `TodoTask`) go in `models/` with no operation suffix.
 
-### General
-- Confirm all changes with the user before applying them.
-- Do not create new markdown files — **exception: `README.md` at the repo root is permitted and must be kept up to date**.
+## AI Agent Guidelines
+- Define the AI agent's role clearly, ensuring it understands its purpose within the codebase.
+- Follow conventions for naming and structuring code to maintain consistency.
+- Reference the `README.md` for project-specific information and guidelines.
+- Ensure that all interactions with the codebase are aligned with the established project rules and conventions.
 

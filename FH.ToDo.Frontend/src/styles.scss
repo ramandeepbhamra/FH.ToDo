@@ -43,3 +43,16 @@ body {
   padding-right: 24px;
   text-align: center;
 }
+
+// Reusable badge base — colour variants applied via Tailwind in templates
+.badge {
+  @apply inline-block px-2 py-0.5 rounded text-xs font-semibold border whitespace-nowrap;
+}
+
+// Material tooltip panel override — global scope reaches overlay, no ::ng-deep needed
+.exception-tooltip {
+  font-size: 0.78rem;
+  max-width: 400px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

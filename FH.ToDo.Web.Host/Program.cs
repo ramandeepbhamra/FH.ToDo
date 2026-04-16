@@ -3,8 +3,10 @@ using FH.ToDo.Core.Repositories;
 using FH.ToDo.Core.EF.Repositories;
 using FH.ToDo.Services.Authentication;
 using FH.ToDo.Services.Core.Authentication;
+using FH.ToDo.Services.Core.Logging;
 using FH.ToDo.Services.Core.Tasks;
 using FH.ToDo.Services.Core.Users;
+using FH.ToDo.Services.Logging;
 using FH.ToDo.Services.Mapping;
 using FH.ToDo.Services.Tasks;
 using FH.ToDo.Services.Users;
@@ -42,10 +44,12 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<ITaskListService, TaskListService>();
 builder.Services.AddScoped<ITodoTaskService, TodoTaskService>();
+builder.Services.AddScoped<IApiLogService, ApiLogService>();
 
 // Mappers
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<TaskMapper>();
+builder.Services.AddSingleton<ApiLogMapper>();
 
 // Web.Core Infrastructure
 builder.Services.AddWebCoreServices(builder.Configuration);
@@ -102,6 +106,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Global exception handling
+app.UseApiLogging();
 app.UseGlobalExceptionHandler();
 
 app.UseCors("AllowAll");
