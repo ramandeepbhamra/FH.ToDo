@@ -1,10 +1,12 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TodoTask } from '../models/todo-task.model';
 import { TodoTaskService } from '../services/todo-task.service';
 
@@ -16,6 +18,7 @@ import { TodoTaskService } from '../services/todo-task.service';
 })
 export class TodoItemComponent {
   private readonly todoTaskService = inject(TodoTaskService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly task = input.required<TodoTask>();
   readonly taskUpdated = output<TodoTask>();
@@ -80,9 +83,15 @@ export class TodoItemComponent {
   addSubTask(): void {
     const title = this.newSubTaskTitle().trim();
     if (!title) return;
-    this.todoTaskService.addSubTask(this.task().id, { title }).subscribe(subTask => {
-      this.taskUpdated.emit({ ...this.task(), subTasks: [...this.task().subTasks, subTask] });
-      this.newSubTaskTitle.set('');
+
+    this.todoTaskService.addSubTask(this.task().id, { title }).subscribe({
+      next: (subTask) => {
+        this.taskUpdated.emit({ ...this.task(), subTasks: [...this.task().subTasks, subTask] });
+        this.newSubTaskTitle.set('');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackBar.open(err.error?.message || 'Failed to add subtask', 'Close', { duration: 3000 });
+      }
     });
   }
 }

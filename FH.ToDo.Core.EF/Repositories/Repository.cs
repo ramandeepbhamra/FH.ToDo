@@ -149,4 +149,12 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey>
     {
         return await _dbSet.LongCountAsync(predicate, cancellationToken);
     }
+
+    // Transaction Support
+
+    public virtual async Task<IRepositoryTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        return new RepositoryTransaction(transaction);
+    }
 }

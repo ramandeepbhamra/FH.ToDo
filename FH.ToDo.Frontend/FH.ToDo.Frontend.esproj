@@ -9,14 +9,14 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="src\app\components\**" />
+    <None Remove="src\app\features\auth\auth-login\**" />
+    <None Remove="src\app\features\auth\auth-register\**" />
     <None Remove="src\app\pages\**" />
     <None Remove="src\app\services\**" />
     <TypeScriptConfiguration Remove="src\app\components\**" />
+    <TypeScriptConfiguration Remove="src\app\features\auth\auth-login\**" />
+    <TypeScriptConfiguration Remove="src\app\features\auth\auth-register\**" />
     <TypeScriptConfiguration Remove="src\app\pages\**" />
     <TypeScriptConfiguration Remove="src\app\services\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\app\features\auth\auth-login\" />
-    <Folder Include="src\app\features\auth\auth-register\" />
   </ItemGroup>
 </Project>

@@ -102,15 +102,28 @@ public class TaskListService : ITaskListService
         if (list.UserId != userId)
             throw new UnauthorizedAccessException("You do not have access to this list.");
 
-        foreach (var task in list.Tasks)
+        // Use transaction to ensure atomic cascade delete
+        await using var transaction = await _listRepository.BeginTransactionAsync(cancellationToken);
+        try
         {
-            foreach (var subTask in task.SubTasks)
-                await _subTaskRepository.DeleteAsync(subTask.Id, cancellationToken);
+            // Cascade delete: SubTasks → Tasks → TaskList
+            foreach (var task in list.Tasks)
+            {
+                foreach (var subTask in task.SubTasks)
+                    await _subTaskRepository.DeleteAsync(subTask.Id, cancellationToken);
 
-            await _taskRepository.DeleteAsync(task.Id, cancellationToken);
+                await _taskRepository.DeleteAsync(task.Id, cancellationToken);
+            }
+
+            await _listRepository.DeleteAsync(listId, cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
         }
-
-        await _listRepository.DeleteAsync(listId, cancellationToken);
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 
     public Task CreateDefaultListAsync(Guid userId, CancellationToken cancellationToken = default)

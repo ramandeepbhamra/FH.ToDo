@@ -11,14 +11,24 @@
   <mat-divider />
 
   @for (list of taskLists(); track list.id) {
-    <a
-      mat-list-item
-      [routerLink]="['/todos/list', list.id]"
-      routerLinkActive="active-link"
-    >
-      <mat-icon matListItemIcon>list</mat-icon>
-      <span matListItemTitle>{{ list.title }}</span>
-    </a>
+    <div class="group relative">
+      <a
+        mat-list-item
+        [routerLink]="['/todos/list', list.id]"
+        routerLinkActive="active-link"
+      >
+        <mat-icon matListItemIcon>list</mat-icon>
+        <span matListItemTitle>{{ list.title }}</span>
+      </a>
+      <button 
+        mat-icon-button 
+        class="!absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-600 hover:!text-red-500 z-10"
+        (click)="confirmDelete($event, list)"
+        matTooltip="Delete list"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
   }
 
   <mat-divider />

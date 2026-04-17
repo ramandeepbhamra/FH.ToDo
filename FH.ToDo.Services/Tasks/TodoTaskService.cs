@@ -146,16 +146,21 @@ public class TodoTaskService : ITodoTaskService
         if (task.UserId != userId)
             throw new UnauthorizedAccessException("You do not have access to this task.");
 
-        if (task.IsCompleted && userRole == UserRole.Basic)
-        {
-            var taskCountInList = await GetTaskCountInListAsync(task.ListId, cancellationToken);
-            if (taskCountInList >= _appSettings.Limits.BasicUserTaskLimit)
-                throw new InvalidOperationException(
-                    $"You have reached the limit of {_appSettings.Limits.BasicUserTaskLimit} tasks per list. Upgrade to Premium to restore this task.");
-        }
+        // Store the new completion state
+        var willBeCompleted = !task.IsCompleted;
 
-        task.IsCompleted = !task.IsCompleted;
+        task.IsCompleted = willBeCompleted;
         task.CompletedDate = task.IsCompleted ? DateTime.UtcNow : null;
+
+        // Cascade completion ONLY when marking task as complete
+        // When marking as incomplete, keep subtask states as-is
+        if (willBeCompleted)
+        {
+            foreach (var subTask in task.SubTasks)
+            {
+                subTask.IsCompleted = true;
+            }
+        }
 
         var updated = await _taskRepository.UpdateAsync(task, cancellationToken);
         return _mapper.TodoTaskToDto(updated);
@@ -185,6 +190,9 @@ public class TodoTaskService : ITodoTaskService
 
         if (task.UserId != userId)
             throw new UnauthorizedAccessException("You do not have access to this task.");
+
+        if (task.IsCompleted)
+            throw new InvalidOperationException("Cannot add subtasks to a completed task. Please mark the task as incomplete first.");
 
         var subTask = new SubTask
         {

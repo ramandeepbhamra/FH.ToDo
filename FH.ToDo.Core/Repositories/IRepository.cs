@@ -64,4 +64,12 @@ public interface IRepository<TEntity, TKey>
     Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<long> LongCountAsync(CancellationToken cancellationToken = default);
     Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
+    // Transaction Support
+
+    /// <summary>
+    /// Begins a database transaction for atomic operations
+    /// Use this when multiple operations need to succeed or fail together
+    /// </summary>
+    Task<IRepositoryTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }
