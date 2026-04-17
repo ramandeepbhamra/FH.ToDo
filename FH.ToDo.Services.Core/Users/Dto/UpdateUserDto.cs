@@ -1,0 +1,32 @@
+using FH.ToDo.Core.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
+
+namespace FH.ToDo.Services.Core.Users.Dto;
+
+/// <summary>
+/// DTO for updating an existing user
+/// </summary>
+public class UpdateUserDto
+{
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Invalid email format")]
+    [MaxLength(256, ErrorMessage = "Email cannot exceed 256 characters")]
+    public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "First name is required")]
+    [MaxLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Last name is required")]
+    [MaxLength(100, ErrorMessage = "Last name cannot exceed 100 characters")]
+    public string LastName { get; set; } = string.Empty;
+
+    [Phone(ErrorMessage = "Invalid phone number format")]
+    [MaxLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
+    public string? PhoneNumber { get; set; }
+
+    public bool IsActive { get; set; }
+
+    [Required(ErrorMessage = "Role is required")]
+    public UserRole Role { get; set; }
+}

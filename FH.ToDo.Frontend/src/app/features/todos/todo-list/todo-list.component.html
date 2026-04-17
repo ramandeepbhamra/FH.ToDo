@@ -1,0 +1,32 @@
+<app-todo-form [listId]="listId()" (taskAdded)="onTaskAdded($event)" />
+
+@if (activeTasks().length > 0) {
+  <div class="task-section">
+    @for (task of activeTasks(); track task.id) {
+      <app-todo-item
+        [task]="task"
+        (taskUpdated)="onTaskUpdated($event)"
+        (taskDeleted)="onTaskDeleted($event)"
+      />
+    }
+  </div>
+}
+
+@if (completedTasks().length > 0) {
+  <div class="task-section completed-section">
+    <p class="section-label">Completed</p>
+    @for (task of completedTasks(); track task.id) {
+      <app-todo-item
+        [task]="task"
+        (taskUpdated)="onTaskUpdated($event)"
+        (taskDeleted)="onTaskDeleted($event)"
+      />
+    }
+  </div>
+}
+
+@if (activeTasks().length === 0 && completedTasks().length === 0) {
+  <div class="empty-state">
+    <p>No tasks yet. Add one above.</p>
+  </div>
+}
