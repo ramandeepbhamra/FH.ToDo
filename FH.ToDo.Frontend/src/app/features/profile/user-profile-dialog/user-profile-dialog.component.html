@@ -1,6 +1,11 @@
-<div mat-dialog-title class="flex items-center gap-2">
-  <mat-icon class="text-[var(--primary)]">account_circle</mat-icon>
-  <span>My Profile</span>
+<div mat-dialog-title class="flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <mat-icon class="text-[var(--primary)]">account_circle</mat-icon>
+    <span>My Profile</span>
+  </div>
+  @if (userRole()) {
+    <span class="role-badge" [attr.data-role]="userRole()">{{ userRole() }}</span>
+  }
 </div>
 
 <mat-dialog-content>

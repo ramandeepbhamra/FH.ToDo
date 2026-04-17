@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgxMaskDirective } from 'ngx-mask';
@@ -34,6 +34,8 @@ export class UserProfileDialogComponent implements OnInit {
   private readonly userService  = inject(UserService);
   private readonly authService  = inject(AuthService);
   private readonly dialogRef    = inject(MatDialogRef<UserProfileDialogComponent>);
+
+  readonly userRole = computed(() => this.authService.currentUser()?.role);
 
   readonly form = new FormGroup<UserProfileForm>({
     firstName: new FormControl('', {

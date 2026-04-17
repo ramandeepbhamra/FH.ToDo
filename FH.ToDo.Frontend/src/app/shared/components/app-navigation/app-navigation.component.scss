@@ -51,10 +51,48 @@ nav {
   gap: 4px;
 }
 
+.user-name-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .user-name {
   font-size: 0.875rem;
   color: var(--primary);
   font-weight: 500;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
+
+  &[data-role="Admin"] {
+    background-color: #fee;
+    color: #c00;
+  }
+
+  &[data-role="Premium"] {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &[data-role="Basic"] {
+    background-color: #e0e7ff;
+    color: #3730a3;
+  }
+
+  &[data-role="Dev"] {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
 }
 
 @media (max-width: 768px) {

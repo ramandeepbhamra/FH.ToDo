@@ -23,6 +23,9 @@
         <button mat-button class="user-name-btn" (click)="openProfile()" matTooltip="Edit profile">
           <mat-icon>account_circle</mat-icon>
           <span class="user-name">{{ currentUser()?.fullName }}</span>
+          @if (currentUser()?.role) {
+            <span class="role-badge" [attr.data-role]="currentUser()?.role">{{ currentUser()?.role }}</span>
+          }
         </button>
         <button mat-icon-button (click)="openTheme()" title="Theme">
           <mat-icon>palette</mat-icon>

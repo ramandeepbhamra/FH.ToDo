@@ -68,8 +68,8 @@ public class TodoTaskService : ITodoTaskService
 
         if (userRole == UserRole.Basic)
         {
-            var activeCountInList = await GetActiveTaskCountInListAsync(input.ListId, cancellationToken);
-            if (activeCountInList >= _appSettings.Limits.BasicUserTaskLimit)
+            var taskCountInList = await GetTaskCountInListAsync(input.ListId, cancellationToken);
+            if (taskCountInList >= _appSettings.Limits.BasicUserTaskLimit)
                 throw new InvalidOperationException(
                     $"You have reached the limit of {_appSettings.Limits.BasicUserTaskLimit} tasks per list. Upgrade to Premium for unlimited tasks.");
         }
@@ -148,8 +148,8 @@ public class TodoTaskService : ITodoTaskService
 
         if (task.IsCompleted && userRole == UserRole.Basic)
         {
-            var activeCountInList = await GetActiveTaskCountInListAsync(task.ListId, cancellationToken);
-            if (activeCountInList >= _appSettings.Limits.BasicUserTaskLimit)
+            var taskCountInList = await GetTaskCountInListAsync(task.ListId, cancellationToken);
+            if (taskCountInList >= _appSettings.Limits.BasicUserTaskLimit)
                 throw new InvalidOperationException(
                     $"You have reached the limit of {_appSettings.Limits.BasicUserTaskLimit} tasks per list. Upgrade to Premium to restore this task.");
         }
@@ -225,8 +225,8 @@ public class TodoTaskService : ITodoTaskService
         await _subTaskRepository.DeleteAsync(subTaskId, cancellationToken);
     }
 
-    private Task<int> GetActiveTaskCountInListAsync(Guid listId, CancellationToken cancellationToken)
+    private Task<int> GetTaskCountInListAsync(Guid listId, CancellationToken cancellationToken)
         => _taskRepository
             .GetAll()
-            .CountAsync(t => t.ListId == listId && !t.IsCompleted && !t.IsDeleted, cancellationToken);
+            .CountAsync(t => t.ListId == listId && !t.IsDeleted, cancellationToken);
 }
