@@ -15,9 +15,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .IsRequired()
             .HasMaxLength(256);
 
-        builder.Property(rt => rt.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");
-
+        // CreatedAt set by application logic when creating token
         builder.Property(rt => rt.IsRevoked)
             .HasDefaultValue(false);
 

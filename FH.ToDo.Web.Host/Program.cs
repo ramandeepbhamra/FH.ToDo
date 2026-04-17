@@ -33,9 +33,17 @@ builder.Host.UseSerilog();
 // Add services to the container
 builder.Services.AddControllers();
 
-// Database
+// Database - SQLite (file-based, zero-setup)
 builder.Services.AddDbContext<ToDoDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
+});
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));

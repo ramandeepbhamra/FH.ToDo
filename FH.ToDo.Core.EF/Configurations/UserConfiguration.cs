@@ -20,10 +20,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Id)
             .ValueGeneratedOnAdd();
 
-        // Audit Fields - SQL Defaults
-        builder.Property(u => u.CreatedDate)
-            .HasDefaultValueSql("GETUTCDATE()");
-
+        // Default Values (CreatedDate handled by DbContext.SaveChangesAsync)
         builder.Property(u => u.IsActive)
             .HasDefaultValue(true);
 
