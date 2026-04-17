@@ -12,6 +12,7 @@ using FH.ToDo.Services.Logging;
 using FH.ToDo.Services.Mapping;
 using FH.ToDo.Services.Tasks;
 using FH.ToDo.Services.Users;
+using FH.ToDo.Core.Shared.Configuration;
 using FH.ToDo.Web.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NSwag;
@@ -29,6 +30,10 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+// Configuration
+builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection("Application"));
+builder.Services.Configure<SessionSettings>(builder.Configuration.GetSection("Session"));
 
 // Add services to the container
 builder.Services.AddControllers();

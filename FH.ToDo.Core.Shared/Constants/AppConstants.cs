@@ -19,4 +19,14 @@ public static class AppConstants
     /// Maximum page size for paginated results
     /// </summary>
     public const int MaxPageSize = 100;
+
+    /// <summary>
+    /// Maximum number of task lists allowed for Basic users
+    /// </summary>
+    public const int BasicUserTaskListLimit = 10;
+
+    /// <summary>
+    /// Maximum number of tasks allowed for Basic users (across all lists)
+    /// </summary>
+    public const int BasicUserTaskLimit = 10;
 }

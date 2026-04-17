@@ -33,7 +33,15 @@ export class ConfigService {
    * Application configuration signal with default values.
    * Updated when load() is called during app initialization.
    */
-  readonly config = signal<AppConfig>({ idleTimeoutMinutes: 15, warningCountdownSeconds: 30 });
+  readonly config = signal<AppConfig>({
+    applicationName: 'FH.ToDo',
+    applicationVersion: '1.0.0',
+    supportEmail: 'support@functionhealth.com',
+    basicUserTaskLimit: 10,
+    basicUserTaskListLimit: 10,
+    idleTimeoutMinutes: 15,
+    warningCountdownSeconds: 30
+  });
 
   /**
    * Loads configuration from the backend API.

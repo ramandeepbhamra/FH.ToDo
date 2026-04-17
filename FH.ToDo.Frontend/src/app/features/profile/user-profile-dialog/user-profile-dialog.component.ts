@@ -9,6 +9,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserService } from '../../users/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.validator';
 import { UserProfileForm } from '../forms/user-profile.form';
@@ -31,6 +32,7 @@ import { UserProfileForm } from '../forms/user-profile.form';
 })
 export class UserProfileDialogComponent implements OnInit {
   private readonly userService  = inject(UserService);
+  private readonly authService  = inject(AuthService);
   private readonly dialogRef    = inject(MatDialogRef<UserProfileDialogComponent>);
 
   readonly form = new FormGroup<UserProfileForm>({
@@ -80,7 +82,17 @@ export class UserProfileDialogComponent implements OnInit {
     const { firstName, lastName, phoneNumber } = this.form.getRawValue();
 
     this.userService.updateProfile({ firstName, lastName, phoneNumber: phoneNumber ?? null }).subscribe({
-      next: () => this.dialogRef.close(true),
+      next: (updatedUser) => {
+        // Update the current user in AuthService to refresh the navigation bar
+        const currentUser = this.authService.currentUser();
+        if (currentUser) {
+          this.authService.updateCurrentUser({
+            ...currentUser,
+            fullName: `${updatedUser.firstName} ${updatedUser.lastName}`,
+          });
+        }
+        this.dialogRef.close(true);
+      },
       error: (err: HttpErrorResponse) => {
         this.errorMessage.set(err.error?.message || 'Failed to update profile. Please try again.');
         this.isSaving.set(false);

@@ -49,6 +49,11 @@ export class AuthService {
       );
   }
 
+  updateCurrentUser(user: AuthUser): void {
+    this.storage.setUser(user);
+    this.currentUserSignal.set(user);
+  }
+
   logout(): void {
     const refreshToken = this.storage.getRefreshToken();
     if (refreshToken) {

@@ -1,9 +1,12 @@
 using FH.ToDo.Core.Entities.Tasks;
 using FH.ToDo.Core.Repositories;
+using FH.ToDo.Core.Shared.Configuration;
+using FH.ToDo.Core.Shared.Enums;
 using FH.ToDo.Services.Core.Tasks;
 using FH.ToDo.Services.Core.Tasks.Dto;
 using FH.ToDo.Services.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FH.ToDo.Services.Tasks;
 
@@ -13,17 +16,20 @@ public class TaskListService : ITaskListService
     private readonly IRepository<TodoTask, Guid> _taskRepository;
     private readonly IRepository<SubTask, Guid> _subTaskRepository;
     private readonly TaskMapper _mapper;
+    private readonly ApplicationSettings _appSettings;
 
     public TaskListService(
         IRepository<TaskList, Guid> listRepository,
         IRepository<TodoTask, Guid> taskRepository,
         IRepository<SubTask, Guid> subTaskRepository,
-        TaskMapper mapper)
+        TaskMapper mapper,
+        IOptions<ApplicationSettings> appSettings)
     {
         _listRepository = listRepository;
         _taskRepository = taskRepository;
         _subTaskRepository = subTaskRepository;
         _mapper = mapper;
+        _appSettings = appSettings.Value;
     }
 
     public async Task<List<TaskListDto>> GetUserListsAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -37,8 +43,20 @@ public class TaskListService : ITaskListService
         return _mapper.TaskListsToDtos(lists);
     }
 
-    public async Task<TaskListDto> CreateAsync(CreateTaskListDto input, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<TaskListDto> CreateAsync(CreateTaskListDto input, Guid userId, UserRole userRole, CancellationToken cancellationToken = default)
     {
+        // Enforce task list limit for Basic users
+        if (userRole == UserRole.Basic)
+        {
+            var activeListCount = await _listRepository
+                .GetAll()
+                .Where(tl => tl.UserId == userId)
+                .CountAsync(cancellationToken);
+
+            if (activeListCount >= _appSettings.Limits.BasicUserTaskListLimit)
+                throw new InvalidOperationException("Upgrade to Premium for unlimited access to all features.");
+        }
+
         var order = await _listRepository
             .GetAll()
             .Where(tl => tl.UserId == userId)
@@ -95,5 +113,5 @@ public class TaskListService : ITaskListService
     }
 
     public Task CreateDefaultListAsync(Guid userId, CancellationToken cancellationToken = default)
-        => CreateAsync(new CreateTaskListDto { Title = "My Tasks" }, userId, cancellationToken);
+        => CreateAsync(new CreateTaskListDto { Title = "My Tasks" }, userId, UserRole.Basic, cancellationToken);
 }

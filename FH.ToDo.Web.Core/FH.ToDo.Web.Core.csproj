@@ -17,4 +17,8 @@
     <ProjectReference Include="..\FH.ToDo.Services.Core\FH.ToDo.Services.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
 </Project>

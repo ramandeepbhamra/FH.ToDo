@@ -27,7 +27,7 @@ public class TaskListsController : ApiControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTaskListDto input, CancellationToken cancellationToken)
     {
-        var list = await _taskListService.CreateAsync(input, CurrentUserId, cancellationToken);
+        var list = await _taskListService.CreateAsync(input, CurrentUserId, CurrentUserRole, cancellationToken);
         return Created(list, "List created");
     }
 

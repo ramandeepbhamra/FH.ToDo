@@ -1,32 +1,35 @@
 using FH.ToDo.Core.Entities.Tasks;
 using FH.ToDo.Core.Repositories;
+using FH.ToDo.Core.Shared.Configuration;
 using FH.ToDo.Core.Shared.Enums;
 using FH.ToDo.Services.Core.Tasks;
 using FH.ToDo.Services.Core.Tasks.Dto;
 using FH.ToDo.Services.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FH.ToDo.Services.Tasks;
 
 public class TodoTaskService : ITodoTaskService
 {
-    private const int BasicUserTaskLimit = 10;
-
     private readonly IRepository<TodoTask, Guid> _taskRepository;
     private readonly IRepository<SubTask, Guid> _subTaskRepository;
     private readonly IRepository<TaskList, Guid> _listRepository;
     private readonly TaskMapper _mapper;
+    private readonly ApplicationSettings _appSettings;
 
     public TodoTaskService(
         IRepository<TodoTask, Guid> taskRepository,
         IRepository<SubTask, Guid> subTaskRepository,
         IRepository<TaskList, Guid> listRepository,
-        TaskMapper mapper)
+        TaskMapper mapper,
+        IOptions<ApplicationSettings> appSettings)
     {
         _taskRepository = taskRepository;
         _subTaskRepository = subTaskRepository;
         _listRepository = listRepository;
         _mapper = mapper;
+        _appSettings = appSettings.Value;
     }
 
     public async Task<List<TodoTaskDto>> GetByListAsync(Guid listId, Guid userId, CancellationToken cancellationToken = default)
@@ -66,9 +69,8 @@ public class TodoTaskService : ITodoTaskService
         if (userRole == UserRole.Basic)
         {
             var activeCount = await GetActiveTaskCountAsync(userId, cancellationToken);
-            if (activeCount >= BasicUserTaskLimit)
-                throw new InvalidOperationException(
-                    $"You have reached your {BasicUserTaskLimit} task limit. Upgrade to Premium for unlimited tasks.");
+            if (activeCount >= _appSettings.Limits.BasicUserTaskLimit)
+                throw new InvalidOperationException("Upgrade to Premium for unlimited access to all features.");
         }
 
         var order = await _taskRepository
@@ -146,9 +148,8 @@ public class TodoTaskService : ITodoTaskService
         if (task.IsCompleted && userRole == UserRole.Basic)
         {
             var activeCount = await GetActiveTaskCountAsync(userId, cancellationToken);
-            if (activeCount >= BasicUserTaskLimit)
-                throw new InvalidOperationException(
-                    $"You have reached your {BasicUserTaskLimit} task limit. Upgrade to Premium to restore this task.");
+            if (activeCount >= _appSettings.Limits.BasicUserTaskLimit)
+                throw new InvalidOperationException("Upgrade to Premium for unlimited access to all features.");
         }
 
         task.IsCompleted = !task.IsCompleted;

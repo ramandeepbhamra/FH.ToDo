@@ -1,11 +1,14 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TodoTask } from '../models/todo-task.model';
 import { TodoTaskService } from '../services/todo-task.service';
+import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.service';
 
 @Component({
   selector: 'app-todo-form',
@@ -15,6 +18,8 @@ import { TodoTaskService } from '../services/todo-task.service';
 })
 export class TodoFormComponent {
   private readonly todoTaskService = inject(TodoTaskService);
+  private readonly upgradeDialog = inject(UpgradeDialogService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly listId = input.required<string>();
   readonly taskAdded = output<TodoTask>();
@@ -33,7 +38,14 @@ export class TodoFormComponent {
         this.title.set('');
         this.isSubmitting.set(false);
       },
-      error: () => this.isSubmitting.set(false),
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 400 && err.error?.message?.includes('Upgrade to Premium')) {
+          this.upgradeDialog.openTaskLimitDialog();
+        } else {
+          this.snackBar.open(err.error?.message || 'Failed to create task', 'Close', { duration: 3000 });
+        }
+        this.isSubmitting.set(false);
+      },
     });
   }
 }

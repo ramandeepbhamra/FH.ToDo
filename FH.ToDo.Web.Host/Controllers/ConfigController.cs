@@ -1,7 +1,9 @@
+using FH.ToDo.Core.Shared.Configuration;
 using FH.ToDo.Web.Core.Controllers;
 using FH.ToDo.Web.Host.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace FH.ToDo.Web.Host.Controllers;
 
@@ -12,29 +14,39 @@ namespace FH.ToDo.Web.Host.Controllers;
 [AllowAnonymous]
 public class ConfigController : ApiControllerBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly ApplicationSettings _appSettings;
+    private readonly SessionSettings _sessionSettings;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigController"/> class.
     /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    public ConfigController(IConfiguration configuration)
+    /// <param name="appSettings">The application settings.</param>
+    /// <param name="sessionSettings">The session settings.</param>
+    public ConfigController(
+        IOptions<ApplicationSettings> appSettings,
+        IOptions<SessionSettings> sessionSettings)
     {
-        _configuration = configuration;
+        _appSettings = appSettings.Value;
+        _sessionSettings = sessionSettings.Value;
     }
 
     /// <summary>
-    /// Gets the public application configuration including session timeout settings.
+    /// Gets the public application configuration including session timeout settings, limits, and app info.
     /// </summary>
-    /// <returns>An <see cref="AppConfigResponse"/> containing idle timeout and warning countdown settings.</returns>
+    /// <returns>An <see cref="AppConfigResponse"/> containing all public configuration.</returns>
     /// <response code="200">Returns the configuration successfully.</response>
     [HttpGet]
     public IActionResult GetConfig()
     {
         var config = new AppConfigResponse
         {
-            IdleTimeoutMinutes       = _configuration.GetValue<int>("Session:IdleTimeoutMinutes", 15),
-            WarningCountdownSeconds  = _configuration.GetValue<int>("Session:WarningCountdownSeconds", 30),
+            ApplicationName = _appSettings.Name,
+            ApplicationVersion = _appSettings.Version,
+            SupportEmail = _appSettings.SupportEmail,
+            BasicUserTaskLimit = _appSettings.Limits.BasicUserTaskLimit,
+            BasicUserTaskListLimit = _appSettings.Limits.BasicUserTaskListLimit,
+            IdleTimeoutMinutes = _sessionSettings.IdleTimeoutMinutes,
+            WarningCountdownSeconds = _sessionSettings.WarningCountdownSeconds,
         };
         return Success(config);
     }

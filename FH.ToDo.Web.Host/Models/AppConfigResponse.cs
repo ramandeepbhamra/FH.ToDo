@@ -2,10 +2,35 @@ namespace FH.ToDo.Web.Host.Models;
 
 /// <summary>
 /// Public app configuration served to the Angular client.
-/// Contains session management settings loaded from appsettings.json.
+/// Contains session management settings, application info, and user limits loaded from appsettings.json.
 /// </summary>
 public class AppConfigResponse
 {
+    /// <summary>
+    /// Gets or sets the application name for branding and display.
+    /// </summary>
+    public string ApplicationName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the application version for display and debugging.
+    /// </summary>
+    public string ApplicationVersion { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the support email for upgrade prompts and contact.
+    /// </summary>
+    public string SupportEmail { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the maximum number of tasks allowed for Basic users.
+    /// </summary>
+    public int BasicUserTaskLimit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of task lists allowed for Basic users.
+    /// </summary>
+    public int BasicUserTaskListLimit { get; set; }
+
     /// <summary>
     /// Gets or sets the idle timeout duration in minutes before showing the warning dialog.
     /// Default value is 15 minutes if not configured in appsettings.json.
