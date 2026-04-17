@@ -133,6 +133,16 @@ public class UserServices : IUserService
         return _mapper.UserToUserDto(updatedUser);
     }
 
+    /// <summary>
+    /// Updates the current user's own profile (FirstName, LastName, PhoneNumber only).
+    /// This method is separate from <see cref="UpdateUserAsync"/> to enforce restricted field access.
+    /// Users cannot change their email, role, or password through this endpoint.
+    /// </summary>
+    /// <param name="userId">The ID of the user whose profile is being updated.</param>
+    /// <param name="input">The profile update data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The updated user DTO.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the user is not found.</exception>
     public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto input, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken)

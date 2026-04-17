@@ -10,8 +10,17 @@ import { SessionWarningDialogComponent } from '../../shared/components/session-w
 
 /**
  * Concrete implementation of IdleService using @ng-idle/core.
+ * 
+ * Monitors user activity and displays a warning dialog when idle timeout is reached.
+ * Automatically logs out the user if they don't respond within the countdown period.
+ * 
  * To replace the library, implement IdleService with a different class
  * and update the `useClass` provider in app.config.ts.
+ * 
+ * Configuration is loaded from the backend via ConfigService.
+ * 
+ * @see IdleService
+ * @see ConfigService
  */
 @Injectable()
 export class NgIdleService extends IdleService implements OnDestroy {
@@ -23,6 +32,11 @@ export class NgIdleService extends IdleService implements OnDestroy {
   private dialogRef: MatDialogRef<SessionWarningDialogComponent> | null = null;
   private readonly destroy$ = new Subject<void>();
 
+  /**
+   * Starts monitoring user activity for idle timeout.
+   * Loads configuration from ConfigService and sets up idle detection.
+   * Opens SessionWarningDialogComponent when user becomes idle.
+   */
   override start(): void {
     const config = this.configService.config();
 
@@ -65,12 +79,19 @@ export class NgIdleService extends IdleService implements OnDestroy {
     this.idle.watch();
   }
 
+  /**
+   * Stops monitoring user activity and closes any open warning dialogs.
+   * Call this when the user logs out.
+   */
   override stop(): void {
     this.idle.stop();
     this.dialogRef?.close(false);
     this.dialogRef = null;
   }
 
+  /**
+   * Cleanup on service destruction.
+   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

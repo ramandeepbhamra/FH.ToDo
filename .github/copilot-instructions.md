@@ -6,12 +6,34 @@
 
 ## Project Guidelines
 
+### Authentication Architecture
+- **Dialog-based authentication** — no route-based `/auth/login` or `/auth/register` pages.
+- Use `AuthDialogService.openLogin()` and `AuthDialogService.openRegister()` to show auth modals.
+- Dashboard route (`/`) is **public** — unauthenticated users can view it; login dialog shown when needed.
+- Auth dialogs are lazy-loaded via dynamic imports.
+
+### Session Management
+- Session idle timeout implemented using `@ng-idle/core` wrapped by abstract `IdleService`.
+- Configuration loaded from backend via `GET /api/config` during app initialization.
+- `SessionWarningDialogComponent` displays live countdown before logout.
+- Health check runs on app startup; `HealthCheckDialogComponent` shown if API unreachable.
+
+### Profile Management
+- Authenticated users can edit their own profile (FirstName, LastName, PhoneNumber) via profile dialog.
+- Profile dialog accessed by clicking username in navigation, lazy-loaded on demand.
+- Backend endpoint: `PUT /api/profile` using `UpdateProfileDto`.
+
+### Directives
+- `TrimOnBlurDirective` trims whitespace from text inputs on blur event.
+- Applied to FirstName/LastName fields: `<input trimOnBlur .../>`
+
 ### Types
 - All types (interfaces, classes, enums, DTOs) must be defined in separate files — one type per file — on both backend and frontend. This rule applies to ALL type declarations, including nested static classes, nested enums, and nested interfaces. Use C# partial classes to split nested types across files while preserving the outer class name.
 
 ### Angular Components
-- Every component lives in its own folder named after the component: `auth-login/`.
-- All files inside that folder are prefixed with the full component name: `auth-login.component.ts`, `auth-login.component.html`, `auth-login.component.scss`.
+- Every component lives in its own folder named after the component: `auth-login-dialog/`.
+- All files inside that folder are prefixed with the full component name: `auth-login-dialog.component.ts`, `auth-login-dialog.component.html`, `auth-login-dialog.component.scss`.
+- **Dialog components** follow same structure: `{feature}-{name}-dialog/` folder.
 - No inline `template:` or `styles:` — always separate `.html` and `.scss` files via `templateUrl` and `styleUrl`.
 - Existing components with inline templates are migrated in a dedicated refactor pass — do not change them as part of feature work.
 

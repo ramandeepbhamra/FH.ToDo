@@ -21,10 +21,15 @@ FH.ToDo.Core.Shared (Shared)
 FH.ToDo.Web.Host/
 ├── Controllers/
 │   ├── AuthController.cs         # Login, register, refresh, revoke
+│   ├── ConfigController.cs       # Public config endpoint (session settings)
+│   ├── ProfileController.cs      # Authenticated user's own profile management
 │   ├── UsersController.cs        # User CRUD (Admin only)
 │   ├── TaskListsController.cs    # Task list CRUD
 │   ├── TodoTasksController.cs    # Task CRUD + subtasks
 │   └── SubTasksController.cs     # Subtask operations
+├── Models/
+│   ├── AppConfigResponse.cs      # Public configuration DTO
+│   └── ... (other response models)
 ├── appsettings.json
 ├── appsettings.Development.json
 └── Program.cs
@@ -32,16 +37,29 @@ FH.ToDo.Web.Host/
 
 ---
 
-## 🔐 Authentication
+## 🔐 Authentication & Authorization
 
-JWT Bearer — `MapInboundClaims = false` is set so claim names exactly match what was issued (no WS-Federation remapping). Claims are read directly by name from the token.
+### JWT Bearer
+- `MapInboundClaims = false` is set so claim names exactly match what was issued (no WS-Federation remapping)
+- Claims are read directly by name from the token
 
-### AuthController conventions
+### AuthController Conventions
 - `[AllowAnonymous]` is applied **per method** (Login, Register, Refresh) — **never** at the class level when the controller also has `[Authorize]` actions
 - `Revoke` requires `[Authorize]` — a valid access token must be presented
 - Applying `[AllowAnonymous]` at the class level overrides any `[Authorize]` on individual methods (ASP0026)
 
-### ApiControllerBase helpers
+### ConfigController
+- Marked `[AllowAnonymous]` — configuration must be accessible before authentication
+- Serves public app configuration to Angular client: `GET /api/config`
+- Returns `AppConfigResponse` with `IdleTimeoutMinutes` and `WarningCountdownSeconds`
+
+### ProfileController
+- Marked `[Authorize]` — requires authentication
+- `GET /api/profile` — returns current user's profile (`CurrentUserId` from `ApiControllerBase`)
+- `PUT /api/profile` — updates FirstName, LastName, PhoneNumber only (uses `UpdateProfileDto`)
+- Users can only edit their own profile — role changes require `UsersController` (Admin only)
+
+### ApiControllerBase Helpers
 `BadRequest(string)`, `NotFound(string)`, and `Unauthorized(string)` are overloads (not hiders) — no `new` keyword:
 ```csharp
 // Correct — overload, different param type (string vs object)
@@ -74,6 +92,39 @@ protected new IActionResult BadRequest(string message) => ...  ❌
   }
 }
 ```
+
+### Session Settings
+
+Session idle timeout and warning countdown configured in `appsettings.json`:
+
+```json
+{
+  "Session": {
+    "IdleTimeoutMinutes": 15,
+    "WarningCountdownSeconds": 30
+  }
+}
+```
+
+- `IdleTimeoutMinutes`: Idle time before showing warning dialog (default: 15)
+- `WarningCountdownSeconds`: Countdown duration before automatic logout (default: 30)
+
+Settings served to Angular client via `GET /api/config` endpoint (`ConfigController`).
+
+### Health Checks
+
+Health check endpoint configured in `Program.cs`:
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ToDoDbContext>("database");
+
+app.MapHealthChecks("/health");
+```
+
+- Endpoint: `GET /health`
+- Checks database connectivity via `DbContext`
+- Used by Angular app initializer to verify API availability on startup
 
 ---
 

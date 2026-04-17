@@ -14,7 +14,9 @@ Angular 19 SPA for the FH.ToDo task management application.
 | Styles | SCSS |
 | Forms | Angular Reactive Forms (typed) |
 | HTTP | Angular HttpClient + JWT interceptor |
-| Auth | JWT + refresh token rotation |
+| Auth | JWT + refresh token rotation + dialog-based auth |
+| Session | @ng-idle/core (idle timeout + warning dialog) |
+| App Init | Health check + config loading on startup |
 
 ---
 
@@ -37,14 +39,24 @@ src/app/
 ├── core/
 │   ├── guards/          # auth.guard.ts
 │   ├── interceptors/    # auth.interceptor.ts (attaches JWT, handles 401 refresh)
-│   └── services/        # auth.service.ts, storage.service.ts, theming.service.ts …
+│   ├── services/        # auth.service.ts, auth-dialog.service.ts, idle.service.ts, config.service.ts, storage.service.ts …
+│   ├── directives/      # trim-on-blur.directive.ts
+│   ├── initializers/    # app.initializer.ts (health check + config load)
+│   ├── matchers/        # password-match.matcher.ts
+│   ├── validators/      # password-match.validator.ts, no-whitespace.validator.ts
+│   └── models/          # app-config.model.ts
 │
 ├── features/
 │   ├── auth/
-│   │   ├── auth-login/        # login page component
-│   │   ├── auth-register/     # register page component
-│   │   ├── forms/             # AuthLoginForm, AuthRegisterForm interfaces
-│   │   └── models/            # AuthLoginRequest, AuthLoginResponse, AuthUser …
+│   │   ├── auth-login-dialog/        # login dialog component (lazy-loaded)
+│   │   ├── auth-register-dialog/     # register dialog component (lazy-loaded)
+│   │   ├── forms/                    # AuthLoginForm, AuthRegisterForm interfaces
+│   │   └── models/                   # AuthLoginRequest, AuthLoginResponse, AuthUser …
+│   │
+│   ├── profile/
+│   │   ├── user-profile-dialog/      # edit own profile dialog (lazy-loaded)
+│   │   ├── forms/                    # UserProfileForm interface
+│   │   └── models/                   # UpdateProfileRequest
 │   │
 │   ├── todos/
 │   │   ├── todo-layout/       # sidebar shell component
@@ -58,15 +70,17 @@ src/app/
 │   │   └── services/          # TodoTaskService, TodoTaskListService
 │   │
 │   ├── users/
-│   │   ├── user-list/         # (stub)
-│   │   ├── user-form/         # (stub)
+│   │   ├── user-list/         # user management list
+│   │   ├── user-form/         # user create/edit dialog
 │   │   ├── forms/             # UserForm interface
 │   │   ├── models/            # User, UserListItem, UserCreateRequest …
-│   │   └── services/          # UserService (stub)
+│   │   └── services/          # UserService
 │   │
 │   ├── dashboard/             # Landing page (hero, video, features, pricing …)
 │   │   ├── dashboard-home/
 │   │   ├── dashboard-hero-section/
+│   │   ├── dashboard-pricing-section/  # shows Basic (unauthenticated) / Premium (authenticated) cards
+│   │   ├── dashboard-features-section/ # todo app features
 │   │   └── … (one folder per section)
 │   │
 │   └── devtools/              # Angular Material component showcase (keep as-is)
@@ -76,9 +90,11 @@ src/app/
 │
 └── shared/
     ├── components/
-    │   ├── app-navigation/    # Top nav bar
-    │   ├── app-toolbar/       # Toolbar (used in devtools)
-    │   └── app-theme-selector/# Theme colour picker sidenav content
+    │   ├── app-navigation/           # Top nav bar (shows Sign in/Register when unauthenticated, username when authenticated)
+    │   ├── app-toolbar/              # Toolbar (used in devtools)
+    │   ├── app-theme-selector/       # Theme colour picker sidenav content
+    │   ├── session-warning-dialog/   # Idle timeout warning with live countdown
+    │   └── health-check-dialog/      # Non-dismissable dialog shown when API is unreachable
     ├── directives/            # scroll-animation.directive.ts
     └── models/                # api-response.model, entity.model, paged-*.model
 ```
@@ -86,6 +102,43 @@ src/app/
 ---
 
 ## Conventions
+
+### Authentication Architecture
+- **Dialog-based authentication** — no route-based `/auth/login` or `/auth/register` pages
+- Use `AuthDialogService.openLogin()` and `AuthDialogService.openRegister()` to show auth modals
+- Dashboard route (`/`) is **public** — unauthenticated users see it with login dialog overlay when needed
+- Auth dialogs are lazy-loaded via dynamic imports: `import('...').then(m => dialog.open(m.AuthLoginDialogComponent))`
+- Switching between login/register automatically closes the other dialog first
+
+### Session Management
+- Session idle timeout implemented using `@ng-idle/core` wrapped by abstract `IdleService`
+- Concrete implementation: `NgIdleService` (registered as `useClass` in `app.config.ts`)
+- To swap libraries, implement `IdleService` and change the provider binding
+- Configuration loaded from backend via `GET /api/config` during app initialization
+- `SessionWarningDialogComponent` displays live countdown driven by `idle.onTimeoutWarning` observable
+- Idle service started when user authenticates, stopped on logout
+- Settings: `config().idleTimeoutMinutes` and `config().warningCountdownSeconds`
+
+### App Initialization
+- `app.initializer.ts` runs **before** Angular bootstrap (registered as `APP_INITIALIZER`)
+- Performs two steps:
+  1. **Health check**: `GET /health` — shows `HealthCheckDialogComponent` (non-dismissable) if API is unreachable
+  2. **Config load**: `GET /api/config` — populates `ConfigService.config` signal with session settings
+- All app initializer logic uses `firstValueFrom()` for proper async/await handling
+- Health check dialog provides "Refresh" button only — user must fix connectivity to proceed
+
+### Profile Management
+- Any authenticated user can edit their own profile: FirstName, LastName, PhoneNumber
+- Profile dialog accessed by clicking username in `app-navigation` component
+- Lazy-loaded: `import('...user-profile-dialog.component').then(m => dialog.open(...))`
+- Backend endpoint: `PUT /api/profile` using `UpdateProfileRequest`
+- Uses `TrimOnBlurDirective` on FirstName/LastName fields
+
+### Directives
+- `TrimOnBlurDirective` trims leading/trailing whitespace from text inputs on blur event
+- Apply as attribute: `<input trimOnBlur .../>`
+- Used on FirstName/LastName fields in register and profile dialogs
+- Implementation: `@HostListener('blur')` → `control.setValue(value.trim(), { emitEvent: false })`
 
 ### Component structure
 Every component has its own folder. All three files are required:
@@ -96,6 +149,8 @@ Every component has its own folder. All three files are required:
   {feature}-{component}.component.html
   {feature}-{component}.component.scss
 ```
+
+**Dialog components** follow the same structure: `{feature}-{name}-dialog/` folder.
 
 ### File naming
 `{feature}-{entity}-{operation}.{type}.ts`
