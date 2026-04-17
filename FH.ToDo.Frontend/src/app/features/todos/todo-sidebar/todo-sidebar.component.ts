@@ -55,7 +55,7 @@ export class TodoSidebarComponent {
         this.showNewListInput.set(false);
       },
       error: (err: HttpErrorResponse) => {
-        if (err.status === 400 && err.error?.message?.includes('Upgrade to Premium')) {
+        if (err.status === 400 && err.error?.message?.includes('task list')) {
           this.upgradeDialog.openTaskListLimitDialog();
         } else {
           this.snackBar.open(err.error?.message || 'Failed to create task list', 'Close', { duration: 3000 });

@@ -36,8 +36,8 @@ export class UpgradeDialogService {
    */
   openTaskLimitDialog(): void {
     this.openUpgradeDialog(
-      'Upgrade to Premium',
-      'Upgrade to Premium for unlimited access to all features.'
+      'Task Limit Reached',
+      'You have reached the limit of 10 tasks per list. Upgrade to Premium for unlimited tasks!'
     );
   }
 
@@ -46,8 +46,8 @@ export class UpgradeDialogService {
    */
   openTaskListLimitDialog(): void {
     this.openUpgradeDialog(
-      'Upgrade to Premium',
-      'Upgrade to Premium for unlimited access to all features.'
+      'Task List Limit Reached',
+      'You have reached the limit of 10 task lists. Upgrade to Premium for unlimited task lists!'
     );
   }
 }

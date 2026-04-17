@@ -68,9 +68,10 @@ public class TodoTaskService : ITodoTaskService
 
         if (userRole == UserRole.Basic)
         {
-            var activeCount = await GetActiveTaskCountAsync(userId, cancellationToken);
-            if (activeCount >= _appSettings.Limits.BasicUserTaskLimit)
-                throw new InvalidOperationException("Upgrade to Premium for unlimited access to all features.");
+            var activeCountInList = await GetActiveTaskCountInListAsync(input.ListId, cancellationToken);
+            if (activeCountInList >= _appSettings.Limits.BasicUserTaskLimit)
+                throw new InvalidOperationException(
+                    $"You have reached the limit of {_appSettings.Limits.BasicUserTaskLimit} tasks per list. Upgrade to Premium for unlimited tasks.");
         }
 
         var order = await _taskRepository
@@ -147,9 +148,10 @@ public class TodoTaskService : ITodoTaskService
 
         if (task.IsCompleted && userRole == UserRole.Basic)
         {
-            var activeCount = await GetActiveTaskCountAsync(userId, cancellationToken);
-            if (activeCount >= _appSettings.Limits.BasicUserTaskLimit)
-                throw new InvalidOperationException("Upgrade to Premium for unlimited access to all features.");
+            var activeCountInList = await GetActiveTaskCountInListAsync(task.ListId, cancellationToken);
+            if (activeCountInList >= _appSettings.Limits.BasicUserTaskLimit)
+                throw new InvalidOperationException(
+                    $"You have reached the limit of {_appSettings.Limits.BasicUserTaskLimit} tasks per list. Upgrade to Premium to restore this task.");
         }
 
         task.IsCompleted = !task.IsCompleted;
@@ -223,8 +225,8 @@ public class TodoTaskService : ITodoTaskService
         await _subTaskRepository.DeleteAsync(subTaskId, cancellationToken);
     }
 
-    private Task<int> GetActiveTaskCountAsync(Guid userId, CancellationToken cancellationToken)
+    private Task<int> GetActiveTaskCountInListAsync(Guid listId, CancellationToken cancellationToken)
         => _taskRepository
             .GetAll()
-            .CountAsync(t => t.UserId == userId && !t.IsCompleted, cancellationToken);
+            .CountAsync(t => t.ListId == listId && !t.IsCompleted && !t.IsDeleted, cancellationToken);
 }

@@ -50,11 +50,12 @@ public class TaskListService : ITaskListService
         {
             var activeListCount = await _listRepository
                 .GetAll()
-                .Where(tl => tl.UserId == userId)
+                .Where(tl => tl.UserId == userId && !tl.IsDeleted)
                 .CountAsync(cancellationToken);
 
             if (activeListCount >= _appSettings.Limits.BasicUserTaskListLimit)
-                throw new InvalidOperationException("Upgrade to Premium for unlimited access to all features.");
+                throw new InvalidOperationException(
+                    $"You have reached the limit of {_appSettings.Limits.BasicUserTaskListLimit} task lists. Upgrade to Premium for unlimited task lists.");
         }
 
         var order = await _listRepository

@@ -40,7 +40,7 @@ export class TodoFormComponent {
         this.isSubmitting.set(false);
       },
       error: (err: HttpErrorResponse) => {
-        if (err.status === 400 && err.error?.message?.includes('Upgrade to Premium')) {
+        if (err.status === 400 && err.error?.message?.includes('tasks per list')) {
           this.upgradeDialog.openTaskLimitDialog();
         } else {
           this.snackBar.open(err.error?.message || 'Failed to create task', 'Close', { duration: 3000 });
