@@ -135,17 +135,24 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 // Auto-apply migrations and seed data on startup
-using (var scope = app.Services.CreateScope())
+// Auto-apply migrations and seed data on startup (skip in test environment)
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var context = scope.ServiceProvider.GetRequiredService<ToDoDbContext>();
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ToDoDbContext>();
 
-    // Apply pending migrations (creates database if it doesn't exist)
-    await context.Database.MigrateAsync();
+        // Apply pending migrations (creates database if it doesn't exist)
+        await context.Database.MigrateAsync();
 
-    // Seed initial data — idempotent, safe to run on every startup
-    await scope.ServiceProvider
-        .GetRequiredService<IDataSeeder>()
-        .SeedAsync();
+        // Seed initial data — idempotent, safe to run on every startup
+        await scope.ServiceProvider
+            .GetRequiredService<IDataSeeder>()
+            .SeedAsync();
+    }
 }
 
 app.Run();
+
+// Make the Program class accessible to WebApplicationFactory for integration testing
+public partial class Program { }

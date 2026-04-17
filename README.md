@@ -286,6 +286,55 @@ src/app/
 
 ---
 
+### FH.ToDo.Tests (Unit Tests)
+**xUnit test project for unit testing services and business logic**
+
+**Contents:**
+- ✅ `Services/` - Service layer tests
+  - `AuthenticationServiceSimpleTests` - Password hashing/verification (3 tests)
+- ✅ **Technology Stack:**
+  - xUnit 2.9.3
+  - Moq 4.20.72 (mocking)
+  - FluentAssertions 7.0.0 (assertions)
+  - MockQueryable.Moq 8.0.0 (async EF mocking)
+  - EF Core InMemory 10.0.5
+
+**Current Coverage:** 3 tests passing (authentication service)
+
+📖 [View FH.ToDo.Tests README](FH.ToDo.Tests/README.md)
+
+---
+
+### FH.ToDo.Tests.Api.BDD (API Integration Tests)
+**Reqnroll BDD test project for end-to-end API testing**
+
+**Contents:**
+- ✅ `Features/` - Gherkin feature files
+  - `Authentication.Login.feature` - 6 login scenarios
+- ✅ `StepDefinitions/` - Step implementations
+  - `AuthenticationLoginSteps` - Given/When/Then steps
+- ✅ `Infrastructure/` - Test infrastructure
+  - `CustomWebApplicationFactory` - In-memory API host + DB seeding
+  - `ScenarioContextHelper` - Shared state between steps
+  - `Hooks` - Test lifecycle management
+
+**Technology Stack:**
+- Reqnroll 2.4.0 (BDD framework)
+- WebApplicationFactory (real HTTP server)
+- SQLite In-Memory (isolated test database)
+- FluentAssertions (readable assertions)
+
+**Current Coverage:** 6 scenarios passing (~10s execution)
+- ✅ Successful login with valid credentials
+- ✅ Failed login (invalid password, non-existent user)
+- ✅ Input validation (empty email/password)
+- ✅ Admin user authentication
+- ✅ JWT token structure validation
+
+📖 [View FH.ToDo.Tests.Api.BDD README](FH.ToDo.Tests.Api.BDD/README.md)
+
+---
+
 ### FH.ToDo.Core.Shared (Shared Library)
 **Common utilities**
 
@@ -542,7 +591,34 @@ public class ProductService : IProductService
 
 ## 🧪 Testing
 
-### Unit Testing Services
+### Test Projects
+
+| Project | Type | Framework | Purpose |
+|---------|------|-----------|---------|
+| **FH.ToDo.Tests** | Unit Tests | xUnit, Moq, FluentAssertions | Service layer testing |
+| **FH.ToDo.Tests.Api.BDD** | API Integration Tests (BDD) | Reqnroll (BDD), xUnit, WebApplicationFactory | End-to-end API testing with Gherkin scenarios |
+
+---
+
+### FH.ToDo.Tests (Unit Tests) ✅
+
+**Purpose:** Test individual services, repositories, and business logic in isolation.
+
+**Current Coverage:** Authentication service password hashing and verification (3 tests passing)
+
+**Running Tests:**
+```powershell
+# Run all unit tests
+dotnet test FH.ToDo.Tests
+
+# Run with verbose output
+dotnet test FH.ToDo.Tests --verbosity detailed
+
+# Watch mode (auto-run on changes)
+dotnet watch test --project FH.ToDo.Tests
+```
+
+**Example Test:**
 ```csharp
 [Fact]
 public async Task GetPeople_WithFilter_ReturnsFilteredUsers()
@@ -558,9 +634,95 @@ public async Task GetPeople_WithFilter_ReturnsFilteredUsers()
     var result = await service.GetPeople(new GetUserInput { Filter = "john" });
 
     // Assert
-    Assert.NotEmpty(result);
+    result.Should().NotBeEmpty();
 }
 ```
+
+📖 **[View FH.ToDo.Tests README](FH.ToDo.Tests/README.md)** for detailed documentation
+
+---
+
+### FH.ToDo.Tests.Api.BDD (API Integration Tests) ✅
+
+**Purpose:** Test complete API workflows using real HTTP requests against an in-memory database.
+
+**Framework:** Reqnroll (modern BDD framework) with Gherkin syntax for human-readable test scenarios.
+
+**Current Coverage:** Authentication/Login API (6 scenarios, all passing)
+- ✅ Successful login with valid credentials
+- ✅ Failed login with invalid password
+- ✅ Failed login with non-existent user
+- ✅ Failed login with empty email
+- ✅ Failed login with empty password
+- ✅ Admin user successful login
+
+**Test Infrastructure:**
+- **In-memory SQLite database** (isolated, no file cleanup needed)
+- **WebApplicationFactory** (full ASP.NET Core pipeline)
+- **Pre-seeded test users** (testuser@example.com, admin@example.com)
+- **Real HTTP client** (tests actual endpoint responses)
+
+**Running BDD Tests:**
+```powershell
+# Run all BDD tests
+dotnet test FH.ToDo.Tests.Api.BDD
+
+# Run with detailed Gherkin output
+dotnet test FH.ToDo.Tests.Api.BDD --verbosity normal
+
+# Run specific feature/scenario
+dotnet test FH.ToDo.Tests.Api.BDD --filter "DisplayName~Authentication"
+dotnet test FH.ToDo.Tests.Api.BDD --filter "DisplayName~successful"
+
+# Watch mode (auto-run on changes)
+dotnet watch test --project FH.ToDo.Tests.Api.BDD
+```
+
+**Example BDD Scenario:**
+```gherkin
+Feature: User Authentication - Login
+    As a user of the FH.ToDo application
+    I want to authenticate with my credentials
+    So that I can access protected resources
+
+Scenario: Successful login with valid credentials
+    Given I am not authenticated
+    When I attempt to login with the following credentials:
+        | Email                | Password     |
+        | testuser@example.com | Password123! |
+    Then the response status code should be 200
+    And the response should contain an access token
+    And the response should contain a refresh token
+    And the token should contain the user email "testuser@example.com"
+```
+
+📖 **[View FH.ToDo.Tests.Api.BDD README](FH.ToDo.Tests.Api.BDD/README.md)** for detailed BDD testing guide
+
+**Visual Studio Test Explorer:**
+1. Open Test Explorer: `Test` → `Test Explorer` (or `Ctrl + E, T`)
+2. Build solution: `Ctrl + Shift + B`
+3. Click ▶️ to run all tests
+4. Tests appear grouped by feature → scenario
+
+**Test Results Summary:**
+```
+✅ FH.ToDo.Tests (3 passing)
+  ✅ AuthenticationServiceSimpleTests
+    ✅ VerifyPassword_WithCorrectPassword_ReturnsTrue
+    ✅ VerifyPassword_WithIncorrectPassword_ReturnsFalse
+    ✅ HashPassword_GeneratesValidHash
+
+✅ FH.ToDo.Tests.Api.BDD (6 passing)
+  ✅ User Authentication - Login
+    ✅ Successful login with valid credentials
+    ✅ Failed login with invalid password
+    ✅ Failed login with non-existent user
+    ✅ Failed login with empty email
+    ✅ Failed login with empty password
+    ✅ Admin user successful login
+```
+
+**Total:** 9 tests passing across 2 test projects
 
 ---
 
