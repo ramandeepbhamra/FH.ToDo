@@ -8,6 +8,7 @@
   </Project>
   <Project Path="FH.ToDo.Services.Core/FH.ToDo.Services.Core.csproj" Id="237ab9ed-eb8b-4795-bd8c-fa6d984ce9c0" />
   <Project Path="FH.ToDo.Services/FH.ToDo.Services.csproj" Id="67ef460b-14de-47ae-9747-5cfcb8ba1a06" />
+  <Project Path="FH.ToDo.Tests.Api.BDD/FH.ToDo.Tests.Api.BDD.csproj" />
   <Project Path="FH.ToDo.Tests/FH.ToDo.Tests.csproj" />
   <Project Path="FH.ToDo.Web.Core/FH.ToDo.Web.Core.csproj" Id="5d1b9789-b60d-40fd-9a7c-5885fcd199ca" />
   <Project Path="FH.ToDo.Web.Host/FH.ToDo.Web.Host.csproj" />
