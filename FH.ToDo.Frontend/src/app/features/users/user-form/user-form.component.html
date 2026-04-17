@@ -13,7 +13,7 @@
           <div class="name-row">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>First name</mat-label>
-              <input matInput formControlName="firstName" maxlength="100" autocomplete="given-name" />
+              <input matInput trimOnBlur formControlName="firstName" maxlength="100" autocomplete="given-name" />
               @if (form.controls.firstName.errors?.['required'] && form.controls.firstName.touched) {
                 <mat-error>First name is required</mat-error>
               } @else if (form.controls.firstName.errors?.['maxlength'] && form.controls.firstName.touched) {
@@ -23,7 +23,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Last name</mat-label>
-              <input matInput formControlName="lastName" maxlength="100" autocomplete="family-name" />
+              <input matInput trimOnBlur formControlName="lastName" maxlength="100" autocomplete="family-name" />
               @if (form.controls.lastName.errors?.['required'] && form.controls.lastName.touched) {
                 <mat-error>Last name is required</mat-error>
               } @else if (form.controls.lastName.errors?.['maxlength'] && form.controls.lastName.touched) {
@@ -34,7 +34,7 @@
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" maxlength="256" autocomplete="email" />
+            <input matInput trimOnBlur type="email" formControlName="email" maxlength="256" autocomplete="email" />
             <mat-icon matSuffix>email</mat-icon>
             @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
               <mat-error>Email is required</mat-error>

@@ -34,6 +34,7 @@
         <mat-label>List name</mat-label>
         <input
           matInput
+          trimOnBlur
           [value]="newListTitle()"
           (input)="newListTitle.set($any($event.target).value)"
           (keyup.enter)="submitNewList()"

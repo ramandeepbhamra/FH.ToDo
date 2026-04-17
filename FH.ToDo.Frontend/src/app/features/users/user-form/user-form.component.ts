@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { UserService } from '../services/user.service';
 import { UserForm } from '../forms/user.form';
 import { UserRole } from '../../../core/enums/user-role.enum';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.validator';
 
 @Component({
@@ -28,6 +29,7 @@ import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.va
     MatCheckboxModule,
     MatFormFieldModule,
     MatIcon,
+    TrimOnBlurDirective,
     MatInput,
     MatProgressSpinnerModule,
     MatSelectModule,
