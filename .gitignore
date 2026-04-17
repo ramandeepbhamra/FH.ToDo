@@ -56,3 +56,38 @@ appsettings.*.local.json
 # Visual Studio backup files
 *.Backup.tmp
 *.bak
+
+# Node.js / npm (Frontend & Playwright)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.npm
+.yarn
+
+# Angular / Frontend
+dist/
+tmp/
+.angular/
+.cache/
+
+# Playwright test results
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright/
+screenshots/
+videos/
+downloads/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

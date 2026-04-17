@@ -11,6 +11,7 @@
   <Project Path="FH.ToDo.Tests.Api.BDD/FH.ToDo.Tests.Api.BDD.csproj">
     <Build Solution="Debug|*" Project="false" />
   </Project>
+  <Project Path="FH.ToDo.Tests.Playwright/FH.ToDo.Tests.Playwright.csproj" />
   <Project Path="FH.ToDo.Tests/FH.ToDo.Tests.csproj" />
   <Project Path="FH.ToDo.Web.Core/FH.ToDo.Web.Core.csproj" Id="5d1b9789-b60d-40fd-9a7c-5885fcd199ca" />
   <Project Path="FH.ToDo.Web.Host/FH.ToDo.Web.Host.csproj" />
