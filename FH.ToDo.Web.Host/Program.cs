@@ -134,9 +134,15 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-// Seed initial data — idempotent, safe to run on every startup
+// Auto-apply migrations and seed data on startup
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<ToDoDbContext>();
+
+    // Apply pending migrations (creates database if it doesn't exist)
+    await context.Database.MigrateAsync();
+
+    // Seed initial data — idempotent, safe to run on every startup
     await scope.ServiceProvider
         .GetRequiredService<IDataSeeder>()
         .SeedAsync();

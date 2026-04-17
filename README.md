@@ -4,14 +4,15 @@
 A production-grade ToDo/Task Management application built with **ASP.NET Core 10**, **Entity Framework Core**, and **Clean Architecture** principles using **Generic Repository Pattern** with **Query Builder Services**. This solution demonstrates professional software development practices including domain-driven design, separation of concerns, modern .NET 10 patterns, and **dialog-based authentication** with **session idle timeout management**.
 
 ### Key Features
+- ✅ **Zero-setup database** — SQLite auto-created on first run (no SQL Server needed)
 - ✅ **Dialog-based authentication** — no route-based auth pages
 - ✅ **Session idle timeout** with countdown warning dialog
 - ✅ **Health check** on app startup with API reachability verification
 - ✅ **Profile management** — users can edit their own FirstName, LastName, PhoneNumber
 - ✅ **User management** with system user protection and exclusion filters
-- ✅ **Data seeding** — 40 users (10 per role) with configurable system users
+- ✅ **Data seeding** — 40 users (10 per role) auto-seeded on startup
 - ✅ **Public dashboard** — unauthenticated users can view dashboard, login when needed
-- ✅ **Swagger UI auto-authorization** — JWT token automatically loaded from Angular app (no manual entry needed)
+- ✅ **Swagger UI with token injection** — One-click "Open Swagger" button (dev only)
 
 ---
 
@@ -303,35 +304,60 @@ src/app/
 | Tool | Minimum Version | Notes |
 |---|---|---|
 | .NET SDK | 10.x | [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/10.0) |
-| SQL Server | 2019 / Express 2019+ | Local or remote instance |
 | Node.js | 20.x LTS | [nodejs.org](https://nodejs.org/) |
 | Angular CLI | 21.x | `npm install -g @angular/cli` |
-| EF Core CLI | 10.x | `dotnet tool install --global dotnet-ef` |
 | Visual Studio | 2022 17.x+ | Community edition is supported |
+| **Database** | **None required!** | SQLite (file-based) - **zero setup** ✅ |
+
+> **💡 No SQL Server installation needed!** The app uses SQLite and auto-creates the database on first run.
 
 ### Backend Setup
 
-**1 — Configure the database connection string**
+**1 — Run the app (database auto-created)**
 
-Edit `FH.ToDo.Web.Host/appsettings.Development.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=YOUR_SERVER;Database=FHToDoDev;User ID=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
-  }
-}
+```powershell
+dotnet run --project FH.ToDo.Web.Host
 ```
 
-**2 — Apply EF Core migrations**
+**That's it!** ✅ The app will automatically:
+- **Create the SQLite database file** (if it doesn't exist)
+- **Apply all EF Core migrations** via `context.Database.MigrateAsync()`
+- **Seed 40 test users** (10 per role: Basic, Premium, Admin, Dev)
+- **Start listening** on `http://localhost:5214`
+
+> **💡 How it works:** `Program.cs` includes startup code that runs `MigrateAsync()` before the app starts. No manual migration commands needed!
+
+**Database Location:**
+- **dotnet run from solution root**: `FH.ToDo/FHToDo.db`
+- **Visual Studio F5**: `FH.ToDo.Web.Host/FHToDo.db`
+
+Both locations work perfectly - the database is auto-created wherever the relative path `Data Source=../FHToDo.db` resolves.
+
+**Test Credentials:**
+```
+Email: fh.admin1@yopmail.com
+Password: 123qwe
+Role: Admin
+
+Other test users: fh.basic1@yopmail.com, fh.premium1@yopmail.com, fh.dev1@yopmail.com
+All passwords: 123qwe
+```
+
+---
+
+**🔧 Manual Migration (Fallback Only):**
+
+If auto-migration fails for any reason, you can apply migrations manually:
 
 ```powershell
 dotnet ef database update --project FH.ToDo.Core.EF --startup-project FH.ToDo.Web.Host
 ```
 
-Re-run this command whenever a new migration is added to the project.
+Then run the app normally. See [Troubleshooting](#-troubleshooting) for more details.
 
-**3 — Choose a launch profile**
+---
+
+**2 — Choose a launch profile (Optional)**
 
 | Profile | HTTP URL | HTTPS URL | Recommendation |
 |---|---|---|---|
@@ -339,14 +365,14 @@ Re-run this command whenever a new migration is added to the project.
 | `https` (Kestrel) | `http://localhost:5214` | `https://localhost:7182` | — |
 | IIS Express | `http://localhost:52333` | `https://localhost:44387` | VS default |
 
-> **Recommendation:** Use the Kestrel `http` profile. In Visual Studio, select it from the run profile dropdown next to the ▶ button. It gives a stable, machine-independent URL.
+> **Recommendation:** Use the Kestrel `http` profile. In Visual Studio, select it from the run profile dropdown next to the ▶ button.
 
 To trust the dev certificate (HTTPS profiles only):
 ```powershell
 dotnet dev-certs https --trust
 ```
 
-**4 — Start the backend and confirm it is healthy**
+**3 — Verify the backend is healthy**
 
 Press `F5`. Navigate to:
 - Scalar UI: `http://localhost:5214/scalar/v1`
@@ -547,6 +573,110 @@ query.TakeIf(condition, maxCount)
 // String utilities
 string.HasValue()
 string.IsNullOrWhiteSpace()
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+### Database Setup
+
+**✅ Automatic (Default):**
+
+The app **automatically creates the database** on first run via `context.Database.MigrateAsync()` in `Program.cs`:
+
+```csharp
+// Auto-apply migrations and seed data on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ToDoDbContext>();
+
+    // ✅ Creates DB + applies all migrations automatically
+    await context.Database.MigrateAsync();
+
+    // ✅ Seeds 40 test users
+    await scope.ServiceProvider.GetRequiredService<IDataSeeder>().SeedAsync();
+}
+```
+
+**Just run the app - no manual steps needed!**
+
+---
+
+**⚠️ Manual Fallback (if auto-migration fails):**
+
+If for any reason auto-migration doesn't work, you can apply migrations manually:
+
+```powershell
+# Navigate to solution root
+cd C:\Projects\FunctionHealth\FH.ToDo
+
+# Apply migrations manually
+dotnet ef database update --project FH.ToDo.Core.EF --startup-project FH.ToDo.Web.Host
+
+# Run the app
+dotnet run --project FH.ToDo.Web.Host
+```
+
+This creates the database at the same location and applies all migrations.
+
+---
+
+### Database Issues
+
+**Problem:** Need to reset or recreate the database
+
+**Solution 1 - Delete and restart** (simplest):
+```powershell
+# Stop the app, delete the database file, restart
+Remove-Item FHToDo.db       # From solution root
+# OR
+Remove-Item FH.ToDo.Web.Host\FHToDo.db    # If running from VS
+
+dotnet run --project FH.ToDo.Web.Host
+```
+The database will be **auto-recreated with fresh data** via `MigrateAsync()` + `SeedAsync()`.
+
+**Solution 2 - Using EF Core CLI**:
+```powershell
+# Drop database
+dotnet ef database drop --project FH.ToDo.Core.EF --startup-project FH.ToDo.Web.Host --force
+
+# Run app (will auto-create)
+dotnet run --project FH.ToDo.Web.Host
+```
+
+**Database location:**
+- `dotnet run` → `FH.ToDo/FHToDo.db` (solution root)
+- Visual Studio F5 → `FH.ToDo.Web.Host/FHToDo.db` (project root)
+
+---
+
+### Common Errors
+
+**Error:** `Connection string keyword 'server' is not supported`  
+**Cause:** Old SQL Server connection string in `appsettings.json`  
+**Fix:** Ensure all appsettings files use SQLite:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=../FHToDo.db"
+  }
+}
+```
+
+**Error:** `No DbContext was found`  
+**Cause:** Missing EF Core tools  
+**Fix:** Install EF Core CLI tools:
+```powershell
+dotnet tool install --global dotnet-ef
+```
+
+**Error:** `Database file is locked`  
+**Cause:** Multiple instances of the app running  
+**Fix:** Stop all running instances, delete lock file:
+```powershell
+Remove-Item FHToDo.db-shm, FHToDo.db-wal -ErrorAction SilentlyContinue
 ```
 
 ---

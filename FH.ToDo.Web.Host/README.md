@@ -79,7 +79,7 @@ protected new IActionResult BadRequest(string message) => ...  ❌
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YuvrajzAlien\\AGAMZMSSQLSERVER;Database=FHToDoDev;..."
+    "DefaultConnection": "Data Source=../FHToDo.db"
   }
 }
 ```
@@ -88,7 +88,7 @@ protected new IActionResult BadRequest(string message) => ...  ❌
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YuvrajzAlien\\AGAMZMSSQLSERVER;Database=FHToDo;..."
+    "DefaultConnection": "Data Source=../FHToDo.db"
   }
 }
 ```
