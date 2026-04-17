@@ -8,11 +8,12 @@ import { MatInput } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TodoTask } from '../models/todo-task.model';
 import { TodoTaskService } from '../services/todo-task.service';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.service';
 
 @Component({
   selector: 'app-todo-form',
-  imports: [FormsModule, MatFormFieldModule, MatInput, MatButtonModule, MatIcon],
+  imports: [FormsModule, MatFormFieldModule, MatInput, MatButtonModule, MatIcon, TrimOnBlurDirective],
   templateUrl: './todo-form.component.html',
   styleUrl: './todo-form.component.scss',
 })

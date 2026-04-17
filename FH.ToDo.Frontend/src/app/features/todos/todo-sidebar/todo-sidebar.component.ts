@@ -11,6 +11,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TodoTaskList } from '../models/todo-task-list.model';
 import { TodoTaskListService } from '../services/todo-task-list.service';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.service';
 
 @Component({
@@ -25,6 +26,7 @@ import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.se
     MatFormFieldModule,
     MatInput,
     MatIcon,
+    TrimOnBlurDirective,
   ],
   templateUrl: './todo-sidebar.component.html',
   styleUrl: './todo-sidebar.component.scss',

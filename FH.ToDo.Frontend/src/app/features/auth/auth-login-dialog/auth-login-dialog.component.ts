@@ -10,6 +10,7 @@ import { MatInput } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthDialogService } from '../../../core/services/auth-dialog.service';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { AuthLoginForm } from '../forms/auth-login.form';
 
 @Component({
@@ -24,6 +25,7 @@ import { AuthLoginForm } from '../forms/auth-login.form';
     MatInput,
     MatIcon,
     MatProgressSpinnerModule,
+    TrimOnBlurDirective,
   ],
 })
 export class AuthLoginDialogComponent {
