@@ -79,7 +79,9 @@ describe('AuthService', () => {
         token: {
           accessToken: 'mock-access-token',
           refreshToken: 'mock-refresh-token',
-          expiresIn: 3600
+          expiresInSeconds: 3600,
+          expiresAt: new Date(Date.now() + 3600000).toISOString(),
+          refreshTokenExpiresAt: new Date(Date.now() + 7 * 24 * 3600000).toISOString()
         }
       };
 
@@ -162,7 +164,13 @@ describe('AuthService', () => {
 
       const mockResponse: AuthLoginResponse = {
         user: { id: '456', email: 'new@example.com', fullName: 'New User', role: 'User' },
-        token: { accessToken: 'new-token', refreshToken: 'new-refresh', expiresIn: 3600 }
+        token: {
+          accessToken: 'new-token',
+          refreshToken: 'new-refresh',
+          expiresInSeconds: 3600,
+          expiresAt: new Date(Date.now() + 3600000).toISOString(),
+          refreshTokenExpiresAt: new Date(Date.now() + 7 * 24 * 3600000).toISOString()
+        }
       };
 
       service.register(registerRequest).subscribe({
