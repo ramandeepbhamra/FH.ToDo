@@ -35,13 +35,45 @@ npm test
 
 ## 🧪 Testing
 
+### Angular 21 Testing Standards ✅
+
+**Framework:** Vitest (Angular 21 default)  
+**Structure:** Co-located tests (`.spec.ts` next to source)  
+**Conventions:** Follows Angular official testing guide
+
+#### ✅ Current Compliance
+
+| Standard | Status | Notes |
+|----------|--------|-------|
+| **Vitest (not Karma/Jasmine)** | ✅ | Angular 21 default |
+| **Co-located test files** | ✅ | `auth.service.spec.ts` next to `auth.service.ts` |
+| **Modern syntax** | ✅ | `vi.fn()` mocks, `provideHttpClient()` |
+| **No deprecated APIs** | ✅ | Fixed: Removed `BrowserDynamicTestingModule` |
+| **Test isolation** | ✅ | `TestBed.resetTestingModule()` between tests |
+| **Proper naming** | ✅ | `{name}.spec.ts` convention |
+
+### File Structure Convention
+
+```
+✅ CORRECT (Co-located):
+src/app/core/services/
+├── auth.service.ts           # Source file
+└── auth.service.spec.ts      # Test file (same folder)
+
+❌ WRONG (Separate folders):
+src/app/core/services/
+├── auth.service.ts
+src/tests/
+└── auth.service.spec.ts      # Don't do this!
+```
+
 ### Setup
 
 Tests use **Vitest** (Angular 21 default test runner).
 
 **Configuration Files:**
 - `vitest.config.ts` - Vitest configuration
-- `src/test-setup.ts` - Angular testing environment initialization
+- `src/test-setup.ts` - Zone.js imports only (no deprecated APIs)
 
 **Dependencies** (auto-installed):
 ```json
@@ -74,17 +106,7 @@ npm test -- auth.service.spec.ts
 npm run test:ui
 ```
 
-### Test File Structure
-
-```
-src/app/core/services/
-├── auth.service.ts
-└── auth.service.spec.ts        ✅ Test file next to source
-
-Test naming: {filename}.spec.ts
-```
-
-### Example Test (Vitest Syntax)
+### Example Test (Angular 21 + Vitest)
 
 ```typescript
 import { TestBed, getTestBed } from '@angular/core/testing';
@@ -94,7 +116,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest';
 import { AuthService } from './auth.service';
 
-// Initialize Angular testing environment ONCE
+// ✅ Initialize Angular testing environment ONCE per test file
 beforeAll(() => {
   getTestBed().initTestEnvironment(
     BrowserDynamicTestingModule,
@@ -106,11 +128,11 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(() => {
-    TestBed.resetTestingModule();  // Reset between tests
+    TestBed.resetTestingModule();  // ✅ Reset between tests
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
+        provideHttpClient(),          // ✅ Angular 21 HTTP provider
+        provideHttpClientTesting(),   // ✅ Angular 21 testing provider
         AuthService
       ]
     });
@@ -125,41 +147,35 @@ describe('AuthService', () => {
 
 ### Key Testing Patterns
 
-**Mocking with Vitest:**
+**Mocking with Vitest (not Jasmine):**
 ```typescript
-// Create mock
+// ✅ CORRECT (Vitest)
 const mockService = {
   method: vi.fn()
 };
-
-// Set return value
 vi.mocked(mockService.method).mockReturnValue('value');
 
-// Verify calls
-expect(mockService.method).toHaveBeenCalled();
-expect(mockService.method).toHaveBeenCalledWith('arg');
+// ❌ WRONG (Jasmine - deprecated)
+const mockService = jasmine.createSpyObj('Service', ['method']);
+mockService.method.and.returnValue('value');
 ```
 
-**HTTP Testing:**
+**HTTP Testing (Angular 21):**
 ```typescript
-import { HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
-let httpMock: HttpTestingController;
-
-beforeEach(() => {
-  httpMock = TestBed.inject(HttpTestingController);
+// ✅ CORRECT (Angular 21)
+TestBed.configureTestingModule({
+  providers: [
+    provideHttpClient(),
+    provideHttpClientTesting()
+  ]
 });
 
-afterEach(() => {
-  httpMock.verify();  // Ensure no pending requests
-});
-
-it('should make HTTP request', () => {
-  service.getData().subscribe();
-  
-  const req = httpMock.expectOne('/api/endpoint');
-  expect(req.request.method).toBe('GET');
-  req.flush({ data: 'response' });
+// ❌ WRONG (Old Angular)
+TestBed.configureTestingModule({
+  imports: [HttpClientTestingModule]
 });
 ```
 
