@@ -2,6 +2,10 @@
   <Project Path="FH.ToDo.Core.EF/FH.ToDo.Core.EF.csproj" />
   <Project Path="FH.ToDo.Core.Shared/FH.ToDo.Core.Shared.csproj" />
   <Project Path="FH.ToDo.Core/FH.ToDo.Core.csproj" />
+  <Project Path="FH.ToDo.Frontend/FH.ToDo.Frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
   <Project Path="FH.ToDo.Services.Core/FH.ToDo.Services.Core.csproj" Id="237ab9ed-eb8b-4795-bd8c-fa6d984ce9c0" />
   <Project Path="FH.ToDo.Services/FH.ToDo.Services.csproj" Id="67ef460b-14de-47ae-9747-5cfcb8ba1a06" />
   <Project Path="FH.ToDo.Tests/FH.ToDo.Tests.csproj" />

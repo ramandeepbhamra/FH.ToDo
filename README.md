@@ -378,6 +378,19 @@ Press `F5`. Navigate to:
 - Scalar UI: `http://localhost:5214/scalar/v1`
 - Swagger UI: `http://localhost:5214/swagger`
 
+**4 — Test the API quickly**
+
+**Option A: Use the .http file** (Recommended for Visual Studio):
+- Open `FH.ToDo.http` in the solution root
+- Click "Send Request" above any endpoint
+- Variables auto-populate between requests (login token, created IDs, etc.)
+
+**Option B: Use Swagger UI**:
+- Navigate to `http://localhost:5214/swagger`
+- Authenticate using "Authorize" button with JWT token
+
+> **💡 Tip:** The `.http` file includes all endpoints with sample data and is the fastest way to test the API!
+
 ---
 
 ### Frontend Setup
@@ -710,11 +723,23 @@ Remove-Item FHToDo.db-shm, FHToDo.db-wal -ErrorAction SilentlyContinue
 
 ## 📖 Further Reading
 
+### Project Documentation
 - [FH.ToDo.Core README](FH.ToDo.Core/README.md) - Domain layer details
 - [FH.ToDo.Core.EF README](FH.ToDo.Core.EF/README.md) - Infrastructure details
 - [FH.ToDo.Web.Host README](FH.ToDo.Web.Host/README.md) - API documentation
+- [FH.ToDo.Tests README](FH.ToDo.Tests/README.md) - Testing guide and runbook
+- [FH.ToDo.Frontend README](FH.ToDo.Frontend/README.md) - Angular SPA documentation
+
+### API Testing
+- **[FH.ToDo.http](FH.ToDo.http)** - HTTP request collection for quick API testing
+  - All endpoints with sample payloads
+  - Works in Visual Studio 2022, VS Code (REST Client), and Rider
+  - Variables auto-populate (tokens, IDs)
+
+### External Resources
 - [Microsoft Docs - Clean Architecture](https://learn.microsoft.com/dotnet/architecture/)
 - [Mapperly Documentation](https://github.com/riok/mapperly)
+- [ASP.NET Core Testing](https://learn.microsoft.com/aspnet/core/test/)
 
 ---
 
