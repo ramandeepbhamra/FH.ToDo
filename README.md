@@ -1,7 +1,17 @@
 # FH.ToDo - Task Management Application
 
 ## 📋 Overview
-A production-grade ToDo/Task Management application built with **ASP.NET Core 10**, **Entity Framework Core**, and **Clean Architecture** principles using **Generic Repository Pattern** with **Query Builder Services**. This solution demonstrates professional software development practices including domain-driven design, separation of concerns, and modern .NET 10 patterns.
+A production-grade ToDo/Task Management application built with **ASP.NET Core 10**, **Entity Framework Core**, and **Clean Architecture** principles using **Generic Repository Pattern** with **Query Builder Services**. This solution demonstrates professional software development practices including domain-driven design, separation of concerns, modern .NET 10 patterns, and **dialog-based authentication** with **session idle timeout management**.
+
+### Key Features
+- ✅ **Dialog-based authentication** — no route-based auth pages
+- ✅ **Session idle timeout** with countdown warning dialog
+- ✅ **Health check** on app startup with API reachability verification
+- ✅ **Profile management** — users can edit their own FirstName, LastName, PhoneNumber
+- ✅ **User management** with system user protection and exclusion filters
+- ✅ **Data seeding** — 40 users (10 per role) with configurable system users
+- ✅ **Public dashboard** — unauthenticated users can view dashboard, login when needed
+- ✅ **Swagger UI auto-authorization** — JWT token automatically loaded from Angular app (no manual entry needed)
 
 ---
 
@@ -193,9 +203,13 @@ public class UserServices : IUserService
 
 **Contents:**
 - ✅ `AuthController` — login + self-registration (JWT)
+- ✅ `ConfigController` — public config endpoint (`GET /api/config`) for session settings
+- ✅ `ProfileController` — authenticated user profile management (`GET/PUT /api/profile`)
 - ✅ `UsersController` — full CRUD
+- ✅ Health check endpoint: `GET /health` (database connectivity check)
 - ✅ DI registration in Program.cs
 - ✅ OpenAPI/Swagger + Scalar configuration
+- ✅ Session configuration: `Session:IdleTimeoutMinutes`, `Session:WarningCountdownSeconds`
 
 **DI Registration Pattern:**
 ```csharp
@@ -207,6 +221,10 @@ builder.Services.AddSingleton<UserMapper>();
 
 // Application services
 builder.Services.AddScoped<IUserService, UserServices>();
+
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ToDoDbContext>("database");
 ```
 
 📖 [View FH.ToDo.Web.Host README](FH.ToDo.Web.Host/README.md)
@@ -214,33 +232,54 @@ builder.Services.AddScoped<IUserService, UserServices>();
 ---
 
 ### FH.ToDo.Frontend (Angular SPA)
-**Angular 19 single-page application**
+**Angular 19 single-page application with dialog-based authentication and session management**
 
-**Stack:** Angular 19, Angular Material, TypeScript (strict), SCSS
+**Stack:** Angular 19, Angular Material, TypeScript (strict), SCSS, @ng-idle/core
 
 **Structure:**
 ```
 src/app/
-├── core/            # Guards, interceptors, app-wide services
-├── features/        # Feature modules (auth, todos, users, dashboard, devtools)
-│   └── {feature}/
-│       ├── {feature}-{component}/    # One folder per component
-│       │   ├── *.component.ts        # templateUrl + styleUrl — no inline
-│       │   ├── *.component.html
-│       │   └── *.component.scss
-│       ├── forms/                    # Typed FormGroup interfaces only
-│       ├── models/                   # API contracts — one interface per file
-│       └── services/                 # Feature-scoped HTTP services
-├── layout/          # App shell (app-layout with navigation + theme sidenav)
-└── shared/          # Cross-feature components, directives, models
+├── core/
+│   ├── guards/          # auth.guard.ts
+│   ├── interceptors/    # auth.interceptor.ts (JWT attachment + 401 handling)
+│   ├── services/        # auth.service.ts, auth-dialog.service.ts, idle.service.ts, config.service.ts
+│   ├── directives/      # trim-on-blur.directive.ts
+│   ├── initializers/    # app.initializer.ts (health check + config load)
+│   ├── validators/      # password-match.validator.ts, no-whitespace.validator.ts
+│   └── models/          # app-config.model.ts
+├── features/
+│   ├── auth/
+│   │   ├── auth-login-dialog/        # Login dialog (lazy-loaded)
+│   │   ├── auth-register-dialog/     # Register dialog (lazy-loaded)
+│   │   ├── forms/                    # AuthLoginForm, AuthRegisterForm interfaces
+│   │   └── models/                   # AuthLoginRequest, AuthRegisterRequest, AuthUser
+│   ├── profile/
+│   │   ├── user-profile-dialog/      # Edit own profile (lazy-loaded)
+│   │   ├── forms/                    # UserProfileForm
+│   │   └── models/                   # UpdateProfileRequest
+│   ├── todos/            # Task management feature
+│   ├── users/            # User management feature
+│   ├── dashboard/        # Public landing page (hero, features, pricing)
+│   └── devtools/         # Material component showcase
+├── layout/               # App shell (navigation + theme sidenav)
+└── shared/
+    ├── components/
+    │   ├── app-navigation/           # Top nav (Sign in/Register when unauthenticated)
+    │   ├── session-warning-dialog/   # Idle timeout warning with countdown
+    │   └── health-check-dialog/      # Non-dismissable dialog when API unreachable
+    ├── directives/
+    └── models/
 ```
 
 **Conventions:**
+- **Dialog-based auth:** No `/auth/login` or `/auth/register` routes — use `AuthDialogService.openLogin()`
+- **Session management:** Idle timeout via abstract `IdleService` (concrete: `NgIdleService`)
+- **App initialization:** Health check + config load before Angular bootstrap
+- **Profile management:** Edit own FirstName, LastName, PhoneNumber via lazy-loaded dialog
+- **TrimOnBlurDirective:** Auto-trim whitespace on FirstName/LastName fields
 - File naming: `{feature}-{entity}-{operation}` — e.g. `todo-task-create-request.model.ts`
-- Form files contain the `FormGroup<T>` **interface only** — form is instantiated in the component
-- Error access: `form.controls.x.errors?.['required']` — bracket notation required (strict templates)
-- Auth models: `AuthLoginRequest`, `AuthRegisterRequest`, `AuthTokenInfo`, etc. — all in `features/auth/models/`
-- Task models: `TodoTask`, `TodoTaskList`, `TodoSubTask`, etc. — all in `features/todos/models/`
+- Form files: Interface only (no factories) — `FormGroup<T>` instantiated in component
+- Error access: `form.controls.x.errors?.['required']` — bracket notation required
 
 📖 [View FH.ToDo.Frontend README](FH.ToDo.Frontend/README.md)
 
