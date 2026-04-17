@@ -19,33 +19,55 @@ FH.ToDo.Core.Shared (Shared)
 ### Project Structure
 ```
 FH.ToDo.Web.Host/
-├── Controllers/          # API endpoints (to be added)
-├── DTOs/                # Data Transfer Objects (to be added)
-├── Mapping/             # AutoMapper profiles (to be added)
-├── appsettings.json     # Configuration
+├── Controllers/
+│   ├── AuthController.cs         # Login, register, refresh, revoke
+│   ├── ConfigController.cs       # Public config endpoint (session settings)
+│   ├── ProfileController.cs      # Authenticated user's own profile management
+│   ├── UsersController.cs        # User CRUD (Admin only)
+│   ├── TaskListsController.cs    # Task list CRUD
+│   ├── TodoTasksController.cs    # Task CRUD + subtasks
+│   └── SubTasksController.cs     # Subtask operations
+├── Models/
+│   ├── AppConfigResponse.cs      # Public configuration DTO
+│   └── ... (other response models)
+├── appsettings.json
 ├── appsettings.Development.json
-├── Program.cs           # Application entry point
-└── README.md
+└── Program.cs
 ```
 
 ---
 
-## 🎯 Current Status
+## 🔐 Authentication & Authorization
 
-### ✅ Completed
-- Project structure created
-- References to Core and Core.EF configured
-- Connection strings configured
-- EF Core Design package added (for migrations support)
+### JWT Bearer
+- `MapInboundClaims = false` is set so claim names exactly match what was issued (no WS-Federation remapping)
+- Claims are read directly by name from the token
 
-### 🚧 To Be Implemented
-- [ ] Register DbContext in DI container
-- [ ] Create controllers (Users, Tasks, etc.)
-- [ ] Add DTOs and AutoMapper
-- [ ] Add authentication/authorization
-- [ ] Add Swagger documentation
-- [ ] Add logging and error handling
-- [ ] Add validation middleware
+### AuthController Conventions
+- `[AllowAnonymous]` is applied **per method** (Login, Register, Refresh) — **never** at the class level when the controller also has `[Authorize]` actions
+- `Revoke` requires `[Authorize]` — a valid access token must be presented
+- Applying `[AllowAnonymous]` at the class level overrides any `[Authorize]` on individual methods (ASP0026)
+
+### ConfigController
+- Marked `[AllowAnonymous]` — configuration must be accessible before authentication
+- Serves public app configuration to Angular client: `GET /api/config`
+- Returns `AppConfigResponse` with `IdleTimeoutMinutes` and `WarningCountdownSeconds`
+
+### ProfileController
+- Marked `[Authorize]` — requires authentication
+- `GET /api/profile` — returns current user's profile (`CurrentUserId` from `ApiControllerBase`)
+- `PUT /api/profile` — updates FirstName, LastName, PhoneNumber only (uses `UpdateProfileDto`)
+- Users can only edit their own profile — role changes require `UsersController` (Admin only)
+
+### ApiControllerBase Helpers
+`BadRequest(string)`, `NotFound(string)`, and `Unauthorized(string)` are overloads (not hiders) — no `new` keyword:
+```csharp
+// Correct — overload, different param type (string vs object)
+protected IActionResult BadRequest(string message) => StatusCode(400, ...);
+
+// Wrong — new keyword not needed, different signature doesn't hide base
+protected new IActionResult BadRequest(string message) => ...  ❌
+```
 
 ---
 
@@ -57,7 +79,7 @@ FH.ToDo.Web.Host/
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YuvrajzAlien\\AGAMZMSSQLSERVER;Database=FHToDo_Dev;..."
+    "DefaultConnection": "Data Source=../FHToDo.db"
   }
 }
 ```
@@ -66,10 +88,43 @@ FH.ToDo.Web.Host/
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YuvrajzAlien\\AGAMZMSSQLSERVER;Database=FHToDo;..."
+    "DefaultConnection": "Data Source=../FHToDo.db"
   }
 }
 ```
+
+### Session Settings
+
+Session idle timeout and warning countdown configured in `appsettings.json`:
+
+```json
+{
+  "Session": {
+    "IdleTimeoutMinutes": 15,
+    "WarningCountdownSeconds": 30
+  }
+}
+```
+
+- `IdleTimeoutMinutes`: Idle time before showing warning dialog (default: 15)
+- `WarningCountdownSeconds`: Countdown duration before automatic logout (default: 30)
+
+Settings served to Angular client via `GET /api/config` endpoint (`ConfigController`).
+
+### Health Checks
+
+Health check endpoint configured in `Program.cs`:
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ToDoDbContext>("database");
+
+app.MapHealthChecks("/health");
+```
+
+- Endpoint: `GET /health`
+- Checks database connectivity via `DbContext`
+- Used by Angular app initializer to verify API availability on startup
 
 ---
 

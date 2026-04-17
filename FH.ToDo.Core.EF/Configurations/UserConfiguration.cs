@@ -1,4 +1,5 @@
 using FH.ToDo.Core.Entities.Users;
+using FH.ToDo.Core.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,12 +20,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Id)
             .ValueGeneratedOnAdd();
 
-        // Audit Fields - SQL Defaults
-        builder.Property(u => u.CreatedDate)
-            .HasDefaultValueSql("GETUTCDATE()");
-
+        // Default Values (CreatedDate handled by DbContext.SaveChangesAsync)
         builder.Property(u => u.IsActive)
             .HasDefaultValue(true);
+
+        builder.Property(u => u.IsSystemUser)
+            .HasDefaultValue(false);
 
         builder.Property(u => u.IsDeleted)
             .HasDefaultValue(false);
@@ -41,6 +42,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(u => new { u.FirstName, u.LastName })
             .HasDatabaseName("IX_Users_FullName");
+
+        builder.HasIndex(u => u.Role)
+            .HasDatabaseName("IX_Users_Role");
+
+        // Role Configuration - Stored as INT with default value
+        builder.Property(u => u.Role)
+            .HasDefaultValue(UserRole.Basic);
 
         // Query Filter for Soft Delete
         builder.HasQueryFilter(u => !u.IsDeleted);

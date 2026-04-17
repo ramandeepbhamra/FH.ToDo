@@ -1,0 +1,20 @@
+<mat-drawer-container>
+  <mat-drawer
+    class="sidebar"
+    [(opened)]="drawerOpen"
+    [mode]="drawerMode()"
+  >
+    <app-todo-sidebar
+      [taskLists]="taskLists()"
+      (listCreated)="onListCreated($event)"
+      (listDeleted)="onListDeleted($event)"
+      (listRenamed)="onListRenamed($event)"
+    />
+  </mat-drawer>
+
+  <mat-drawer-content class="ml-[220px]">
+    <div class="p-6">
+      <router-outlet />
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

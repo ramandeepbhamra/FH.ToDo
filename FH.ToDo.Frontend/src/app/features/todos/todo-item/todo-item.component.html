@@ -1,0 +1,75 @@
+<div class="task-row">
+  <mat-checkbox
+    [checked]="task().isCompleted"
+    (change)="toggleComplete()"
+  />
+
+  @if (!isEditing()) {
+    <span
+      class="task-title"
+      [class.completed]="task().isCompleted"
+      (dblclick)="startEdit()"
+    >
+      {{ task().title }}
+    </span>
+
+    @if (task().dueDate) {
+      <span class="due-date" [class.overdue]="isDueDateOverdue">
+        {{ task().dueDate }}
+      </span>
+    }
+  } @else {
+    <mat-form-field appearance="outline" style="flex:1; margin-bottom:-1.25em">
+      <input
+        matInput
+        [value]="editTitle()"
+        (input)="editTitle.set($any($event.target).value)"
+        (keyup.enter)="saveEdit()"
+        (keyup.escape)="cancelEdit()"
+        autofocus
+      />
+    </mat-form-field>
+    <button mat-icon-button (click)="saveEdit()"><mat-icon>check</mat-icon></button>
+    <button mat-icon-button (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
+  }
+
+  <button mat-icon-button (click)="toggleFavourite()">
+    <mat-icon>{{ task().isFavourite ? 'star' : 'star_border' }}</mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="showSubTasks.set(!showSubTasks())">
+    <mat-icon>{{ showSubTasks() ? 'expand_less' : 'chevron_right' }}</mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="delete()">
+    <mat-icon>delete_outline</mat-icon>
+  </button>
+</div>
+
+@if (showSubTasks()) {
+  <div class="subtasks">
+    @for (sub of task().subTasks; track sub.id) {
+      <div class="subtask-row">
+        <mat-checkbox
+          [checked]="sub.isCompleted"
+          (change)="toggleSubTaskComplete(sub.id)"
+        />
+        <span class="subtask-title" [class.completed]="sub.isCompleted">{{ sub.title }}</span>
+        <button mat-icon-button (click)="deleteSubTask(sub.id)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <mat-form-field appearance="outline" class="w-full" style="margin-top:4px">
+      <mat-label>Add subtask</mat-label>
+      <input
+        matInput
+        [value]="newSubTaskTitle()"
+        (input)="newSubTaskTitle.set($any($event.target).value)"
+        (keyup.enter)="addSubTask()"
+        placeholder="Press Enter to add"
+      />
+    </mat-form-field>
+  </div>
+}

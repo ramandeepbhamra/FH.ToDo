@@ -15,9 +15,12 @@ public class ToDoDbContextFactory : IDesignTimeDbContextFactory<ToDoDbContext>
 {
     public ToDoDbContext CreateDbContext(string[] args)
     {
+        // For design-time, look for appsettings in the Web.Host project
+        var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "FH.ToDo.Web.Host");
+
         // Build configuration
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"}.json", optional: true)
             .AddEnvironmentVariables()
@@ -27,18 +30,10 @@ public class ToDoDbContextFactory : IDesignTimeDbContextFactory<ToDoDbContext>
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        // Create DbContext options
+        // Create DbContext options for SQLite
         var optionsBuilder = new DbContextOptionsBuilder<ToDoDbContext>();
-        
-        optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
-                errorNumbersToAdd: null);
-            sqlOptions.CommandTimeout(60);
-            sqlOptions.MigrationsAssembly(typeof(ToDoDbContext).Assembly.FullName);
-        });
+
+        optionsBuilder.UseSqlite(connectionString);
 
         // Enable sensitive data logging in development
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")

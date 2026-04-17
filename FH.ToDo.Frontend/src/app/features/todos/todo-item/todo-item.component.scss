@@ -1,0 +1,48 @@
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--primary-light);
+}
+
+.task-title {
+  flex: 1;
+  cursor: pointer;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.due-date {
+  font-size: 0.75rem;
+  color: var(--primary-dark);
+}
+
+.due-date.overdue {
+  color: var(--error);
+}
+
+.subtasks {
+  margin-left: 40px;
+  padding-bottom: 4px;
+}
+
+.subtask-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.subtask-title {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.subtask-title.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
