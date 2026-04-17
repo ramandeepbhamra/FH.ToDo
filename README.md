@@ -874,20 +874,36 @@ dotnet ef database update
 
 ## 🧪 Testing
 
-### Running Tests (when implemented)
+### Running Tests
+
 ```bash
 dotnet test
 ```
 
-### Test Projects Structure
+**Current Test Coverage:**
+- ✅ **AuthenticationService** - Password hashing and verification (3 tests)
+  - Correct password validation
+  - Incorrect password rejection
+  - Hash generation and validation
+
+**Test Results:**
+```
+✅ 3 Tests Passed | 0 Failed
+```
+
+### Test Project Structure
 ```
 FH.ToDo.Tests/
-├── Unit/
-│   ├── Core.Tests/
-│   └── Core.EF.Tests/
-└── Integration/
-    └── Web.Host.Tests/
+├── Services/
+│   └── AuthenticationServiceSimpleTests.cs
+├── Controllers/                         (To be added)
+└── FH.ToDo.Tests.csproj
 ```
+
+**Testing Stack:**
+- **Framework:** xUnit 2.9.2
+- **Mocking:** Moq 4.20.72
+- **Assertions:** FluentAssertions 7.0.0
 
 ---
 
