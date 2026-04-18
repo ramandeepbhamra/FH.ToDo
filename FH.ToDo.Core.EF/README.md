@@ -1,222 +1,89 @@
-# FH.ToDo.Core.EF - Entity Framework Core Infrastructure
+# FH.ToDo.Core.EF — Infrastructure Layer
 
-## 📋 Overview
-This is the **Infrastructure Layer** for Entity Framework Core. It contains DbContext, entity configurations (Fluent API), and database migrations. This project serves as the **single source of truth** for database schema.
-
-> **Key Principle**: Infrastructure depends on Domain, never the reverse. This project references `FH.ToDo.Core` but Core does NOT reference this.
+EF Core infrastructure: DbContext, Fluent API configurations, repository implementation, and migrations.
 
 ---
 
-## 🏗️ Architecture
+## What Lives Here
 
-### Clean Architecture Position
-```
-FH.ToDo.Web.Host (Presentation)
-    ↓ references
-FH.ToDo.Core (Domain) ← Pure, no dependencies
-    ↑ referenced by
-FH.ToDo.Core.EF (Infrastructure - YOU ARE HERE)
-```
-
-### Project Structure
 ```
 FH.ToDo.Core.EF/
-├── Configurations/
-│   └── UserConfiguration.cs       # Fluent API for User entity
+├── Configurations/           IEntityTypeConfiguration<T> per entity
 ├── Context/
-│   └── ToDoDbContext.cs          # Main DbContext
+│   └── ToDoDbContext.cs      DbContext with audit tracking + soft delete
 ├── Factories/
-│   └── ToDoDbContextFactory.cs   # Design-time factory for migrations
-├── Migrations/
-│   ├── 20260410013210_AddingUserEntity.cs
-│   ├── 20260410013210_AddingUserEntity.Designer.cs
-│   └── ToDoDbContextModelSnapshot.cs
-├── appsettings.json              # Connection strings for migrations
-├── appsettings.Development.json
-├── FH.ToDo.Core.EF.csproj
-└── README.md
+│   └── ToDoDbContextFactory.cs  Design-time factory for migrations
+├── Migrations/               Auto-generated EF migrations
+└── Repositories/
+    └── Repository.cs         Generic IRepository<T,K> implementation
 ```
 
 ---
 
-## 🎯 Key Components
+## ToDoDbContext
 
-### 1. ToDoDbContext
-**Location**: `Context/ToDoDbContext.cs`
+Overrides `SaveChangesAsync()` to:
+1. Auto-populate `CreatedDate`, `CreatedBy` on insert
+2. Auto-populate `ModifiedDate`, `ModifiedBy` on update
+3. Convert deletes into soft deletes (`IsDeleted = true`, `DeletedDate`, `DeletedBy`)
 
-Main database context with:
-- ✅ **DbSets** for all entities
-- ✅ **Automatic audit tracking** via SaveChanges override
-- ✅ **Automatic soft delete** handling
-- ✅ **Configuration discovery** via assembly scanning
+---
 
-**Features**:
-```csharp
-// Automatically sets CreatedDate, ModifiedDate
-public override async Task<int> SaveChangesAsync(...)
-{
-    SetAuditFields();
-    return await base.SaveChangesAsync(...);
-}
+## Fluent API Rules
 
-// Converts DELETE into UPDATE (soft delete)
-// Sets IsDeleted = true, DeletedDate = now
+All schema configuration belongs here — not on entity classes.
+
+| Use Fluent API for | Reason |
+|---|---|
+| Indexes (`HasIndex`) | No annotation equivalent |
+| Unique constraints | No annotation equivalent |
+| SQL defaults (`HasDefaultValueSql`) | No annotation equivalent |
+| Cascade delete (`OnDelete`) | No annotation equivalent |
+| Soft delete filter (`HasQueryFilter`) | No annotation equivalent |
+| Relationships (`HasOne`, `WithMany`) | Explicit control |
+
+**Never duplicate** in Fluent API what a `[Required]` or `[MaxLength]` annotation already declares on the entity.
+
+---
+
+## Working with Migrations
+
+```bash
+# Add a migration (run from solution root)
+dotnet ef migrations add <Name> \
+  --project FH.ToDo.Core.EF \
+  --startup-project FH.ToDo.Web.Host
+
+# Migrations apply automatically on startup via MigrateAsync()
+# Manual apply (fallback only):
+dotnet ef database update \
+  --project FH.ToDo.Core.EF \
+  --startup-project FH.ToDo.Web.Host
+
+# Rollback
+dotnet ef database update <PreviousMigrationName> \
+  --project FH.ToDo.Core.EF \
+  --startup-project FH.ToDo.Web.Host
+
+# Remove last migration
+dotnet ef migrations remove \
+  --project FH.ToDo.Core.EF \
+  --startup-project FH.ToDo.Web.Host
+
+# List migrations
+dotnet ef migrations list \
+  --project FH.ToDo.Core.EF \
+  --startup-project FH.ToDo.Web.Host
 ```
 
 ---
 
-### 2. Entity Configurations (Fluent API)
+## Adding a New Entity Config
 
-**Purpose**: Define database-specific features that annotations can't handle.
-
-**Ownership rule — what goes where:**
-
-| Concern | Owner | Why |
-|---|---|---|
-| `NOT NULL` | `[Required]` on entity | EF reads the annotation automatically |
-| Column max length | `[MaxLength(n)]` on entity | EF reads the annotation automatically |
-| Indexes | Fluent API `HasIndex()` | No annotation equivalent |
-| SQL defaults | Fluent API `HasDefaultValueSql()` | No annotation equivalent |
-| Cascade delete | Fluent API `OnDelete()` | No annotation equivalent |
-| Query filters | Fluent API `HasQueryFilter()` | No annotation equivalent |
-| Soft-delete filter | Fluent API `HasQueryFilter(e => !e.IsDeleted)` | No annotation equivalent |
-
-**Never duplicate in Fluent API what an annotation already declares:**
-```csharp
-// ❌ Wrong — [Required] on entity already makes this NOT NULL
-builder.Property(u => u.Title).IsRequired().HasMaxLength(200);
-
-// ✅ Correct — annotation handles schema, Fluent API handles what annotations can't
-builder.HasIndex(u => u.Email).IsUnique().HasDatabaseName("IX_Users_Email");
-builder.Property(u => u.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
-builder.HasQueryFilter(u => !u.IsDeleted);
-```
-
-**What's Configured**:
-- ✅ **Indexes** (unique, composite)
-- ✅ **SQL defaults** (`GETUTCDATE()`)
-- ✅ **Query filters** (soft delete)
-- ✅ **Relationships** (foreign keys, cascade rules)
-
----
-
-## 🗄️ Database Schema
-
-### Users Table
-
-| Column | Type | Constraints | Default |
-|--------|------|-------------|---------|
-| **Id** | UNIQUEIDENTIFIER | PRIMARY KEY | NewGuid() |
-| **Email** | NVARCHAR(256) | NOT NULL, UNIQUE | - |
-| FirstName | NVARCHAR(100) | NOT NULL | - |
-| LastName | NVARCHAR(100) | NOT NULL | - |
-| PhoneNumber | NVARCHAR(20) | NULL | - |
-| IsActive | BIT | NOT NULL | 1 |
-| **CreatedDate** | DATETIME2 | NOT NULL | GETUTCDATE() |
-| CreatedBy | NVARCHAR(256) | NULL | - |
-| ModifiedDate | DATETIME2 | NULL | - |
-| ModifiedBy | NVARCHAR(256) | NULL | - |
-| **IsDeleted** | BIT | NOT NULL | 0 |
-| DeletedDate | DATETIME2 | NULL | - |
-| DeletedBy | NVARCHAR(256) | NULL | - |
-
-### Indexes
-- `IX_Users_Email` (UNIQUE) - Fast email lookups
-- `IX_Users_FullName` (FirstName, LastName) - Fast name searches
-- `IX_Users_IsDeleted` - Optimizes soft delete queries
-
----
-
-## 🚀 Working with Migrations
-
-### Create a Migration
-
-**Using dotnet CLI** (Recommended):
-```powershell
-cd C:\Projects\FunctionHealth\FH.ToDo\FH.ToDo.Core.EF
-dotnet ef migrations add <MigrationName>
-```
-
-**Using Package Manager Console**:
-```powershell
-# Set Default project: FH.ToDo.Core.EF
-# Set Startup project: FH.ToDo.Web.Host
-Add-Migration <MigrationName>
-```
-
-### Apply Migration to Database
-
-```powershell
-dotnet ef database update
-```
-
-### Rollback Migration
-```powershell
-dotnet ef database update <PreviousMigrationName>
-```
-
-### Remove Last Migration
-```powershell
-dotnet ef migrations remove
-```
-
-### List All Migrations
-```powershell
-dotnet ef migrations list
-```
-
----
-
-## 📦 Dependencies
-
-### NuGet Packages
-- Microsoft.EntityFrameworkCore (10.0.5)
-- Microsoft.EntityFrameworkCore.SqlServer (10.0.5)
-- Microsoft.EntityFrameworkCore.Design (10.0.5)
-- Microsoft.EntityFrameworkCore.Tools (10.0.5)
-
-### Project References
-- FH.ToDo.Core
-
----
-
-## 🛡️ Production Features
-
-### Connection Resiliency
-- Automatic retry on transient failures
-- Configurable retry count and delay
-
-### Audit Tracking
-- `CreatedDate` set on insert
-- `ModifiedDate` set on update
-- Automatic via SaveChanges override
-
-### Soft Delete
-- DELETE converted to UPDATE
-- `IsDeleted = true`
-- Query filter excludes soft-deleted records
-
----
-
-## 🔄 Adding a New Entity
-
-1. **Create entity** in `FH.ToDo.Core`
-2. **Create configuration** in `Configurations/`
-3. **Add DbSet** to `ToDoDbContext`
-4. **Create migration**: `dotnet ef migrations add AddNewEntity`
-5. **Apply migration**: `dotnet ef database update`
-
----
-
-## ✅ Summary
-
-This project provides:
-- ✅ Production-grade EF Core infrastructure
-- ✅ Clean separation from domain layer
-- ✅ Automatic audit tracking and soft delete
-- ✅ Full database control via Fluent API
-- ✅ DBA-grade design with proper indexes
-
-**Version**: 1.0  
-**Target Framework**: .NET 10  
-**Database**: SQL Server
+1. Create `Configurations/{Entity}Configuration.cs` implementing `IEntityTypeConfiguration<T>`
+2. Register in `ToDoDbContext.OnModelCreating()`:
+   ```csharp
+   modelBuilder.ApplyConfiguration(new MyEntityConfiguration());
+   ```
+3. Add `DbSet<T>` to `ToDoDbContext`
+4. Run `dotnet ef migrations add Add{Entity}`

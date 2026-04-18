@@ -1,75 +1,210 @@
-# Copilot Instructions
+# GitHub Copilot Instructions — FH.ToDo
 
-## General Guidelines
-- Confirm all changes with the user before applying them.
-- Do not create new markdown files — **exception: `README.md` at the repo root is permitted and must be kept up to date**.
+You are an AI pair programmer on the FH.ToDo project. Read this file in full before suggesting any code. These instructions override your defaults — follow them exactly.
 
-## Project Guidelines
+---
 
-### Authentication Architecture
-- **Dialog-based authentication** — no route-based `/auth/login` or `/auth/register` pages.
-- Use `AuthDialogService.openLogin()` and `AuthDialogService.openRegister()` to show auth modals.
-- Dashboard route (`/`) is **public** — unauthenticated users can view it; login dialog shown when needed.
-- Auth dialogs are lazy-loaded via dynamic imports.
+## Project at a Glance
 
-### Session Management
-- Session idle timeout implemented using `@ng-idle/core` wrapped by abstract `IdleService`.
-- Configuration loaded from backend via `GET /api/config` during app initialization.
-- `SessionWarningDialogComponent` displays live countdown before logout.
-- Health check runs on app startup; `HealthCheckDialogComponent` shown if API unreachable.
+FH.ToDo is a full-stack task management app:
+- **Backend:** .NET 10, ASP.NET Core, EF Core 10, SQLite, Serilog, Mapperly, JWT + BCrypt
+- **Frontend:** Angular 21 standalone components, Angular Material, Tailwind CSS (layout only)
+- **Testing:** xUnit + Moq + FluentAssertions (BE unit), Reqnroll BDD (BE integration), Playwright (E2E), Vitest (FE unit)
 
-### Profile Management
-- Authenticated users can edit their own profile (FirstName, LastName, PhoneNumber) via profile dialog.
-- Profile dialog accessed by clicking username in navigation, lazy-loaded on demand.
-- Backend endpoint: `PUT /api/profile` using `UpdateProfileDto`.
+Deep context files:
+- `.ai/context/project-overview.md` — what the app does and who uses it
+- `.ai/context/architecture.md` — layer diagram, entity design, routing, state management
+- `.ai/context/coding-standards.md` — naming, patterns, forbidden practices
+- `.ai/agents/backend-architect.md` — authoritative .NET patterns
+- `.ai/agents/frontend-architect.md` — authoritative Angular patterns
+- `.ai/agents/qa-engineer.md` — test patterns for all 4 layers
 
-### Directives
-- `TrimOnBlurDirective` trims whitespace from text inputs on blur event.
-- Applied to FirstName/LastName fields: `<input trimOnBlur .../>`
+---
 
-### Types
-- All types (interfaces, classes, enums, DTOs) must be defined in separate files — one type per file — on both backend and frontend. This rule applies to ALL type declarations, including nested static classes, nested enums, and nested interfaces. Use C# partial classes to split nested types across files while preserving the outer class name.
+## Backend Rules (Non-Negotiable)
 
-### Angular Components
-- Every component lives in its own folder named after the component: `auth-login-dialog/`.
-- All files inside that folder are prefixed with the full component name: `auth-login-dialog.component.ts`, `auth-login-dialog.component.html`, `auth-login-dialog.component.scss`.
-- **Dialog components** follow same structure: `{feature}-{name}-dialog/` folder.
-- No inline `template:` or `styles:` — always separate `.html` and `.scss` files via `templateUrl` and `styleUrl`.
-- Existing components with inline templates are migrated in a dedicated refactor pass — do not change them as part of feature work.
+### Layers
+```
+Web.Host → Web.Core → Services → Services.Core → Core.EF → Core → Core.Shared
+```
+Inner layers never reference outer layers. `Core` has zero external dependencies.
 
-### Angular File Naming
-- Convention: `{feature}-{component}.{type}.ts` — e.g. `auth-login.component.ts`, `todo-task.model.ts`, `auth-login.form.ts`.
-- Model naming for request/response DTOs: `{feature}-{entity}-{operation}-request.model.ts` — e.g. `todo-task-create-request.model.ts`.
+### Entities
+- Always extend `BaseEntity<Guid>`
+- Soft delete only — never hard delete. `IsDeleted` is filtered via global query filter
+- Use `DateOnly` for date-only fields — never `DateTime`
+- Audit fields (`CreatedBy`, `ModifiedBy`, etc.) are auto-set by `ToDoDbContext.SaveChangesAsync()`
 
-### Angular Folder Structure (per feature)features/{feature}/
-  {feature}-{component}/          ← one folder per component
-    {feature}-{component}.component.ts
-    {feature}-{component}.component.html
-    {feature}-{component}.component.scss
-  forms/                          ← typed FormGroup schemas + factories
-    {feature}-{entity}.form.ts
-  models/                         ← API contracts, entity interfaces
-    {feature}-{entity}.model.ts
-    {feature}-{entity}-{operation}-request.model.ts
-  services/
-    {feature}-{entity}.service.ts
-  {feature}.routes.ts
-### Angular Forms
-- Use Angular reactive forms only (`FormGroup`, `FormControl`).
-- Each `.form.ts` file exports a single typed interface — the form schema — named with a `Form` suffix: e.g. `AuthLoginForm`.
-- The `.form.ts` file contains **only the interface** — no factory function, no default values.
-- The `FormGroup` is instantiated in the component with validators and defaults: `readonly form = new FormGroup<AuthLoginForm>({...})`.
-- Use `nonNullable: true` on all `FormControl` instances for better type inference.
-- Error access in templates uses **bracket notation**: `form.controls.email.errors?.['required']`, `form.errors?.['passwordMismatch']`.
+### Mapping
+- **Mapperly only** — never AutoMapper, never manual `new XDto { Prop = entity.Prop }`
+- Mapper classes: `partial` class decorated with `[Mapper]` in `FH.ToDo.Services/Mapping/`
 
-### Angular Models
-- Model files contain the interface only — no initial data, no factory, no schema.
-- API request/response types go in `models/` — no `Form` suffix.
-- Entity types (e.g. `TodoTask`) go in `models/` with no operation suffix.
+### Services
+- Constructor injection (registered in `Program.cs`)
+- Compose EF queries via `_repo.GetAll()` + LINQ — never raw SQL
+- Exception semantics: `KeyNotFoundException` → 404, `UnauthorizedAccessException` → 403, `InvalidOperationException` → 400
+- Never catch exceptions in services — let `ExceptionHandlingMiddleware` handle them
 
-## AI Agent Guidelines
-- Define the AI agent's role clearly, ensuring it understands its purpose within the codebase.
-- Follow conventions for naming and structuring code to maintain consistency.
-- Reference the `README.md` for project-specific information and guidelines.
-- Ensure that all interactions with the codebase are aligned with the established project rules and conventions.
+### Controllers
+- Thin — one line delegating to service
+- `[Authorize]` class-level; `[AllowAnonymous]` method-level only
+- Use only `ApiControllerBase` helpers: `Success()`, `Created()`, `NotFound()`, `BadRequest()`, `Unauthorized()`, `Forbidden()`
+- Extract user identity from `CurrentUserId` / `CurrentUserRole` — never parse JWT manually
 
+### EF Config
+- Fluent API only in `IEntityTypeConfiguration<T>` — no data annotations on entities
+- Register in `ToDoDbContext.OnModelCreating()` via `modelBuilder.ApplyConfiguration()`
+
+---
+
+## Frontend Rules (Non-Negotiable)
+
+### Angular Patterns
+```typescript
+// ✅ Always inject() — never constructor injection
+private readonly myService = inject(MyService);
+
+// ✅ input() / output() — never @Input() / @Output()
+readonly title = input.required<string>();
+readonly saved = output<void>();
+
+// ✅ @if / @for — never *ngIf / *ngFor
+// ✅ inject() not constructor
+// ✅ No standalone: true (implicit)
+// ✅ No NgModule
+// ✅ Always separate .html and .scss files
+```
+
+### Signals
+```typescript
+readonly isLoading = signal(false);
+readonly count = computed(() => this.items().length);
+
+// Service-level shared state — readonly public signal
+private readonly _user = signal<User | null>(null);
+readonly user = this._user.asReadonly();
+```
+
+### HTTP
+- Services return `Observable<T>` from HTTP calls
+- Components subscribe and write to signals — never `toSignal()` with HTTP
+
+### Dialogs
+- Always lazy-load: `import('./path/dialog.component').then(m => this.dialog.open(m.DialogComponent, ...))`
+- Auth dialogs are the canonical example — follow that pattern
+
+### Responsive Layout
+- **Never write `@media` queries in SCSS** — ever
+- Use `ResponsiveService.smallWidth()` / `mediumWidth()` / `largeWidth()` in templates
+- `SidenavService` (singleton) manages open/close state for all sidnavs
+
+### Theming & Colours
+- **Never hardcode hex, rgb, or colour names** in SCSS or templates
+- Use CSS custom properties: `var(--primary)`, `var(--background)`, `var(--primary-light)`, etc.
+- Material error states: `[color]="hasError() ? 'warn' : undefined"` — not custom red
+- Tailwind for layout/spacing only — not for colours
+
+### Error UX Pattern (All Forms)
+```typescript
+readonly titleError = signal(false);
+private triggerError(sig: WritableSignal<boolean>, msg: string): void {
+  this.snackBar.open(msg, 'Close', { duration: 3000 });
+  sig.set(true);
+  setTimeout(() => sig.set(false), 600);
+}
+```
+```html
+<mat-form-field [color]="titleError() ? 'warn' : undefined" [class.shake]="titleError()">
+```
+`.shake` and `@keyframes shake` are defined globally in `styles.scss`.
+
+### Auth
+- No route `/auth/login` or `/auth/register` — ever
+- Dialog-only auth via `AuthDialogService`
+
+---
+
+## Test Rules
+
+### Backend Unit Tests (xUnit, `FH.ToDo.Tests`)
+- AAA pattern: Arrange / Act / Assert
+- `[Fact]` for single cases, `[Theory]` + `[InlineData]` for parameterised
+- FluentAssertions always: `.Should().Be()`, `.Should().NotBeNull()`
+- `Mock<IRepository<T,K>>` with MockQueryable for repo mocks
+
+### BDD Integration Tests (Reqnroll, `FH.ToDo.Tests.Api.BDD`)
+- One `.feature` file per domain area
+- Steps must be reusable — no step that can only be used in one scenario
+- `CustomWebApplicationFactory` spins up real API + test SQLite DB — do not change infrastructure files
+
+### E2E Tests (Playwright, `FH.ToDo.Tests.Playwright`)
+- Base URL: `http://localhost:4200`
+- Selector priority: `#id` → `[data-testid]` → `[formControlName]` → ARIA role → text
+- Never `page.waitForTimeout()` — use locator assertions instead
+- Always `waitForLoadState('networkidle')` after navigation
+
+### Frontend Unit Tests (Vitest, co-located `*.spec.ts`)
+- `vi.fn()` for all dependencies
+- `describe` → `beforeEach` → `it` structure
+- Assert signals by calling them: `service.mySignal()`
+
+---
+
+## Forbidden Patterns — Never Suggest These
+
+| Forbidden | Reason |
+|---|---|
+| AutoMapper | Project uses Mapperly |
+| `@media` in SCSS | Use ResponsiveService |
+| Hardcoded colours | Breaks theming |
+| Route-based `/auth/login` | Dialog-only auth |
+| `@Input()` / `@Output()` | Use `input()` / `output()` |
+| Constructor injection (FE) | Use `inject()` |
+| `*ngIf` / `*ngFor` | Use `@if` / `@for` |
+| `standalone: true` | Implicit since Angular v17 |
+| `NgModule` | App is fully standalone |
+| Inline template/styles | Always separate files |
+| Hard delete on any entity | Soft delete only |
+| Raw SQL in services | Use `_repo.GetAll()` + LINQ |
+| `try/catch` in services | Let ExceptionHandlingMiddleware handle |
+| `Console.WriteLine` | Use `ILogger<T>` |
+| Hardcoded session/limit values | Read from config |
+| `errors?.required` in templates | `errors?.['required']` |
+| Multiple exports per file | One type per file |
+| Feature code in `core/` | Only singletons in `core/` |
+
+---
+
+## Validation Field Lengths
+
+| Field | Min | Max |
+|---|---|---|
+| Task / subtask title | 1 | 255 |
+| Task list name | 1 | 100 |
+| User name | 1 | 100 |
+| Email | — | 256 |
+| Password | 8 | — |
+
+---
+
+## When Adding a New Feature — Checklist
+
+**Backend:**
+1. Entity → `FH.ToDo.Core/Entities/` (extend `BaseEntity<Guid>`)
+2. Fluent config → `FH.ToDo.Core.EF/Configurations/` (register in `ToDoDbContext`)
+3. Add `DbSet<T>` to `ToDoDbContext`
+4. Add EF migration
+5. DTOs → `FH.ToDo.Services.Core/{Feature}/Dto/`
+6. Service interface → `FH.ToDo.Services.Core/{Feature}/`
+7. Mapperly mapper → `FH.ToDo.Services/Mapping/`
+8. Service impl → `FH.ToDo.Services/{Feature}/`
+9. Register in `Program.cs`
+10. Controller → `FH.ToDo.Web.Host/Controllers/`
+
+**Frontend:**
+1. Model interfaces → `features/{feature}/models/`
+2. Service → `features/{feature}/services/`
+3. Component + template + styles → `features/{feature}/{component-name}/`
+4. Add route to `{feature}.routes.ts`
+5. If dialog: lazy-load via dynamic `import()`
+6. If shared (≥2 features): move to `shared/`
