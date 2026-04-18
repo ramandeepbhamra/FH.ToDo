@@ -1,19 +1,15 @@
-import { Component, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
-import { MatInput } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TodoTaskList } from '../models/todo-task-list.model';
 import { TodoTaskListService } from '../services/todo-task-list.service';
-import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.service';
 
 @Component({
@@ -21,15 +17,11 @@ import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.se
   imports: [
     RouterLink,
     RouterLinkActive,
-    FormsModule,
     MatListModule,
     MatButtonModule,
     MatDividerModule,
-    MatFormFieldModule,
-    MatInput,
     MatIcon,
     MatTooltipModule,
-    TrimOnBlurDirective,
   ],
   templateUrl: './todo-sidebar.component.html',
   styleUrl: './todo-sidebar.component.scss',
@@ -41,59 +33,29 @@ export class TodoSidebarComponent {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
 
-  @ViewChild('listNameInput') listNameInput?: ElementRef<HTMLInputElement>;
-
   readonly taskLists = input<TodoTaskList[]>([]);
   readonly listCreated = output<TodoTaskList>();
   readonly listDeleted = output<string>();
   readonly listRenamed = output<TodoTaskList>();
 
-  readonly showNewListInput = signal(false);
-  readonly newListTitle = signal('');
-  readonly listNameError = signal(false);
+  async openListDialog(event?: Event, list?: TodoTaskList): Promise<void> {
+    event?.preventDefault();
+    event?.stopPropagation();
 
-  showNewListForm(): void {
-    this.showNewListInput.set(true);
-    // Focus the input after view update
-    setTimeout(() => this.listNameInput?.nativeElement.focus(), 0);
-  }
+    const { TodoTaskListDialogComponent } = await import('../todo-task-list-dialog/todo-task-list-dialog.component');
+    const dialogRef = this.dialog.open(TodoTaskListDialogComponent, {
+      width: '400px',
+      data: { list },
+    });
 
-  private triggerListNameError(message: string): void {
-    this.snackBar.open(message, 'Close', { duration: 3000 });
-    this.listNameError.set(true);
-    setTimeout(() => this.listNameError.set(false), 600);
-  }
-
-  submitNewList(): void {
-    const title = this.newListTitle().trim();
-    if (!title) {
-      this.triggerListNameError('List name is required');
-      return;
-    }
-    if (title.length > 100) {
-      this.triggerListNameError('List name cannot exceed 100 characters');
-      return;
-    }
-
-    this.taskListService.create({ title }).subscribe({
-      next: (list) => {
-        this.listCreated.emit(list);
-        this.newListTitle.set('');
-        this.showNewListInput.set(false);
-      },
-      error: (err: HttpErrorResponse) => {
-        if (err.status === 400 && err.error?.message?.includes('task list')) {
-          this.upgradeDialog.openTaskListLimitDialog();
-        } else {
-          this.snackBar.open(err.error?.message || 'Failed to create task list', 'Close', { duration: 3000 });
-        }
+    dialogRef.afterClosed().subscribe((result: TodoTaskList | undefined) => {
+      if (!result) return;
+      if (list) {
+        this.listRenamed.emit(result);
+      } else {
+        this.listCreated.emit(result);
       }
     });
-  }
-
-  cancelNewList(): void {
-    this.newListTitle.set('');
-    this.showNewListInput.set(false);
   }
 
   async confirmDelete(event: Event, list: TodoTaskList): Promise<void> {
@@ -122,7 +84,6 @@ export class TodoSidebarComponent {
   }
 
   private deleteList(id: string): void {
-    // Check if we're deleting the currently active list
     const isCurrentList = this.router.url.includes(`/todos/list/${id}`);
 
     this.taskListService.delete(id).subscribe({
@@ -130,7 +91,6 @@ export class TodoSidebarComponent {
         this.listDeleted.emit(id);
         this.snackBar.open('Task list deleted successfully', 'Close', { duration: 3000 });
 
-        // Navigate to favorites if deleting the current list
         if (isCurrentList) {
           this.router.navigate(['/todos/favourites']);
         }

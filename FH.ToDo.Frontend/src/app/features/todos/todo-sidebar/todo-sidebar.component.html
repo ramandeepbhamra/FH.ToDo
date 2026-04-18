@@ -17,47 +17,38 @@
         mat-list-item
         [routerLink]="['/todos/list', list.id]"
         routerLinkActive="active-link"
+        [matTooltip]="list.title"
+        matTooltipPosition="right"
       >
         <mat-icon matListItemIcon>list</mat-icon>
         <span matListItemTitle>{{ list.title }}</span>
       </a>
-      <button 
-        mat-icon-button 
-        class="!absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-600 hover:!text-red-500 z-10"
-        (click)="confirmDelete($event, list)"
-        matTooltip="Delete list"
-      >
-        <mat-icon>delete</mat-icon>
-      </button>
+      <div class="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex z-10">
+        <button
+          mat-icon-button
+          class="!w-8 !h-8 text-gray-600 hover:!text-blue-500"
+          (click)="openListDialog($event, list)"
+          matTooltip="Rename list"
+        >
+          <mat-icon class="!text-[18px]">edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="!w-8 !h-8 text-gray-600 hover:!text-red-500"
+          (click)="confirmDelete($event, list)"
+          matTooltip="Delete list"
+        >
+          <mat-icon class="!text-[18px]">delete</mat-icon>
+        </button>
+      </div>
     </div>
   }
 
   <mat-divider class="my-0" />
 
-  @if (!showNewListInput()) {
-    <mat-list-item (click)="showNewListForm()" style="cursor:pointer">
-      <mat-icon matListItemIcon>add</mat-icon>
-      <span matListItemTitle>New list</span>
-    </mat-list-item>
-  } @else {
-    <div class="new-list-form">
-      <mat-form-field appearance="outline" class="w-full" [color]="listNameError() ? 'warn' : undefined" [class.shake]="listNameError()">
-        <mat-label>List name</mat-label>
-        <input
-          matInput
-          trimOnBlur
-          #listNameInput
-          [value]="newListTitle()"
-          (input)="newListTitle.set($any($event.target).value)"
-          (keyup.enter)="submitNewList()"
-          (keyup.escape)="cancelNewList()"
-          maxlength="100"
-        />
-      </mat-form-field>
-      <div class="flex gap-2">
-        <button mat-flat-button (click)="submitNewList()">Add</button>
-        <button mat-button (click)="cancelNewList()">Cancel</button>
-      </div>
-    </div>
-  }
+  <mat-list-item (click)="openListDialog()" style="cursor:pointer">
+    <mat-icon matListItemIcon>add</mat-icon>
+    <span matListItemTitle>New list</span>
+  </mat-list-item>
+
 </mat-nav-list>

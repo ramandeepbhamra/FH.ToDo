@@ -4,15 +4,14 @@
   height: 100%;
 }
 
-.new-list-form {
-  padding: 8px 16px 16px;
-}
-
-// Add spacing between list items (top and bottom)
 :host ::ng-deep {
   .mat-mdc-list-item {
     margin-top: 4px;
     margin-bottom: 4px;
+  }
+
+  .group .mdc-list-item__content {
+    padding-right: 68px;
   }
 
   .active-link {
@@ -24,4 +23,5 @@
       color: var(--primary) !important;
     }
   }
+
 }
