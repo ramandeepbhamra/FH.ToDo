@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { toDateOnlyString } from '../../../core/utils/date.util';
 import { TodoTask } from '../models/todo-task.model';
 import { TodoTaskService } from '../services/todo-task.service';
+import { ResponsiveService } from '../../../core/services/responsive.service';
 
 @Component({
   selector: 'app-todo-item',
@@ -35,6 +36,7 @@ export class TodoItemComponent {
   private readonly todoTaskService = inject(TodoTaskService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  readonly responsiveService = inject(ResponsiveService);
 
   readonly task = input.required<TodoTask>();
   readonly taskUpdated = output<TodoTask>();

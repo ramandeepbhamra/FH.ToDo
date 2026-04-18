@@ -14,6 +14,11 @@
   position: relative;
 }
 
+.task-row.editing {
+  padding-right: 0;
+  align-items: flex-start;
+}
+
 .task-title {
   flex: 1;
   cursor: pointer;
@@ -35,6 +40,53 @@
 
 .due-date.overdue {
   color: var(--error);
+}
+
+.edit-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.edit-container--mobile {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 0;
+}
+
+.edit-fields {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.edit-fields--mobile {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.edit-title-field {
+  flex: 1;
+  margin-bottom: -1.25em;
+}
+
+.edit-date-field {
+  width: 160px;
+  margin-bottom: -1.25em;
+}
+
+.edit-container--mobile .edit-date-field {
+  width: 100%;
+}
+
+.edit-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .subtasks {

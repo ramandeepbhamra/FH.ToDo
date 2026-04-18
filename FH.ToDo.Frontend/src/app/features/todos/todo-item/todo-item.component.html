@@ -1,4 +1,4 @@
-<div class="task-row group relative" [class.bg-red-50]="isDueDateOverdue && !task().isCompleted">
+<div class="task-row group relative" [class.bg-red-50]="isDueDateOverdue && !task().isCompleted" [class.editing]="isEditing()">
   <mat-checkbox
     [checked]="task().isCompleted"
     (change)="toggleComplete()"
@@ -13,7 +13,9 @@
     <span
       class="task-title min-w-0"
       [class.completed]="task().isCompleted"
-      (dblclick)="startEdit()"
+      [matTooltip]="task().title"
+      matTooltipShowDelay="800"
+      (dblclick)="!task().isCompleted && startEdit()"
     >
       {{ task().title }}
     </span>
@@ -31,44 +33,52 @@
       </div>
     }
   } @else {
-    <mat-form-field appearance="outline" style="flex:1; margin-bottom:-1.25em" [color]="titleError() ? 'warn' : undefined" [class.shake]="titleError()">
-      <mat-label>Task title</mat-label>
-      <input
-        matInput
-        [value]="editTitle()"
-        (input)="editTitle.set($any($event.target).value)"
-        (keyup.enter)="saveEdit()"
-        (keyup.escape)="cancelEdit()"
-        maxlength="255"
-        autofocus
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" style="width: 160px; margin-bottom:-1.25em">
-      <mat-label>Due Date</mat-label>
-      <input 
-        matInput 
-        [matDatepicker]="picker" 
-        [(ngModel)]="editDueDate"
-        placeholder="MM/DD/YYYY"
-      >
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-    <button mat-icon-button (click)="saveEdit()"><mat-icon>check</mat-icon></button>
-    <button mat-icon-button (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
+    <div class="edit-container" [class.edit-container--mobile]="responsiveService.smallWidth()">
+      <div class="edit-fields" [class.edit-fields--mobile]="responsiveService.smallWidth()">
+        <mat-form-field appearance="outline" class="edit-title-field" [color]="titleError() ? 'warn' : undefined" [class.shake]="titleError()">
+          <mat-label>Task title</mat-label>
+          <input
+            matInput
+            [value]="editTitle()"
+            (input)="editTitle.set($any($event.target).value)"
+            (keyup.enter)="saveEdit()"
+            (keyup.escape)="cancelEdit()"
+            maxlength="255"
+            autofocus
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="edit-date-field">
+          <mat-label>Due Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            [(ngModel)]="editDueDate"
+            placeholder="MM/DD/YYYY"
+          >
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="edit-actions">
+        <button mat-icon-button (click)="saveEdit()"><mat-icon>check</mat-icon></button>
+        <button mat-icon-button (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
+      </div>
+    </div>
   }
 
   <!-- Action buttons (show on hover, hide during edit) -->
   @if (!isEditing()) {
     <div class="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1 bg-inherit">
-      <button
-        mat-icon-button
-        class="text-gray-600 hover:!text-blue-500"
-        (click)="startEdit()"
-        matTooltip="Edit task"
-      >
-        <mat-icon>edit</mat-icon>
-      </button>
+      @if (!task().isCompleted) {
+        <button
+          mat-icon-button
+          class="text-gray-600 hover:!text-blue-500"
+          (click)="startEdit()"
+          matTooltip="Edit task"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
 
       <button
         mat-icon-button
@@ -113,19 +123,23 @@
           <span
             class="subtask-title"
             [class.completed]="sub.isCompleted"
-            (dblclick)="startEditSubTask(sub.id, sub.title)"
+            [matTooltip]="sub.title"
+            matTooltipShowDelay="800"
+            (dblclick)="!sub.isCompleted && startEditSubTask(sub.id, sub.title)"
           >
             {{ sub.title }}
           </span>
           <div class="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
-            <button
-              mat-icon-button
-              class="!w-8 !h-8 text-gray-600 hover:!text-blue-500"
-              (click)="startEditSubTask(sub.id, sub.title)"
-              matTooltip="Edit subtask"
-            >
-              <mat-icon class="!text-[16px]">edit</mat-icon>
-            </button>
+            @if (!sub.isCompleted) {
+              <button
+                mat-icon-button
+                class="!w-8 !h-8 text-gray-600 hover:!text-blue-500"
+                (click)="startEditSubTask(sub.id, sub.title)"
+                matTooltip="Edit subtask"
+              >
+                <mat-icon class="!text-[16px]">edit</mat-icon>
+              </button>
+            }
             <button
               mat-icon-button
               class="!w-8 !h-8 text-gray-600"
