@@ -1,5 +1,10 @@
 <mat-toolbar class="nav-bar">
   <div class="container nav-container">
+    @if (isAuthenticated() && responsiveService.smallWidth()) {
+      <button mat-icon-button (click)="sidenavService.toggle()" matTooltip="Toggle menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
     <a routerLink="/" class="logo">
       <mat-icon>check_circle</mat-icon>
       <span>FH ToDo</span>

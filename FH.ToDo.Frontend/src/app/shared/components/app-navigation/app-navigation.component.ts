@@ -8,6 +8,8 @@ import { RouterLink } from '@angular/router';
 import { ThemeSelectorService } from '../../../core/services/theme-selector.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthDialogService } from '../../../core/services/auth-dialog.service';
+import { ResponsiveService } from '../../../core/services/responsive.service';
+import { SidenavService } from '../../../core/services/sidenav.service';
 import { UserRole } from '../../../core/enums/user-role.enum';
 
 @Component({
@@ -21,6 +23,8 @@ export class AppNavigationComponent {
   private readonly themeSelectorService = inject(ThemeSelectorService);
   private readonly dialog               = inject(MatDialog);
   readonly authDialogService            = inject(AuthDialogService);
+  readonly responsiveService            = inject(ResponsiveService);
+  readonly sidenavService               = inject(SidenavService);
 
   readonly currentUser     = this.authService.currentUser;
   readonly isAuthenticated = computed(() => !!this.currentUser());

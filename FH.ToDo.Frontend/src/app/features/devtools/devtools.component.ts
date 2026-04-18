@@ -1,4 +1,4 @@
-import { Component, signal, inject, computed, effect } from '@angular/core';
+import { Component, inject, computed, effect } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -6,6 +6,7 @@ import { RouterOutlet } from '@angular/router';
 import { CreditsComponent } from './credits.component';
 import { MainMenuComponent } from './main-menu.component';
 import { ResponsiveService } from '../../core/services/responsive.service';
+import { SidenavService } from '../../core/services/sidenav.service';
 import { ThemingService } from '../../core/services/theming.service';
 
 @Component({
@@ -22,13 +23,14 @@ import { ThemingService } from '../../core/services/theming.service';
     <mat-drawer-container>
       <mat-drawer
         class="component-selector"
-        [(opened)]="componentSelectorOpen"
+        [opened]="sidenavService.isOpen()"
+        (openedChange)="sidenavService.isOpen.set($event)"
         [mode]="componentSelectorMode()"
       >
         <app-main-menu />
         <app-credits class="credits" />
       </mat-drawer>
-      <mat-drawer-content class="ml-[200px]">
+      <mat-drawer-content [style.margin-left]="contentMargin()">
         <div class="p-6">
           <router-outlet />
         </div>
@@ -54,16 +56,17 @@ import { ThemingService } from '../../core/services/theming.service';
   `,
 })
 export class DevtoolsComponent {
-  componentSelectorOpen = signal(true);
-  themingService = inject(ThemingService);
-  responsiveService = inject(ResponsiveService);
+  readonly themingService = inject(ThemingService);
+  readonly responsiveService = inject(ResponsiveService);
+  readonly sidenavService = inject(SidenavService);
 
-  componentSelectorMode = computed(() => {
-    if (this.responsiveService.smallWidth()) {
-      return 'over';
-    }
-    return 'side';
-  });
+  readonly componentSelectorMode = computed(() =>
+    this.responsiveService.smallWidth() ? 'over' : 'side'
+  );
+
+  readonly contentMargin = computed(() =>
+    this.responsiveService.smallWidth() ? '0' : '200px'
+  );
 
   setTheme = effect(() => {
     document.body.style.setProperty(`--primary`, this.themingService.primary());
