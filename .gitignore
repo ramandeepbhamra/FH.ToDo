@@ -50,6 +50,11 @@ artifacts/
 *.mdf
 *.ldf
 
+# SQLite database files (generated at runtime on startup)
+*.db
+*.db-shm
+*.db-wal
+
 # Entity Framework Core
 appsettings.*.local.json
 

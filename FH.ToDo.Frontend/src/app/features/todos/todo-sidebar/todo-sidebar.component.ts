@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -41,6 +41,8 @@ export class TodoSidebarComponent {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
 
+  @ViewChild('listNameInput') listNameInput?: ElementRef<HTMLInputElement>;
+
   readonly taskLists = input<TodoTaskList[]>([]);
   readonly listCreated = output<TodoTaskList>();
   readonly listDeleted = output<string>();
@@ -48,10 +50,30 @@ export class TodoSidebarComponent {
 
   readonly showNewListInput = signal(false);
   readonly newListTitle = signal('');
+  readonly listNameError = signal(false);
+
+  showNewListForm(): void {
+    this.showNewListInput.set(true);
+    // Focus the input after view update
+    setTimeout(() => this.listNameInput?.nativeElement.focus(), 0);
+  }
+
+  private triggerListNameError(message: string): void {
+    this.snackBar.open(message, 'Close', { duration: 3000 });
+    this.listNameError.set(true);
+    setTimeout(() => this.listNameError.set(false), 600);
+  }
 
   submitNewList(): void {
     const title = this.newListTitle().trim();
-    if (!title) return;
+    if (!title) {
+      this.triggerListNameError('List name is required');
+      return;
+    }
+    if (title.length > 100) {
+      this.triggerListNameError('List name cannot exceed 100 characters');
+      return;
+    }
 
     this.taskListService.create({ title }).subscribe({
       next: (list) => {

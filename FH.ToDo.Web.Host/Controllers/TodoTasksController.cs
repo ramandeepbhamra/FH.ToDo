@@ -73,6 +73,13 @@ public class TodoTasksController : ApiControllerBase
         return Created(subTask, "Subtask added");
     }
 
+    [HttpPut("{taskId:guid}/subtasks/{subTaskId:guid}")]
+    public async Task<IActionResult> UpdateSubTask(Guid taskId, Guid subTaskId, [FromBody] CreateSubTaskDto input, CancellationToken cancellationToken)
+    {
+        var subTask = await _todoTaskService.UpdateSubTaskAsync(subTaskId, input, CurrentUserId, cancellationToken);
+        return Success(subTask, "Subtask updated");
+    }
+
     [HttpPatch("{taskId:guid}/subtasks/{subTaskId:guid}/complete")]
     public async Task<IActionResult> ToggleSubTaskComplete(Guid taskId, Guid subTaskId, CancellationToken cancellationToken)
     {
@@ -85,5 +92,12 @@ public class TodoTasksController : ApiControllerBase
     {
         await _todoTaskService.DeleteSubTaskAsync(subTaskId, CurrentUserId, cancellationToken);
         return Success("Subtask deleted");
+    }
+
+    [HttpPut("update-order")]
+    public async Task<IActionResult> UpdateOrder([FromBody] BulkUpdateTaskOrderDto input, CancellationToken cancellationToken)
+    {
+        await _todoTaskService.UpdateOrderAsync(input, CurrentUserId, cancellationToken);
+        return Success("Task order updated");
     }
 }
