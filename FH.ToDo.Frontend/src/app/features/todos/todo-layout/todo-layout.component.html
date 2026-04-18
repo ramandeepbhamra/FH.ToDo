@@ -1,7 +1,8 @@
 <mat-drawer-container>
   <mat-drawer
     class="sidebar"
-    [(opened)]="drawerOpen"
+    [opened]="sidenavService.isOpen()"
+    (openedChange)="sidenavService.isOpen.set($event)"
     [mode]="drawerMode()"
   >
     <app-todo-sidebar
@@ -12,7 +13,7 @@
     />
   </mat-drawer>
 
-  <mat-drawer-content class="ml-[220px]">
+  <mat-drawer-content [style.margin-left]="contentMargin()">
     <div class="p-6 max-w-full overflow-x-hidden">
       <router-outlet />
     </div>
