@@ -105,6 +105,68 @@ FH.ToDo/
 
 ---
 
+## Design Decisions & Trade-offs
+
+### Architecture
+
+**Mapperly over AutoMapper**
+Mapperly is a compile-time source generator — zero runtime reflection, no registration overhead, and mapping errors caught at build time. AutoMapper resolves mappings at runtime, which can hide mismatches until production. Trade-off: less dynamic flexibility, but faster, safer, and more maintainable.
+
+**Generic `IRepository<T,K>` over per-entity repositories**
+One generic interface and one implementation cover every entity in the system. Services compose queries via private `BuildQuery()` methods, keeping business logic in the service layer. Trade-off: complex queries stay in services rather than specialised repositories, but eliminates significant boilerplate and keeps the pattern consistent.
+
+**SQLite for development, designed to migrate to MSSQL/PostgreSQL**
+SQLite requires zero infrastructure — the database file is auto-created on first run via `MigrateAsync()`. The entire data layer (EF Core, Fluent API, generic repository) is database-agnostic. Switching to MSSQL or PostgreSQL is a connection string and NuGet package change with no service or controller code touched. Trade-off: SQLite is single-writer and not suitable for concurrent production load, but removes all setup friction for local development and assessment review.
+
+> **Note on SQLite files:** `*.db`, `*.db-shm`, and `*.db-wal` are intentionally gitignored. The database is always auto-created and seeded on first run — committing the file would cause stale seed data conflicts across environments.
+
+**Soft delete on all entities**
+No entity is ever hard-deleted. `IsDeleted` is filtered globally via EF Core query filters, so all queries are automatically scoped without manual `Where(!e.IsDeleted)` calls. Trade-off: the database accumulates historical data, but gains a full audit trail, data recovery capability, and compliance-readiness.
+
+**Fluent API only for EF configuration — no data annotations for schema**
+All database schema decisions (indexes, constraints, relationships, query filters) live in `IEntityTypeConfiguration<T>` classes. Data annotations on entities are not duplicated in Fluent API. Trade-off: slightly more files, but a single source of truth that prevents annotation/Fluent API conflicts as the schema evolves.
+
+---
+
+### Frontend
+
+**Dialog-based authentication over route-based**
+Login and registration are Angular Material dialogs lazy-loaded via dynamic `import()`. The dashboard is always publicly accessible — authentication never interrupts navigation context or breaks the browser back button. Trade-off: slightly less browser-history-friendly, but a significantly better UX for a SPA where the shell is always present.
+
+**Angular signals over NgRx**
+Signals are Angular's built-in reactive primitive — no boilerplate, no actions, no reducers, no selectors. For an application at this scale, signals with service-level state are sufficient and far less ceremonious. Trade-off: no Redux DevTools or time-travel debugging, but the codebase is dramatically simpler and easier to onboard.
+
+**`ResponsiveService` over CSS `@media` queries**
+All responsive behaviour is driven by CDK `BreakpointObserver` signals in `ResponsiveService`. Layout decisions are made in TypeScript and reflected in templates via `@if` and `computed()` — never in SCSS. Trade-off: slightly more code than media queries, but eliminates CSS/TypeScript state drift and makes responsive behaviour testable.
+
+**Lazy-loaded dialogs via dynamic `import()`**
+Auth, profile, task list, and confirm dialogs are not bundled in the main chunk. Each is loaded on first open. Trade-off: small async delay on first dialog open, but the initial bundle is significantly smaller and time-to-interactive is faster.
+
+---
+
+### Testing
+
+**Three-layer test strategy**
+- **Unit tests** (xUnit + Moq + FluentAssertions) — service logic in isolation, fast feedback
+- **BDD integration tests** (Reqnroll + WebApplicationFactory) — full HTTP request/response cycle against a real in-memory SQLite database, human-readable Gherkin scenarios
+- **E2E tests** (Playwright, Chromium) — critical user journeys against the running app
+- **Frontend unit tests** (Vitest) — service and component logic in isolation
+
+Each layer catches a different class of bug. Trade-off: more setup investment, but confidence at every level of the stack.
+
+---
+
+### What We Would Do Next
+
+- **Migrate to MSSQL or PostgreSQL** for production — the data layer is already database-agnostic
+- **Add CQRS via MediatR** — the service layer is already structured with clear read/write separation
+- **Output caching** on read-heavy endpoints (`/api/config`, task lists) via ASP.NET Core's built-in `AddOutputCache()`
+- **Multi-device refresh token support** — add `DeviceId` to `RefreshToken` to allow one token per device rather than one per user
+- **Multilingual support (i18n)** — the theme-aware, signal-driven frontend is well-positioned for runtime locale switching
+- **Two-factor authentication** — TOTP-based 2FA for Admin and Dev roles
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
