@@ -9,6 +9,7 @@ import { TodoSubTask } from '../models/todo-sub-task.model';
 import { TodoTaskCreateRequest } from '../models/todo-task-create-request.model';
 import { TodoTaskUpdateRequest } from '../models/todo-task-update-request.model';
 import { TodoSubTaskCreateRequest } from '../models/todo-sub-task-create-request.model';
+import { UpdateTaskOrderDto } from '../models/update-task-order.model';
 
 @Injectable({ providedIn: 'root' })
 export class TodoTaskService {
@@ -69,9 +70,21 @@ export class TodoTaskService {
       .pipe(map(r => r.data!));
   }
 
+  updateSubTask(taskId: string, subTaskId: string, request: TodoSubTaskCreateRequest): Observable<TodoSubTask> {
+    return this.http
+      .put<ApiResponse<TodoSubTask>>(`${this.base}/${taskId}/subtasks/${subTaskId}`, request)
+      .pipe(map(r => r.data!));
+  }
+
   deleteSubTask(taskId: string, subTaskId: string): Observable<void> {
     return this.http
       .delete<ApiResponse<void>>(`${this.base}/${taskId}/subtasks/${subTaskId}`)
+      .pipe(map(() => undefined));
+  }
+
+  updateOrder(listId: string, updates: UpdateTaskOrderDto[]): Observable<void> {
+    return this.http
+      .put<ApiResponse<void>>(`${this.base}/update-order`, { listId, updates })
       .pipe(map(() => undefined));
   }
 }

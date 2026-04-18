@@ -3,12 +3,13 @@
     mat-list-item
     routerLink="/todos/favourites"
     routerLinkActive="active-link"
+    class="mb-0"
   >
-    <mat-icon matListItemIcon>star</mat-icon>
+    <mat-icon matListItemIcon class="text-orange-500">star</mat-icon>
     <span matListItemTitle>Favourites</span>
   </a>
 
-  <mat-divider />
+  <mat-divider class="my-0" />
 
   @for (list of taskLists(); track list.id) {
     <div class="group relative">
@@ -31,25 +32,26 @@
     </div>
   }
 
-  <mat-divider />
+  <mat-divider class="my-0" />
 
   @if (!showNewListInput()) {
-    <mat-list-item (click)="showNewListInput.set(true)" style="cursor:pointer">
+    <mat-list-item (click)="showNewListForm()" style="cursor:pointer">
       <mat-icon matListItemIcon>add</mat-icon>
       <span matListItemTitle>New list</span>
     </mat-list-item>
   } @else {
     <div class="new-list-form">
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full" [color]="listNameError() ? 'warn' : undefined" [class.shake]="listNameError()">
         <mat-label>List name</mat-label>
         <input
           matInput
           trimOnBlur
+          #listNameInput
           [value]="newListTitle()"
           (input)="newListTitle.set($any($event.target).value)"
           (keyup.enter)="submitNewList()"
           (keyup.escape)="cancelNewList()"
-          autofocus
+          maxlength="100"
         />
       </mat-form-field>
       <div class="flex gap-2">

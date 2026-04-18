@@ -49,10 +49,45 @@ body {
   @apply inline-block px-2 py-0.5 rounded text-xs font-semibold border whitespace-nowrap;
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
 // Material tooltip panel override — global scope reaches overlay, no ::ng-deep needed
 .exception-tooltip {
   font-size: 0.78rem;
   max-width: 400px;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+
+.field-error .mdc-notched-outline__leading,
+.field-error .mdc-notched-outline__notch,
+.field-error .mdc-notched-outline__trailing {
+  border-color: var(--mat-sys-error) !important;
+  border-width: 2px !important;
+}
+
+.field-error {
+  animation: shake 0.5s ease-in-out;
 }

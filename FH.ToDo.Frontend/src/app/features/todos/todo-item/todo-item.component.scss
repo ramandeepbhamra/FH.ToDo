@@ -1,14 +1,26 @@
+:host {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .task-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
+  padding: 8px 176px 8px 0;
   border-bottom: 1px solid var(--primary-light);
+  max-width: 100%;
+  position: relative;
 }
 
 .task-title {
   flex: 1;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .task-title.completed {
@@ -34,7 +46,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 0;
+  padding: 4px 72px 4px 0;
 }
 
 .subtask-title {

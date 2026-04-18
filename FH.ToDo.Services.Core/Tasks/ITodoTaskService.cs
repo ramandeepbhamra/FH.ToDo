@@ -21,7 +21,11 @@ public interface ITodoTaskService
 
     Task<SubTaskDto> AddSubTaskAsync(Guid taskId, CreateSubTaskDto input, Guid userId, CancellationToken cancellationToken = default);
 
+    Task<SubTaskDto> UpdateSubTaskAsync(Guid subTaskId, CreateSubTaskDto input, Guid userId, CancellationToken cancellationToken = default);
+
     Task<SubTaskDto> ToggleSubTaskCompleteAsync(Guid subTaskId, Guid userId, CancellationToken cancellationToken = default);
 
     Task DeleteSubTaskAsync(Guid subTaskId, Guid userId, CancellationToken cancellationToken = default);
+
+    Task UpdateOrderAsync(BulkUpdateTaskOrderDto input, Guid userId, CancellationToken cancellationToken = default);
 }

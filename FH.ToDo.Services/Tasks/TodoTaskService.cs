@@ -205,6 +205,21 @@ public class TodoTaskService : ITodoTaskService
         return _mapper.SubTaskToDto(created);
     }
 
+    public async Task<SubTaskDto> UpdateSubTaskAsync(Guid subTaskId, CreateSubTaskDto input, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var subTask = await _subTaskRepository.GetAll()
+            .Include(st => st.TodoTask)
+            .FirstOrDefaultAsync(st => st.Id == subTaskId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Subtask {subTaskId} not found.");
+
+        if (subTask.TodoTask.UserId != userId)
+            throw new UnauthorizedAccessException("You do not have access to this subtask.");
+
+        subTask.Title = input.Title;
+        var updated = await _subTaskRepository.UpdateAsync(subTask, cancellationToken);
+        return _mapper.SubTaskToDto(updated);
+    }
+
     public async Task<SubTaskDto> ToggleSubTaskCompleteAsync(Guid subTaskId, Guid userId, CancellationToken cancellationToken = default)
     {
         var subTask = await _subTaskRepository.GetAll()
@@ -237,4 +252,23 @@ public class TodoTaskService : ITodoTaskService
         => _taskRepository
             .GetAll()
             .CountAsync(t => t.ListId == listId && !t.IsDeleted, cancellationToken);
+
+    public async Task UpdateOrderAsync(BulkUpdateTaskOrderDto input, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var list = await _listRepository.GetAll()
+            .FirstOrDefaultAsync(tl => tl.Id == input.ListId && tl.UserId == userId, cancellationToken)
+            ?? throw new KeyNotFoundException("Task list not found.");
+
+        foreach (var update in input.Updates)
+        {
+            var task = await _taskRepository.GetAll()
+                .FirstOrDefaultAsync(t => t.Id == update.Id && t.UserId == userId, cancellationToken);
+
+            if (task != null && task.ListId == input.ListId)
+            {
+                task.Order = update.Order;
+                await _taskRepository.UpdateAsync(task, cancellationToken);
+            }
+        }
+    }
 }
