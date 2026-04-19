@@ -1,6 +1,16 @@
 # FH.ToDo
 
-A production-grade task management application built with **.NET 10 Clean Architecture** and **Angular 21**.
+A production-grade, fully responsive task management application built with **.NET 10 Clean Architecture** and **Angular 21**.
+
+Designed for four roles — **Basic**, **Premium**, **Admin**, and **Dev** — each with distinct access and capabilities:
+
+- **Tasks & Lists** — create task lists, add tasks with due dates, subtasks, completion tracking, and favourites; drag-and-drop reordering
+- **Dashboard** — public landing page accessible to all visitors with role-aware CTAs
+- **User Management** — Admin-only user administration: create, edit, assign roles, deactivate accounts
+- **API Logs** — Admin and Dev users can browse, filter, and paginate all logged API activity
+- **DevTools** — Dev-only live component browser with full theming support
+
+Responsive across all screen sizes — desktop, tablet, and mobile — without a single CSS `@media` query. All layout breakpoints are managed in TypeScript via Angular CDK's `BreakpointObserver`, surfaced as signals through `ResponsiveService`. This keeps responsive behaviour testable, consistent, and completely decoupled from stylesheets.
 
 ---
 
