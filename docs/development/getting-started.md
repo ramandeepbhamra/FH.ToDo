@@ -48,11 +48,7 @@ On first run, the app automatically:
 
 ### 3. Test Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | fh.admin1@yopmail.com | 123qwe |
-| Basic | fh.basic1@yopmail.com | 123qwe |
-| Dev | fh.dev1@yopmail.com | 123qwe |
+Seed accounts for all four roles (Basic, Premium, Admin, Dev) are created automatically on first run. See the seeding logic in the project, or register a new Basic account directly via the app.
 
 ### Database Location
 
