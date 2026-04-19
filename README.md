@@ -79,6 +79,7 @@ FH.ToDo/
 
 | Document | Description |
 |---|---|
+| [Features](docs/features.md) | Roles, permissions, and detailed behaviour for every feature |
 | [Architecture Overview](docs/architecture/overview.md) | Layer diagram, domain model, key design decisions |
 | [Scalability](docs/architecture/scalability.md) | Architectural, testing, and feature scaling roadmap |
 | [Getting Started](docs/development/getting-started.md) | Full local setup and CORS configuration |
