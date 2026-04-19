@@ -34,13 +34,7 @@ Database is created and seeded automatically on first run. No SQL Server require
 
 **Quick API testing:** Use [`FH.ToDo.http`](FH.ToDo.http) in the solution root — covers all endpoints with sample payloads and auto-populates tokens and IDs between requests. Works in Visual Studio 2022, VS Code (REST Client extension), and Rider.
 
-**Test credentials**
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | fh.admin1@yopmail.com | 123qwe |
-| Basic | fh.basic1@yopmail.com | 123qwe |
-| Dev | fh.dev1@yopmail.com | 123qwe |
+**Test credentials:** Seed accounts for all three roles (Admin, Basic, Dev) are created automatically on first run. See the seeding logic in the project, or register a new Basic account directly via the app.
 
 ### Frontend
 
