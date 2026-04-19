@@ -18,6 +18,18 @@ import { UserDialogData } from '../models/user-dialog-data.model';
 import { UserRole } from '../../../core/enums/user-role.enum';
 import { noWhitespaceValidator } from '../../../core/validators/no-whitespace.validator';
 
+/**
+ * Modal dialog for creating and editing user accounts (Admin only).
+ *
+ * Mode is determined by `UserDialogData.userId`:
+ * - `null` → create mode: password field is required and shown.
+ * - non-null → edit mode: user data is loaded on init; password field is hidden.
+ *
+ * System users (`isSystemUser === true`) have their role field disabled to prevent
+ * accidental role changes on seed/service accounts.
+ *
+ * Closes with `true` on a successful save so the parent list can reload.
+ */
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.component.html',
@@ -43,7 +55,9 @@ export class UserDialogComponent implements OnInit {
   readonly data = inject<UserDialogData>(MAT_DIALOG_DATA);
 
   readonly roles = Object.values(UserRole);
+  /** `true` when a `userId` was provided — drives template visibility and submit logic. */
   readonly isEditMode = computed(() => !!this.data.userId);
+  /** `true` when the loaded user is a system/seed account — disables the role selector. */
   readonly isSystemUser = signal(false);
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
@@ -72,6 +86,7 @@ export class UserDialogComponent implements OnInit {
     isActive: new FormControl(true, { nonNullable: true }),
   });
 
+  /** Separate control — only validated and submitted in create mode. */
   readonly passwordControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(6), Validators.maxLength(100)],
@@ -108,6 +123,12 @@ export class UserDialogComponent implements OnInit {
     });
   }
 
+  /**
+   * Validates and submits the form.
+   * In create mode, also validates `passwordControl`.
+   * Calls update or create on `UserService` depending on `isEditMode`.
+   * Closes the dialog with `true` on success so the parent list reloads.
+   */
   submit(): void {
     const passwordInvalid = !this.isEditMode() && this.passwordControl.invalid;
     if (this.form.invalid || passwordInvalid) {

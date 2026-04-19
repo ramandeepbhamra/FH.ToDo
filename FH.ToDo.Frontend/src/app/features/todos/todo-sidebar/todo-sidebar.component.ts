@@ -12,6 +12,17 @@ import { TodoTaskList } from '../models/todo-task-list.model';
 import { TodoTaskListService } from '../services/todo-task-list.service';
 import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.service';
 
+/**
+ * Left-hand sidebar listing the user's task lists with create, rename, and delete actions.
+ *
+ * Create and rename use the lazy-loaded `TodoTaskListDialogComponent`.
+ * Delete uses the lazy-loaded `ConfirmDialogComponent` before calling the service.
+ * After a successful delete, if the deleted list is the currently active route,
+ * the user is redirected to `/todos/favourites`.
+ *
+ * All mutations are communicated upward via outputs — the sidebar never holds the
+ * authoritative list state.
+ */
 @Component({
   selector: 'app-todo-sidebar',
   imports: [
@@ -33,11 +44,21 @@ export class TodoSidebarComponent {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
 
+  /** The current list of task lists to render. Provided by the parent layout component. */
   readonly taskLists = input<TodoTaskList[]>([]);
+  /** Emitted when a new list is successfully created. */
   readonly listCreated = output<TodoTaskList>();
+  /** Emitted with the deleted list ID after a successful soft-delete. */
   readonly listDeleted = output<string>();
+  /** Emitted when an existing list is successfully renamed. */
   readonly listRenamed = output<TodoTaskList>();
 
+  /**
+   * Opens the task list dialog in create or edit mode depending on whether
+   * a `list` argument is provided. Lazy-loads `TodoTaskListDialogComponent`.
+   * @param event Optional click event — prevented and stopped to avoid nav side-effects.
+   * @param list When provided, opens the dialog in rename/edit mode.
+   */
   async openListDialog(event?: Event, list?: TodoTaskList): Promise<void> {
     event?.preventDefault();
     event?.stopPropagation();
@@ -58,6 +79,11 @@ export class TodoSidebarComponent {
     });
   }
 
+  /**
+   * Opens a confirmation dialog before deleting the list.
+   * Lazy-loads `ConfirmDialogComponent`.
+   * @param event Click event — prevented and stopped to avoid activating the list item link.
+   */
   async confirmDelete(event: Event, list: TodoTaskList): Promise<void> {
     event.preventDefault();
     event.stopPropagation();

@@ -14,6 +14,14 @@ import { TodoTaskService } from '../services/todo-task.service';
 import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { UpgradeDialogService } from '../../../shared/services/upgrade-dialog.service';
 
+/**
+ * Inline form for creating a new task in a specific list.
+ *
+ * Auto-focuses the title input on init and after each successful submission.
+ * On a 400 response whose message mentions "tasks per list", opens the upgrade
+ * prompt dialog instead of showing a generic error — Basic users who have hit
+ * their task limit are guided to contact support.
+ */
 @Component({
   selector: 'app-todo-form',
   imports: [FormsModule, MatFormFieldModule, MatInput, MatButtonModule, MatIcon, TrimOnBlurDirective, MatDatepickerModule, MatNativeDateModule],
@@ -27,7 +35,9 @@ export class TodoFormComponent implements AfterViewInit {
 
   @ViewChild('taskInput') taskInput?: ElementRef<HTMLInputElement>;
 
+  /** ID of the list the new task will be created in. Required. */
   readonly listId = input.required<string>();
+  /** Emitted with the newly created task after a successful submission. */
   readonly taskAdded = output<TodoTask>();
 
   readonly title = signal('');
@@ -45,6 +55,10 @@ export class TodoFormComponent implements AfterViewInit {
     setTimeout(() => this.titleError.set(false), 600);
   }
 
+  /**
+   * Validates the form, calls the service, and emits `taskAdded` on success.
+   * Resets the form and re-focuses the input after each successful creation.
+   */
   submit(): void {
     const title = this.title().trim();
     if (!title) {
@@ -66,7 +80,6 @@ export class TodoFormComponent implements AfterViewInit {
         this.title.set('');
         this.dueDate = null;
         this.isSubmitting.set(false);
-        // Refocus after successful creation
         setTimeout(() => this.taskInput?.nativeElement.focus(), 0);
       },
       error: (err: HttpErrorResponse) => {

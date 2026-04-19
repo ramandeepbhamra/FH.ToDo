@@ -12,6 +12,12 @@ import { ResponsiveService } from '../../../core/services/responsive.service';
 import { SidenavService } from '../../../core/services/sidenav.service';
 import { UserRole } from '../../../core/enums/user-role.enum';
 
+/**
+ * Top navigation bar present on every page.
+ * Exposes login/register dialogs for unauthenticated users and a profile dialog
+ * for authenticated users. The profile dialog is lazy-loaded via dynamic `import()`
+ * to keep the initial bundle lean.
+ */
 @Component({
   selector: 'app-navigation',
   templateUrl: './app-navigation.component.html',
@@ -34,6 +40,7 @@ export class AppNavigationComponent {
   readonly logout    = () => this.authService.logout();
   readonly openTheme = () => this.themeSelectorService.open();
 
+  /** Opens the user profile dialog. Lazy-loaded to avoid including it in the main chunk. */
   openProfile(): void {
     import('../../../features/profile/user-profile-dialog/user-profile-dialog.component')
       .then(m => this.dialog.open(m.UserProfileDialogComponent, { width: '500px', disableClose: false }));

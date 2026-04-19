@@ -15,6 +15,20 @@ import { adminGuard } from './core/guards/admin.guard';
 import { devUserGuard } from './core/guards/dev-user.guard';
 import { adminOrDevUserGuard } from './core/guards/admin-or-dev-user.guard';
 
+/**
+ * Root route configuration.
+ *
+ * Auth is dialog-only — there is no `/auth/login` page route. The `auth` path
+ * exists only to satisfy lazy-loading conventions; `AUTH_ROUTES` is an empty array.
+ *
+ * Guard hierarchy:
+ * - `authGuard`         — any authenticated user; redirects to `/` + opens login dialog
+ * - `adminGuard`        — Admin role only
+ * - `devUserGuard`      — Dev role only
+ * - `adminOrDevUserGuard` — Admin or Dev role
+ *
+ * Feature routes (`users`, `todos`, `logs`) are lazy-loaded via their own route files.
+ */
 export const routes: Routes = [
   {
     path: 'auth',
@@ -65,4 +79,3 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: 'auth/login' },
 ];
-

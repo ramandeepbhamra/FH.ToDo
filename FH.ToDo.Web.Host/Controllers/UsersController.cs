@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace FH.ToDo.Web.Host.Controllers;
 
 /// <summary>
-/// User management controller — Admin only (POST is AllowAnonymous for self-registration)
+/// Full user management — Admin only.
+/// Allows creating, reading, updating, and soft-deleting any user account.
 /// </summary>
 [Authorize(Roles = nameof(UserRole.Admin))]
 public class UsersController : ApiControllerBase
@@ -20,9 +21,10 @@ public class UsersController : ApiControllerBase
         _userService = userService;
     }
 
-    /// <summary>
-    /// Get paginated list of users
-    /// </summary>
+    /// <summary>Returns a paginated, filterable list of all users except the current admin.</summary>
+    /// <param name="input">Pagination, sorting, and search filters.</param>
+    /// <returns>A paged result of <see cref="UserDto"/>.</returns>
+    /// <response code="200">Users returned successfully.</response>
     [HttpGet]
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersInputDto input)
     {
@@ -31,9 +33,11 @@ public class UsersController : ApiControllerBase
         return Success(result);
     }
 
-    /// <summary>
-    /// Get user by ID
-    /// </summary>
+    /// <summary>Returns a single user by ID.</summary>
+    /// <param name="id">The ID of the user to retrieve.</param>
+    /// <returns>The matching <see cref="UserDto"/>.</returns>
+    /// <response code="200">User returned successfully.</response>
+    /// <response code="404">User not found.</response>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
@@ -41,20 +45,26 @@ public class UsersController : ApiControllerBase
         return Success(user);
     }
 
-    /// <summary>
-    /// Create a new user
-    /// </summary>
+    /// <summary>Creates a new user account with a specified role.</summary>
+    /// <param name="input">User creation data including email, password, and role.</param>
+    /// <returns>The newly created <see cref="UserDto"/>.</returns>
+    /// <response code="201">User created successfully.</response>
+    /// <response code="400">Validation failed or email is already in use.</response>
     [HttpPost]
-    [AllowAnonymous] // Allow registration without authentication
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDto input)
     {
         var user = await _userService.CreateUserAsync(input);
         return Created(user, "User created successfully");
     }
 
-    /// <summary>
-    /// Update an existing user
-    /// </summary>
+    /// <summary>Updates an existing user's details, role, and active status.</summary>
+    /// <param name="id">The ID of the user to update.</param>
+    /// <param name="input">Updated user data.</param>
+    /// <returns>The updated <see cref="UserDto"/>.</returns>
+    /// <response code="200">User updated successfully.</response>
+    /// <response code="400">Validation failed or email is already taken by another user.</response>
+    /// <response code="404">User not found.</response>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDto input)
     {
@@ -62,9 +72,10 @@ public class UsersController : ApiControllerBase
         return Success(user, "User updated successfully");
     }
 
-    /// <summary>
-    /// Delete a user (soft delete)
-    /// </summary>
+    /// <summary>Soft-deletes a user account.</summary>
+    /// <param name="id">The ID of the user to delete.</param>
+    /// <response code="200">User deleted successfully.</response>
+    /// <response code="404">User not found.</response>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {

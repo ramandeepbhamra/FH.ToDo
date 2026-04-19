@@ -2,17 +2,16 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FH.ToDo.Core.Entities.Base;
 using FH.ToDo.Core.Entities.Users;
+using FH.ToDo.Core.Shared.Constants;
 
 namespace FH.ToDo.Core.Entities.Tasks;
 
 [Table("TodoTasks")]
 public class TodoTask : BaseEntity<Guid>
 {
-    public const int MaxTitleLength = 255;
-
     [Required]
-    [MinLength(1)]
-    [MaxLength(MaxTitleLength)]
+    [MinLength(ValidationConstants.TaskTitle.MinLength)]
+    [MaxLength(ValidationConstants.TaskTitle.MaxLength)]
     public string Title { get; set; } = string.Empty;
 
     public Guid ListId { get; set; }
