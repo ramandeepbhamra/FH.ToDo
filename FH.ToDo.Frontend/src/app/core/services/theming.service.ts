@@ -10,6 +10,14 @@ type Theme = {
   error: string;
 };
 
+/**
+ * Manages the active colour theme via writable signals that are bound to CSS
+ * custom properties in `styles.scss` (`--primary`, `--background`, etc.).
+ *
+ * Use `applyTheme` to switch to a preset from `definedThemes`, or call the
+ * individual setters to apply a custom colour. Components must never hardcode
+ * hex values — always read from these signals or the corresponding CSS vars.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -23,6 +31,10 @@ export class ThemingService {
 
   constructor() {}
 
+  /**
+   * Preset themes available in the theme selector.
+   * Each entry maps to the full set of CSS custom properties used across the app.
+   */
   definedThemes: Theme[] = [
     {
       name: 'Teal',
@@ -62,30 +74,25 @@ export class ThemingService {
     },
   ];
 
-  setPrimary(color: string) {
-    this.primary.set(color);
-  }
+  /** Sets the primary brand colour. */
+  setPrimary(color: string) { this.primary.set(color); }
 
-  setPrimaryLight(color: string) {
-    this.primaryLight.set(color);
-  }
+  /** Sets the light variant of the primary colour (used for backgrounds and hover states). */
+  setPrimaryLight(color: string) { this.primaryLight.set(color); }
 
-  setPrimaryDark(color: string) {
-    this.primaryDark.set(color);
-  }
+  /** Sets the dark variant of the primary colour (used for text on light backgrounds). */
+  setPrimaryDark(color: string) { this.primaryDark.set(color); }
 
-  setRipple(color: string) {
-    this.ripple.set(color);
-  }
+  /** Sets the ripple overlay colour (should include alpha, e.g. `#046e8f1e`). */
+  setRipple(color: string) { this.ripple.set(color); }
 
-  setBackground(color: string) {
-    this.background.set(color);
-  }
+  /** Sets the page background colour. */
+  setBackground(color: string) { this.background.set(color); }
 
-  setError(color: string) {
-    this.error.set(color);
-  }
+  /** Sets the error/destructive colour (used for Material `warn` palette). */
+  setError(color: string) { this.error.set(color); }
 
+  /** Applies all colours from a preset theme in a single update. */
   applyTheme(theme: Theme) {
     const { primary, primaryLight, primaryDark, ripple, background, error } = theme;
     this.primary.set(primary);

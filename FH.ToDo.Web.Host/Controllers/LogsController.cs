@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace FH.ToDo.Web.Host.Controllers;
 
 /// <summary>
-/// API log viewer — Admin and Dev only
+/// API log viewer — restricted to Admin and Dev roles.
+/// Exposes paginated, filterable access to the <c>ApiLogs</c> database table written by Serilog.
 /// </summary>
 [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Dev))]
 public class LogsController : ApiControllerBase
@@ -20,9 +21,10 @@ public class LogsController : ApiControllerBase
         _apiLogService = apiLogService;
     }
 
-    /// <summary>
-    /// Get paginated API log entries
-    /// </summary>
+    /// <summary>Returns a paginated list of API log entries with optional filters.</summary>
+    /// <param name="input">Pagination, date range, log level, and keyword filters.</param>
+    /// <returns>A paged result of <see cref="ApiLogDto"/>.</returns>
+    /// <response code="200">Logs returned successfully.</response>
     [HttpGet]
     public async Task<IActionResult> GetLogs([FromQuery] GetApiLogsInputDto input)
     {

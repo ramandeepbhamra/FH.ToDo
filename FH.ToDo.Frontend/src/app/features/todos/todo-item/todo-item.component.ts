@@ -16,15 +16,23 @@ import { TodoTask } from '../models/todo-task.model';
 import { TodoTaskService } from '../services/todo-task.service';
 import { ResponsiveService } from '../../../core/services/responsive.service';
 
+/**
+ * Renders a single task row with inline editing, subtask management,
+ * completion/favourite toggles, and soft-delete with confirmation.
+ *
+ * Communicates changes upward via `taskUpdated` and `taskDeleted` outputs —
+ * it never mutates the parent's list directly.
+ * Subtask and task delete flows use lazy-loaded `ConfirmDialogComponent`.
+ */
 @Component({
   selector: 'app-todo-item',
   imports: [
-    FormsModule, 
-    MatCheckbox, 
-    MatButtonModule, 
-    MatFormFieldModule, 
-    MatInput, 
-    MatIcon, 
+    FormsModule,
+    MatCheckbox,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInput,
+    MatIcon,
     MatTooltipModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -38,8 +46,11 @@ export class TodoItemComponent {
   private readonly dialog = inject(MatDialog);
   readonly responsiveService = inject(ResponsiveService);
 
+  /** The task to display. Required — provided by the parent list component. */
   readonly task = input.required<TodoTask>();
+  /** Emitted when any field on the task (or one of its subtasks) changes. */
   readonly taskUpdated = output<TodoTask>();
+  /** Emitted with the task ID after a successful soft-delete. */
   readonly taskDeleted = output<string>();
 
   readonly isEditing = signal(false);
@@ -62,6 +73,7 @@ export class TodoItemComponent {
     setTimeout(() => errorSignal.set(false), 600);
   }
 
+  /** `true` when the task has a due date in the past and is not yet completed. */
   get isDueDateOverdue(): boolean {
     if (!this.task().dueDate || this.task().isCompleted) return false;
     const dueDateStr = this.task().dueDate;
@@ -73,6 +85,7 @@ export class TodoItemComponent {
     return dueDate < today;
   }
 
+  /** Formats an ISO date string to `MM/DD/YYYY` for display. Returns `''` for null. */
   formatDueDate(dateString: string | null): string {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -90,6 +103,7 @@ export class TodoItemComponent {
     this.todoTaskService.toggleFavourite(this.task().id).subscribe(updated => this.taskUpdated.emit(updated));
   }
 
+  /** Populates edit signals from the current task and enters edit mode. */
   startEdit(): void {
     this.editTitle.set(this.task().title);
     const dueDateStr = this.task().dueDate;
@@ -97,6 +111,7 @@ export class TodoItemComponent {
     this.isEditing.set(true);
   }
 
+  /** Validates and persists the edited title and due date, then exits edit mode. */
   saveEdit(): void {
     const title = this.editTitle().trim();
     if (!title) {
@@ -122,12 +137,12 @@ export class TodoItemComponent {
     this.isEditing.set(false);
   }
 
-  // SubTask Edit Methods
   startEditSubTask(subTaskId: string, title: string): void {
     this.editingSubTaskId.set(subTaskId);
     this.editSubTaskTitle.set(title);
   }
 
+  /** Validates and persists an edited subtask title. Merges the updated subtask into the emitted task. */
   saveSubTaskEdit(subTaskId: string): void {
     const title = this.editSubTaskTitle().trim();
     if (!title) {
@@ -151,6 +166,11 @@ export class TodoItemComponent {
     this.editSubTaskTitle.set('');
   }
 
+  /**
+   * Opens a confirmation dialog before deleting the task.
+   * The message includes the subtask count when subtasks are present.
+   * `ConfirmDialogComponent` is lazy-loaded to keep the initial bundle lean.
+   */
   async confirmDelete(): Promise<void> {
     const { ConfirmDialogComponent } = await import(
       '../../../shared/components/confirm-dialog/confirm-dialog.component'
@@ -190,6 +210,7 @@ export class TodoItemComponent {
     });
   }
 
+  /** Toggles completion on a subtask and merges the result into the emitted task. */
   toggleSubTaskComplete(subTaskId: string): void {
     this.todoTaskService.toggleSubTaskComplete(this.task().id, subTaskId).subscribe(updated => {
       const subTasks = this.task().subTasks.map(s => s.id === updated.id ? updated : s);
@@ -197,6 +218,10 @@ export class TodoItemComponent {
     });
   }
 
+  /**
+   * Opens a confirmation dialog before deleting a subtask.
+   * `ConfirmDialogComponent` is lazy-loaded to keep the initial bundle lean.
+   */
   async confirmDeleteSubTask(subTaskId: string, title: string): Promise<void> {
     const { ConfirmDialogComponent } = await import(
       '../../../shared/components/confirm-dialog/confirm-dialog.component'
@@ -226,6 +251,7 @@ export class TodoItemComponent {
     });
   }
 
+  /** Validates and adds a new subtask, then appends it to the emitted task's subtask list. */
   addSubTask(): void {
     const title = this.newSubTaskTitle().trim();
     if (!title) {

@@ -13,7 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace FH.ToDo.Web.Host.Controllers;
 
 /// <summary>
-/// Authentication controller — login, self-registration, token refresh, and revocation
+/// Authentication — login, self-registration, token refresh, and revocation.
+/// All endpoints except <c>revoke</c> are accessible without a prior access token.
 /// </summary>
 public class AuthController : ApiControllerBase
 {
@@ -37,7 +38,12 @@ public class AuthController : ApiControllerBase
         _taskListService = taskListService;
     }
 
-    /// <summary>Login with email and password</summary>
+    /// <summary>Authenticates a user with email and password.</summary>
+    /// <param name="request">Login credentials.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A <see cref="LoginResponseDto"/> containing the access token, refresh token, and user info.</returns>
+    /// <response code="200">Login successful.</response>
+    /// <response code="401">Invalid email or password.</response>
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request, CancellationToken cancellationToken)
@@ -48,7 +54,12 @@ public class AuthController : ApiControllerBase
         return Success(BuildLoginResponse(user, token), "Login successful");
     }
 
-    /// <summary>Register a new account — creates the user then auto-authenticates</summary>
+    /// <summary>Registers a new Basic user account and auto-authenticates on success.</summary>
+    /// <param name="request">New account details.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A <see cref="LoginResponseDto"/> identical to a successful login response.</returns>
+    /// <response code="201">Registration successful — returns tokens and user info.</response>
+    /// <response code="400">Validation failed or email is already in use.</response>
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] CreateUserDto request, CancellationToken cancellationToken)
@@ -66,7 +77,12 @@ public class AuthController : ApiControllerBase
         return Created(BuildLoginResponse(user, token), "Registration successful");
     }
 
-    /// <summary>Exchange a valid refresh token for a new access token + rotated refresh token</summary>
+    /// <summary>Exchanges a valid refresh token for a new access token and a rotated refresh token.</summary>
+    /// <param name="request">The current refresh token.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A <see cref="LoginResponseDto"/> with fresh tokens.</returns>
+    /// <response code="200">Token refreshed successfully.</response>
+    /// <response code="401">Refresh token is invalid, expired, or the user account is inactive.</response>
     [HttpPost("refresh")]
     [AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request, CancellationToken cancellationToken)
@@ -85,7 +101,11 @@ public class AuthController : ApiControllerBase
         return Success(BuildLoginResponse(user, token), "Token refreshed");
     }
 
-    /// <summary>Revoke a refresh token — logs out the current device</summary>
+    /// <summary>Revokes a refresh token, logging out the current device.</summary>
+    /// <param name="request">The refresh token to revoke.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Logged out successfully.</response>
+    /// <response code="401">Access token missing or invalid.</response>
     [HttpPost("revoke")]
     [Authorize]
     public async Task<IActionResult> Revoke([FromBody] RefreshTokenRequestDto request, CancellationToken cancellationToken)

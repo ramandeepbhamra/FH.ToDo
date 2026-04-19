@@ -19,6 +19,17 @@ import { UserDialogData } from '../models/user-dialog-data.model';
 import { User } from '../models/user.model';
 import { UserRole } from '../../../core/enums/user-role.enum';
 
+/**
+ * Admin-only paginated user management table.
+ *
+ * Supports server-side pagination, sorting, and multi-field filtering (name,
+ * email, role, active status, system user flag). Filters reset the page to 0
+ * before reloading. All filter state is held in signals — no route params or
+ * query string synchronisation.
+ *
+ * Opens `UserDialogComponent` for both create (null userId) and edit (string userId).
+ * Reloads the list after the dialog closes with a saved result.
+ */
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
@@ -57,7 +68,6 @@ export class UserListComponent implements OnInit {
   readonly sortBy = signal('firstName');
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
-  // Filters
   readonly filterName = signal('');
   readonly filterEmail = signal('');
   readonly filterRole = signal<UserRole | null>(null);
@@ -70,6 +80,7 @@ export class UserListComponent implements OnInit {
     this.load();
   }
 
+  /** Fetches the current page of users with all active filter and sort state applied. */
   load(): void {
     this.isLoading.set(true);
     this.userService.getUsers({
@@ -93,11 +104,13 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  /** Resets to page 0 and reloads when any filter value changes. */
   applyFilters(): void {
     this.pageIndex.set(0);
     this.load();
   }
 
+  /** Clears all filter signals, resets to page 0, and reloads. */
   clearFilters(): void {
     this.filterName.set('');
     this.filterEmail.set('');
@@ -121,6 +134,10 @@ export class UserListComponent implements OnInit {
     this.load();
   }
 
+  /**
+   * Opens the user dialog in create or edit mode.
+   * @param userId Pass `null` to open in create mode, or a user ID string for edit mode.
+   */
   openDialog(userId: string | null): void {
     const data: UserDialogData = { userId };
     this.dialog.open(UserDialogComponent, { data, width: '600px', disableClose: true })
@@ -128,4 +145,3 @@ export class UserListComponent implements OnInit {
       .subscribe(saved => { if (saved) this.load(); });
   }
 }
-

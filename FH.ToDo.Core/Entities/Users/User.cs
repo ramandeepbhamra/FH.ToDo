@@ -1,4 +1,5 @@
 ﻿using FH.ToDo.Core.Entities.Base;
+using FH.ToDo.Core.Shared.Constants;
 using FH.ToDo.Core.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,29 +9,24 @@ namespace FH.ToDo.Core.Entities.Users;
 [Table("Users")]
 public class User : BaseEntity<Guid>
 {
-    public const int MaxNameLength = 100;
-    public const int MaxPhoneNumberLength = 20;
-    public const int MaxEmailAddressLength = 256;
-    public const int MaxPasswordHashLength = 256;
-
     [Required]
-    [MaxLength(MaxEmailAddressLength)]
+    [MaxLength(ValidationConstants.Email.MaxLength)]
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(MaxPasswordHashLength)]
+    [MaxLength(ValidationConstants.PasswordHash.MaxLength)]
     public string PasswordHash { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(MaxNameLength)]
+    [MaxLength(ValidationConstants.UserName.MaxLength)]
     public string FirstName { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(MaxNameLength)]
+    [MaxLength(ValidationConstants.UserName.MaxLength)]
     public string LastName { get; set; } = string.Empty;
 
-    [MaxLength(MaxPhoneNumberLength)]
+    [MaxLength(ValidationConstants.PhoneNumber.MaxLength)]
     [Phone]
     public string? PhoneNumber { get; set; }
 
