@@ -12,6 +12,8 @@ Designed for four roles — **Basic**, **Premium**, **Admin**, and **Dev** — e
 
 Responsive across all screen sizes — desktop, tablet, and mobile — without a single CSS `@media` query. All layout breakpoints are managed in TypeScript via Angular CDK's `BreakpointObserver`, surfaced as signals through `ResponsiveService`. This keeps responsive behaviour testable, consistent, and completely decoupled from stylesheets.
 
+> For a full breakdown of every feature, role permissions, and business rules see [Features](docs/features.md).
+
 ---
 
 ## Quick Start
