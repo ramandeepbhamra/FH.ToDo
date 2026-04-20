@@ -12,6 +12,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { toDateOnlyString } from '../../../core/utils/date.util';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { TodoTask } from '../models/todo-task.model';
 import { TodoTaskService } from '../services/todo-task.service';
 import { ResponsiveService } from '../../../core/services/responsive.service';
@@ -36,6 +37,7 @@ import { ResponsiveService } from '../../../core/services/responsive.service';
     MatTooltipModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    TrimOnBlurDirective,
   ],
   templateUrl: './todo-item.component.html',
   styleUrl: './todo-item.component.scss',

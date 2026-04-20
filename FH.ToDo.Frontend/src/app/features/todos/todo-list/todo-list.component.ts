@@ -9,6 +9,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { TodoFormComponent } from '../todo-form/todo-form.component';
 import { TodoItemComponent } from '../todo-item/todo-item.component';
 import { TodoTask } from '../models/todo-task.model';
@@ -28,6 +29,7 @@ import { TodoTaskService } from '../services/todo-task.service';
   selector: 'app-todo-list',
   imports: [
     FormsModule,
+    TrimOnBlurDirective,
     TodoFormComponent,
     TodoItemComponent,
     DragDropModule,

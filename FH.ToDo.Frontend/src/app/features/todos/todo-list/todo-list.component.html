@@ -12,7 +12,7 @@
     <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 py-2">
       <mat-form-field appearance="outline">
         <mat-label>Search</mat-label>
-        <input matInput [ngModel]="searchText()" (ngModelChange)="searchText.set($event)" placeholder="Search tasks...">
+        <input matInput trimOnBlur [ngModel]="searchText()" (ngModelChange)="searchText.set($event)" placeholder="Search tasks...">
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
       <div class="flex items-center pb-1">

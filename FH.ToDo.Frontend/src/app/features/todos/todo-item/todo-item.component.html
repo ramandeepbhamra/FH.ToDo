@@ -39,6 +39,7 @@
           <mat-label>Task title</mat-label>
           <input
             matInput
+            trimOnBlur
             [value]="editTitle()"
             (input)="editTitle.set($any($event.target).value)"
             (keyup.enter)="saveEdit()"
@@ -153,6 +154,7 @@
           <mat-form-field appearance="outline" style="flex:1; margin-bottom:-1.25em" [color]="subtaskEditError() ? 'warn' : undefined" [class.shake]="subtaskEditError()">
             <input
               matInput
+              trimOnBlur
               [value]="editSubTaskTitle()"
               (input)="editSubTaskTitle.set($any($event.target).value)"
               (keyup.enter)="saveSubTaskEdit(sub.id)"
@@ -167,16 +169,21 @@
       </div>
     }
 
-    <mat-form-field appearance="outline" class="w-full" style="margin-top:4px" [color]="newSubtaskError() ? 'warn' : undefined" [class.shake]="newSubtaskError()">
-      <mat-label>Add subtask</mat-label>
-      <input
-        matInput
-        [value]="newSubTaskTitle()"
-        (input)="newSubTaskTitle.set($any($event.target).value)"
-        (keyup.enter)="addSubTask()"
-        placeholder="Press Enter to add"
-        maxlength="255"
-      />
-    </mat-form-field>
+    <div class="flex items-center gap-2" style="margin-top:4px">
+      <mat-form-field appearance="outline" class="flex-1" style="margin-bottom:-1.25em" [color]="newSubtaskError() ? 'warn' : undefined" [class.shake]="newSubtaskError()">
+        <mat-label>Add subtask</mat-label>
+        <input
+          matInput
+          trimOnBlur
+          [value]="newSubTaskTitle()"
+          (input)="newSubTaskTitle.set($any($event.target).value)"
+          (keyup.enter)="addSubTask()"
+          maxlength="255"
+        />
+      </mat-form-field>
+      <button mat-flat-button (click)="addSubTask()" [disabled]="!newSubTaskTitle().trim()">
+        Add
+      </button>
+    </div>
   </div>
 }

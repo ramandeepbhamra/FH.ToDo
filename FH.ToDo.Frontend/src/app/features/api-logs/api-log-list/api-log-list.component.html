@@ -28,6 +28,7 @@
       <mat-form-field appearance="outline">
         <mat-label>Service</mat-label>
         <input matInput
+               trimOnBlur
                [ngModel]="filterServiceName()"
                (ngModelChange)="filterServiceName.set($event)"
                placeholder="e.g. Users">

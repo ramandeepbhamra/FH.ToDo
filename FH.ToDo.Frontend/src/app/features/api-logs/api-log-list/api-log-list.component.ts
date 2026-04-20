@@ -14,6 +14,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { ApiLog } from '../models/api-log.model';
 import { ApiLogGetRequest } from '../models/api-log-get-request.model';
 import { ApiLogService } from '../services/api-log.service';
@@ -25,6 +26,7 @@ import { ApiLogService } from '../services/api-log.service';
   imports: [
     DatePipe,
     FormsModule,
+    TrimOnBlurDirective,
     MatButtonModule,
     MatDatepickerModule,
     MatExpansionModule,
