@@ -18,6 +18,13 @@ Responsive across all screen sizes — desktop, tablet, and mobile — without a
 
 ## Quick Start
 
+> [!WARNING]
+> **Always run the backend using the Kestrel `http` launch profile — not IIS Express.**
+> The API is configured to serve on port `5214`. This is the expected default across the Angular `environment.ts`, CORS policy, and Playwright E2E tests. Selecting IIS Express or any other launch profile will break all three.
+
+> [!NOTE]
+> **Test accounts** are seeded automatically on first run by `DataSeeder`. Accounts exist for all four roles — Basic, Premium, Admin, and Dev. Alternatively, register a new Basic account directly via the app.
+
 ### Prerequisites
 
 | Tool | Version |
@@ -34,8 +41,6 @@ dotnet run --project FH.ToDo.Web.Host
 
 Database is created and seeded automatically on first run. No SQL Server required — SQLite file-based.
 
-> **Critical:** Always use the Kestrel `http` profile (select from the dropdown next to ▶ in Visual Studio). These ports are hardcoded in the frontend `environment.ts`, CORS config, and Playwright E2E tests — using a different profile will break all three.
-
 | URL | Purpose |
 |---|---|
 | `http://localhost:5214` | API base URL |
@@ -45,8 +50,6 @@ Database is created and seeded automatically on first run. No SQL Server require
 | `http://localhost:4200` | Angular frontend |
 
 **Quick API testing:** Use [`FH.ToDo.http`](FH.ToDo.http) in the solution root — covers all endpoints with sample payloads and auto-populates tokens and IDs between requests. Works in Visual Studio 2022, VS Code (REST Client extension), and Rider.
-
-**Test credentials:** Seed accounts for all three roles (Admin, Basic, Dev) are created automatically on first run. See the seeding logic in the project, or register a new Basic account directly via the app.
 
 ### Frontend
 
