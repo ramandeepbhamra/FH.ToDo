@@ -22,12 +22,12 @@
     <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 py-2 items-center">
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput [ngModel]="filterName()" (ngModelChange)="filterName.set($event)" placeholder="First or last name">
+        <input matInput trimOnBlur [ngModel]="filterName()" (ngModelChange)="filterName.set($event)" placeholder="First or last name">
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
-        <input matInput [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)" placeholder="e.g. user@mail.com">
+        <input matInput trimOnBlur [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)" placeholder="e.g. user@mail.com">
         <mat-icon matSuffix>email</mat-icon>
       </mat-form-field>
       <mat-form-field appearance="outline">

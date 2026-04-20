@@ -13,6 +13,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TrimOnBlurDirective } from '../../../core/directives/trim-on-blur.directive';
 import { UserService } from '../services/user.service';
 import { UserDialogComponent } from '../user-dialog/user-dialog.component';
 import { UserDialogData } from '../models/user-dialog-data.model';
@@ -36,6 +37,7 @@ import { UserRole } from '../../../core/enums/user-role.enum';
   styleUrl: './user-list.component.scss',
   imports: [
     FormsModule,
+    TrimOnBlurDirective,
     MatButtonModule,
     MatExpansionModule,
     MatFormFieldModule,
