@@ -99,6 +99,7 @@ FH.ToDo/
 | [Scalability](docs/architecture/scalability.md) | Architectural, testing, and feature scaling roadmap |
 | [Getting Started](docs/development/getting-started.md) | Full local setup and CORS configuration |
 | [Adding Features](docs/development/adding-features.md) | Step-by-step checklist for adding new features |
+| [AI Setup](docs/development/ai-setup.md) | AI assistant configuration — Claude Code, Copilot, agent definitions |
 
 ### Project READMEs
 
