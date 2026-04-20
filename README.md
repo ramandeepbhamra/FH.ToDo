@@ -23,7 +23,15 @@ Responsive across all screen sizes — desktop, tablet, and mobile — without a
 > The API is configured to serve on port `5214`. This is the expected default across the Angular `environment.ts`, CORS policy, and Playwright E2E tests. Selecting IIS Express or any other launch profile will break all three.
 
 > [!NOTE]
+> **Startup project:** Set `FH.ToDo.Web.Host` as the startup project in Visual Studio. This project hosts the API, Swagger UI, Scalar UI, and health check endpoint.
+>
 > **Test accounts** are seeded automatically on first run by `DataSeeder`. Accounts exist for all four roles — Basic, Premium, Admin, and Dev. Alternatively, register a new Basic account directly via the app.
+
+> [!NOTE]
+> **EF Core migrations** target `FH.ToDo.Core.EF` with `FH.ToDo.Web.Host` as the startup project. The database is migrated and seeded automatically on startup — manual commands are only needed if you want to apply or roll back migrations explicitly:
+> ```bash
+> dotnet ef database update --project FH.ToDo.Core.EF --startup-project FH.ToDo.Web.Host
+> ```
 
 ### Prerequisites
 
