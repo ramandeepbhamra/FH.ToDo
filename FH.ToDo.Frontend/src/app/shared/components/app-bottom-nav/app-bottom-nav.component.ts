@@ -20,5 +20,6 @@ export class AppBottomNavComponent {
   readonly isAuthenticated = computed(() => !!this.currentUser());
   readonly isAdmin = computed(() => this.currentUser()?.role === UserRole.Admin);
   readonly isDevUser = computed(() => this.currentUser()?.role === UserRole.Dev);
+  readonly isPremium = computed(() => this.currentUser()?.role === UserRole.Premium);
   readonly isAdminOrDev = computed(() => this.isAdmin() || this.isDevUser());
 }

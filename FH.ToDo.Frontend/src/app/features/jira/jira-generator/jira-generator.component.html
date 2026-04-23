@@ -1,0 +1,85 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-header__title">
+      <mat-icon>bug_report</mat-icon>
+      <h1>Jira Test Generator</h1>
+    </div>
+    <p class="page-header__subtitle">
+      Enter a Jira ticket number to generate AI-powered test cases instantly.
+    </p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-row">
+      <mat-form-field
+        appearance="outline"
+        class="field-ticket"
+        [color]="ticketError() ? 'warn' : undefined"
+        [class.shake]="ticketError()"
+      >
+        <mat-label>Jira Ticket</mat-label>
+        <input
+          matInput
+          placeholder="e.g. PROJ-123"
+          [(ngModel)]="ticketNumber"
+          [disabled]="loading()"
+          (keyup.enter)="generate()"
+          data-testid="jira-ticket-input"
+        />
+        <mat-icon matSuffix>confirmation_number</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-format">
+        <mat-label>Output Format</mat-label>
+        <mat-select [(ngModel)]="format" [disabled]="loading()" data-testid="format-select">
+          @for (f of formats; track f) {
+            <mat-option [value]="f">{{ f }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        class="generate-btn"
+        (click)="generate()"
+        [disabled]="!canGenerate()"
+        data-testid="generate-btn"
+      >
+        @if (loading()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>auto_awesome</mat-icon>
+        }
+        <span>{{ loading() ? 'Generating…' : 'Generate' }}</span>
+      </button>
+    </div>
+  </div>
+
+  @if (result(); as r) {
+    <div class="result-card" data-testid="result-panel">
+      <div class="result-card__header">
+        <div class="result-card__meta">
+          <span class="ticket-badge" data-testid="ticket-badge">{{ r.ticketKey }}</span>
+          <span class="issue-type">{{ r.issueType }}</span>
+          <span class="summary">{{ r.summary }}</span>
+        </div>
+        <div class="result-card__actions">
+          <button
+            mat-stroked-button
+            (click)="copyToClipboard()"
+            [matTooltip]="copied() ? 'Copied!' : 'Copy to clipboard'"
+            data-testid="copy-btn"
+          >
+            <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+            <span>{{ copied() ? 'Copied' : 'Copy' }}</span>
+          </button>
+          <button mat-button (click)="reset()" data-testid="reset-btn">
+            <mat-icon>refresh</mat-icon>
+            <span>New Ticket</span>
+          </button>
+        </div>
+      </div>
+      <pre class="result-card__output" data-testid="output">{{ r.testCases }}</pre>
+    </div>
+  }
+</div>

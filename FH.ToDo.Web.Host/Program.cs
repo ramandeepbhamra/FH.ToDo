@@ -8,10 +8,12 @@ using FH.ToDo.Services.Core.Authentication;
 using FH.ToDo.Services.Core.Logging;
 using FH.ToDo.Services.Core.Tasks;
 using FH.ToDo.Services.Core.Users;
+using FH.ToDo.Services.Core.Jira;
 using FH.ToDo.Services.Logging;
 using FH.ToDo.Services.Mapping;
 using FH.ToDo.Services.Tasks;
 using FH.ToDo.Services.Users;
+using FH.ToDo.Services.Jira;
 using FH.ToDo.Core.Shared.Configuration;
 using FH.ToDo.Web.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +36,8 @@ builder.Host.UseSerilog();
 // Configuration
 builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection("Application"));
 builder.Services.Configure<SessionSettings>(builder.Configuration.GetSection("Session"));
+builder.Services.Configure<JiraSettings>(builder.Configuration.GetSection("Jira"));
+builder.Services.Configure<AiSettings>(builder.Configuration.GetSection("Ai"));
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -61,6 +65,8 @@ builder.Services.AddScoped<ITaskListService, TaskListService>();
 builder.Services.AddScoped<ITodoTaskService, TodoTaskService>();
 builder.Services.AddScoped<IApiLogService, ApiLogService>();
 builder.Services.AddScoped<IDataSeeder, DataSeeder>();
+builder.Services.AddScoped<IJiraService, JiraService>();
+builder.Services.AddScoped<ITestCaseService, TestCaseService>();
 
 // Mappers
 builder.Services.AddScoped<UserMapper>();

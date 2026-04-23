@@ -36,6 +36,7 @@ export class AppNavigationComponent {
   readonly isAuthenticated = computed(() => !!this.currentUser());
   readonly isAdmin         = computed(() => this.currentUser()?.role === UserRole.Admin);
   readonly isDevUser       = computed(() => this.currentUser()?.role === UserRole.Dev);
+  readonly isPremium       = computed(() => this.currentUser()?.role === UserRole.Premium);
 
   readonly logout    = () => this.authService.logout();
   readonly openTheme = () => this.themeSelectorService.open();

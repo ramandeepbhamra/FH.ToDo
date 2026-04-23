@@ -5,6 +5,13 @@
       <span>Todos</span>
     </a>
 
+    @if (isPremium()) {
+      <a class="nav-item" routerLink="/jira" routerLinkActive="active" matRipple>
+        <mat-icon>bug_report</mat-icon>
+        <span>Test Gen</span>
+      </a>
+    }
+
     @if (isAdmin()) {
       <a class="nav-item" routerLink="/users" routerLinkActive="active" matRipple>
         <mat-icon>group</mat-icon>

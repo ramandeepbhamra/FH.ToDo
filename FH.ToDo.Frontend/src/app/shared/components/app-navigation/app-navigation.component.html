@@ -15,6 +15,9 @@
       @if (!responsiveService.smallWidth()) {
         <nav>
           <a mat-button routerLink="/todos">Todos</a>
+          @if (isPremium()) {
+            <a mat-button routerLink="/jira">Test Generator</a>
+          }
           @if (isAdmin()) {
             <a mat-button routerLink="/users">Users</a>
           }

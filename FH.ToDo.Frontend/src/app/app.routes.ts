@@ -14,6 +14,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { devUserGuard } from './core/guards/dev-user.guard';
 import { adminOrDevUserGuard } from './core/guards/admin-or-dev-user.guard';
+import { premiumGuard } from './core/guards/premium.guard';
 
 /**
  * Root route configuration.
@@ -74,6 +75,11 @@ export const routes: Routes = [
         path: 'logs',
         canActivate: [adminOrDevUserGuard],
         loadChildren: () => import('./features/api-logs/api-logs.routes').then(m => m.API_LOGS_ROUTES),
+      },
+      {
+        path: 'jira',
+        canActivate: [premiumGuard],
+        loadChildren: () => import('./features/jira/jira.routes').then(m => m.JIRA_ROUTES),
       },
     ],
   },
